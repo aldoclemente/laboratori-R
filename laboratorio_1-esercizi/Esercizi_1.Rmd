@@ -1,0 +1,466 @@
+---
+title: "Laboratorio 1"
+subtitle: "Soluzioni Esercizi"
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ESERCIZIO 1
+
+Importare i dati di anagrafica.txt. I dati consistono in osservazioni di 4 variabili:
+
+* ETA
+* PESO
+* ALTEZZA
+* SESSO ( 1 = femmina, 2 = maschio ) 
+
+che rappresentano l'età, il peso, l'altezza e il sesso di pazienti ammessi in diversi reparti di ospedali della Lombardia con una diagnosi di infarto.
+Selezionare e condurre un'analisi descrittiva delle variabili quantitative: ETA, PESO, ALTEZZA.
+Commentare i risultati alla luce di quanto osservato.
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. Per prima cosa, è necessario impostare correttamente la cartella di lavoro 
+(\texttt{working directory}). Quindi:
+
+```{r}
+# Da interfaccia RStudio:
+# 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
+
+# Da console:
+# setwd('C:/percorso/dove/si/trova/il/file/anagrafica.txt')
+```
+
+2. Ora è possibile importare il dataset dal file di testo tramite il comando 
+\texttt{read.table} ed assegnarlo ad una nuova variabile chiamata
+\texttt{anagrafica}.
+```{r}
+anagrafica = read.table("anagrafica.txt", header=TRUE)
+head(anagrafica)
+```
+
+3. Selezioniamo le prime tre colonne di \texttt{anagrafica}.
+
+```{r}
+anagrafica = anagrafica[,1:3] # ATTENTZIONE sto sovrascrivendo la variabile
+```
+
+4. Summary delle variabili di interesse. Si noti che NON è necessario utilizzare `attach()`. Infatti, accediamo alle variabili di interesse tramite l'operatore `$`.
+```{r}
+summary(anagrafica$ETA)     # oppure: summary(anagrafica[,1])
+
+summary(anagrafica$PESO)    # oppure: summary(anagrafica[,2])
+
+summary(anagrafica$ALTEZZA) # oppure: summary(anagrafica[,3])
+```
+
+5. Boxplots delle variaibli di interesse.
+```{r}
+par(mfrow=c(1,3))
+boxplot(anagrafica$ETA,
+        main="Età")
+boxplot(anagrafica$PESO,
+        main="Peso")
+boxplot(anagrafica$ALTEZZA,
+        main="Altezza")
+
+```
+
+6. Istogrammi delle variabili di interesse.
+```{r, fig.height=7}
+ndati = nrow(anagrafica)
+par(mfrow=c(3,1))
+hist(anagrafica$ETA,
+     probability = T,
+     main="Età", xlab = "", ylab="Densità",
+     breaks = floor(sqrt(ndati)) )
+hist(anagrafica$PESO,
+     probability = T,
+     main="Peso", xlab="", ylab="Densità",
+     breaks = floor(sqrt(ndati)))
+hist(anagrafica$ALTEZZA,
+     probability = T,
+     main="Altezza", xlab="", ylab="Densità",
+     breaks = floor(sqrt(ndati)))
+
+```
+
+
+
+## ESERCIZIO 2
+
+Importare i dati di anagrafica.txt. I dati consistono in osservazioni di 4 variabili:
+
+* ETA
+* PESO
+* ALTEZZA
+* SESSO ( 1 = femmina, 2 = maschio ) 
+
+che rappresentano l'età, il peso, l'altezza e il sesso di pazienti ammessi in diversi reparti di ospedali della Lombardia con una diagnosi di infarto. Condurre analisi descrittiva della variabile qualitativa SESSO.
+Commentare i risultati alla luce di quanto osservato.
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. Per prima cosa, è necessario impostare correttamente la cartella di lavoro 
+(\texttt{working directory}). Quindi:
+
+```{r}
+# Da interfaccia RStudio:
+# 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
+
+# Da console:
+# setwd('C:/percorso/dove/si/trova/il/file/anagrafica.txt')
+```
+
+2. Ora è possibile importare il dataset dal file di testo tramite il comando 
+\texttt{read.table} ed assegnarlo ad una nuova variabile chiamata
+\texttt{anagrafica}.
+```{r, echo=FALSE}
+rm(list=ls())
+```
+
+```{r}
+anagrafica = read.table("anagrafica.txt", header=TRUE)
+head(anagrafica)
+```
+
+3.Assegno la quarta colonna di \texttt{anagrafica} alla nuova variabile \texttt{sesso}.
+```{r}
+sesso = anagrafica[,4]
+class(sesso) # sesso è composto da "interi"
+```
+
+4. \texttt{sesso} contiene i valori `1` e `2` per le femmine e i maschi, rispettivamente. Sostituiamo `1` e `2` con dei caratteri più informativi(`"F"` e `"M"`) selezionando opportunamente il sottocampione da modificare tramite la funzione `which`.
+```{r}
+sesso[which(sesso==1)] = "F"
+sesso[which(sesso==2)] = "M"
+class(sesso)
+```
+
+5. Sesso come variabile `factor`.  
+```{r}
+sesso = factor(sesso)
+summary(sesso)
+```
+
+6. Tabelle delle frequenze assolute e relative.
+```{r}
+freq_ass = table(sesso)
+freq_ass
+
+freq_rel = freq_ass / length(sesso) # oppure prop.table(freq_ass)
+freq_rel
+```
+
+7. Barplot e Grafico a torta della tabella delle frequenze relative.
+```{r}
+par(mfrow=c(1,2))
+barplot(freq_rel, col=c("pink","lightblue"), main="Frequenze relative\n sesso")
+pie(freq_rel, col=c("pink","lightblue"), main="Frequenze relative\n sesso")
+```
+
+
+## ESERCIZIO 3: ESPOSIZIONE A PESTICIDI
+
+L'esposizione cronica a pesticidi può comportare alterazioni di svariati organi
+e sistemi dell'organismo umano, quali ad esempio quello nervoso
+(\texttt{NER}), endocrino (\texttt{END}), immunitario (\texttt{IMM}),
+riproduttivo (\texttt{RIP}), renale (\texttt{REN}), cardiovascolare
+(\texttt{CAR}) e respiratorio (\texttt{RES}).
+
+Si consideri la seguente variabile categorica, contenente i sistemi anatomici
+alterati di 60 pazienti a seguito di esposizione ad alcuni pesticidi.
+
+```{r, echo=TRUE}
+# Sistemi alterati di 60 pazienti
+sistemi = c( 'NER', 'NER', 'END', 'NER', 'END', 'NER', 'IMM', 'NER', 'IMM',
+             'NER', 'RIP', 'IMM', 'END', 'END', 'IMM', 'END', 'NER', 'END',
+             'NER', 'RIP', 'REN', 'NER', 'IMM', 'NER', 'IMM', 'RIP', 'RIP',
+             'CAR', 'CAR', 'NER', 'NER', 'RIP', 'CAR', 'RIP', 'CAR', 'REN',
+             'IMM', 'END', 'RES', 'NER', 'NER', 'IMM', 'NER', 'NER', 'END',
+             'END', 'END', 'NER', 'NER', 'CAR', 'RES', 'RES', 'NER', 'NER',
+             'NER', 'CAR', 'RES', 'REN', 'CAR', 'IMM' )
+```
+
+Si richiede di:
+
+1. Creare le tabelle di frequenze assolute e relative di \texttt{sistemi}. 
+
+2. Visualizzare mediante opportuni grafici il dataset.
+
+3. Estrarre il sottocampione composto dai sistemi di tipo \texttt{NER} e
+\texttt{END}.
+
+4. Eliminare dal campione tutti i sistemi di tipo \texttt{RIP} e \texttt{RES}.
+
+5. Creare le tabelle di frequenze assolute e relative del nuovo campione.
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. Al fine di creare le tabelle di frequenze assolute e relative e rispondere
+alle richieste successive più agevolmente, occorre prima convertire
+opportunamente la variabile \texttt{sistemi} da \texttt{character} a
+\texttt{factor}.
+
+```{r}
+class(sistemi)
+
+sistemi = as.factor(sistemi)
+
+sistemi
+
+class(sistemi)
+```
+
+Il numero di valori possibili assunti dagli elementi di \texttt{sistemi} è pari
+a 7. I livelli corrispondono ai sistemi anatomici danneggiati.
+
+```{r}
+levels(sistemi)
+
+length(levels(sistemi))
+```
+
+Pertanto, si ottengono le tabelle di frequenze assolute e relative come segue.
+
+```{r}
+freq_ass = table(sistemi)
+freq_ass
+
+freq_rel = freq_ass/length(sistemi)
+freq_rel
+```
+
+Ad esempio, il 35\% degli individui analizzati (21 pazienti su 60) ha subito
+danni al sistema nervoso, mentre il 15\% (9 pazienti su 60) a quello
+immunitario. Infine, si ricorda che l'ultima istruzione è equivalente a:
+
+```{r}
+freq_rel = prop.table(freq_ass)
+freq_rel
+```
+
+2. I grafici a barre richiesti vengono ottenuti mediante la funzione
+\texttt{barplot()}.
+
+```{r}
+par(mfrow=c(1,2))
+barplot(freq_ass, col=rainbow(length(levels(sistemi))),
+        main='Frequenze assolute:\n SISTEMI')
+
+barplot(freq_rel, col=rainbow(length(levels(sistemi))),
+        main='Frequenze relative:\n SISTEMI')
+```
+
+Nel primo grafico l'altezza di ogni rettangolo è pari alla frequenza assoluta.
+Nel secondo grafico, invece, si visualizzano le frequenze relative. I due
+grafici hanno scale diverse e, come atteso, la somma delle frequenze relative è
+pari a 1.
+
+```{r}
+sum(freq_rel)
+```
+
+Analogamente, è possibile ottenere un grafico a torta attraverso \texttt{pie()}.
+
+```{r}
+pie(freq_rel, col=rainbow(length(levels(sistemi))),
+    main='Frequenze relative:\n SISTEMI')
+```
+
+Il cerchio è diviso in spicchi con ampiezze angolari proporzionali alle classi
+di frequenza.
+
+3. Il sottocampione richiesto può essere estratto tramite la funzione
+\texttt{which}.
+
+```{r}
+gruppo_NER_END = sistemi[which(sistemi == "NER" | sistemi == "END")]
+gruppo_NER_END
+```
+
+4. In modo analogo al punto precedente è possibile estrarre il sottocampione
+richiesto tramite la funzione \texttt{which()}.
+
+```{r}
+gruppo_senza_RIP_RES = sistemi[-which(sistemi == "RIP" | sistemi == "RES")]
+gruppo_senza_RIP_RES
+```
+
+5. Le tabelle di frequenze assolute e relative del nuovo campione vengono così
+ricavate.
+
+```{r}
+table(gruppo_senza_RIP_RES)
+table(gruppo_senza_RIP_RES)/length(gruppo_senza_RIP_RES)
+```
+
+## ESERCIZIO 4: ANALISI DI DELFINI
+
+Si consideri il dataset contenuto nel file di testo \texttt{delfini.txt}
+relativo a 100 delfini avvistati al largo delle isole Azzorre. Le variabili
+osservate sono le seguenti:
+
+* \texttt{freq}: frequenza dei fischi emessi dagli esemplari (in kHz)
+
+* \texttt{length}: lunghezza degli esemplari (in metri)
+
+* \texttt{sex}: genere degli esemplari (0 = maschi, 1 = femmine)
+
+* \texttt{age}: età degli esemplari (in anni).
+
+Si richiede di:
+
+1. Impostare la working directory corretta. Caricare il dataset e assegnarlo ad
+una nuova variabile \texttt{delfini} di tipo dataframe.
+
+2. Creare le tabelle di frequenze assolute e relative per la variabile
+\texttt{sex} (0 = maschi, 1 = femmine).
+
+3. Creare un grafico a torta delle frequenze relative del sesso dei delfini. 
+Creare un grafico a barre delle frequenze assolute del sesso dei delfini.
+
+4. Estrarre i dati relativi ai delfini che hanno più di 16 anni (\texttt{age}
+$\geq 16$). [ *Suggerimento: utilizzare la funzione \texttt{which()} per
+selezionare le righe desiderate; se necessario usare \texttt{help(which)} per
+capirne meglio il funzionamento.* ]
+
+5. Estrarre i dati relativi all'età dei delfini di genere femminile e lunghezza
+maggiore di 1.80. Inoltre, contare quanti esemplari soddisfano queste
+condizioni. [ *Suggerimento: utilizzare le funzioni \texttt{which()} e
+\texttt{length()} per selezionare le righe desiderate.* ]
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. Per prima cosa, è necessario impostare correttamente la cartella di lavoro 
+(\texttt{working directory}). Quindi:
+
+```{r}
+# Da interfaccia RStudio:
+# 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
+
+# Da console:
+# setwd('C:/percorso/dove/si/trova/il/file/delfini.txt')
+```
+
+Ora è possibile importare il dataset dal file di testo tramite il comando 
+\texttt{read.table} ed assegnarlo ad una nuova variabile chiamata
+\texttt{delfini}, come da richiesta.
+
+```{r}
+delfini = read.table("delfini.txt", header=TRUE)
+
+class(delfini)
+
+str(delfini)
+
+head(delfini)
+
+attach(delfini)
+```
+
+2. Al fine di creare le tabelle di frequenze assolute e relative e rispondere
+alle richieste successive più agevolmente, occorre prima convertire
+opportunamente la variabile \texttt{sex} da \texttt{int} a
+\texttt{factor}. Si noti che è stato eseguito il comando
+\texttt{attach(delfini)}. Pertanto, l'accesso alla variabile \texttt{sex} non
+necessita del comando \texttt{delfini\$sex}, ma semplicemente di \texttt{sex}.
+
+```{r}
+sex = as.factor(sex)  # in questo modo si sta modificando direttamente il
+                      # dataset e non si sta creando una nuova variabile
+sex
+
+class(sex)
+
+str(delfini)
+```
+
+Trattandosi di una variabile binaria, il numero di valori possibili assunti
+dagli elementi di \texttt{sex} è pari a 2. I livelli 0 e 1 corrispondono al
+genere dei delfini (0 = maschi, 1 = femmine).
+
+```{r}
+levels(sex)
+
+length(levels(sex))
+```
+
+Pertanto, si ottengono le tabelle di frequenze assolute e relative come segue.
+
+```{r}
+freq_ass = table(sex)
+freq_ass
+
+freq_rel = freq_ass/length(sex)  # oppure: freq_rel = prop.table(freq_ass)
+freq_rel
+```
+
+Il 57\% dei delfini nel dataset, corrispondente a 57 esemplari su 100, ha genere
+maschile, mentre il restante 43\% ha genere femminile (43 esemplari su 100).
+
+3. In modo simile a quanto fatto nell'esercizio precedente, si ricavano i
+grafici desiderati.
+
+```{r}
+par(mfrow=c(1,2))
+pie(freq_rel, col=c('green', 'red'), main='Frequenze relative:\n SEX')
+barplot(freq_ass, col=c('green', 'red'), main='Frequenze assolute:\n SEX')
+```
+
+4. Il sottocampione di delfini con età maggiore di 16 anni viene così estratto.
+
+```{r}
+gruppo = delfini[which(age > 16),]
+gruppo
+
+range(gruppo$age)
+```
+
+5. Le età dei delfini di genere femminile e lunghezza maggiore di 1.80 vengono
+così estratte.
+
+```{r}
+delfini[which(sex == 1 & length > 1.80),4] 
+```
+
+Gli esemplari che soddisfano le condizioni di cui sopra sono 14 in totale.
+
+```{r}
+length(delfini[which(sex == 1 & length > 1.80),4])
+```
+
+Si ricorda ancora una volta che l'accesso al dataframe avviene direttamente
+digitando il nome della variabile di interesse (ad esempio \texttt{age}) grazie
+all'uso di \texttt{attach(delfini)}. In assenza di questo comando, l'accesso
+alle variabili del dataframe avviene tramite l'operatore \$ (ad esempio
+\texttt{delfini\$age}).
+
+Nel nostro caso, una volta concluso il lavoro sul dataset, è buona norma
+eseguire:
+
+```{r}
+detach(delfini)   # ricordarsi sempre!
+```
+

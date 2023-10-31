@@ -1,0 +1,169 @@
+---
+title: "Laboratorio 3"
+subtitle: "Legge dei Grandi Numeri e Teorema Centrale del Limite"
+output: pdf_document
+date: ""
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,fig.width= 4.5, 
+                                   fig.height= 3.5, 
+                                   fig.align= "center")
+```
+
+# Legge dei Grandi Numeri
+
+*Siano $X_1, ..., X_n$ variabili aleatorie indipendenti e identicamente distribuite con media $\mu$ e varianza finita $\sigma^2$.
+Allora la loro media campionaria $\overline{X}= \frac{\sum_{i=1}^{n} X_i}{n}$ converge in probabilità a $\mu$, per $n$ che tende all'infinito.*
+
+Simuliamo $n$ lanci di una moneta truccata in cui la probabilità
+di ottenere testa è 0.7, e studiamo come la proporzione di casi
+in cui si ottiene testa cambi all'aumentare del numero di lanci.
+
+Per la Legge dei Grandi Numeri ci aspettiamo che la proporzione di lanci
+in cui si ottiene testa (media campionaria degli esiti dei lanci)
+converga al valore teorico 0.7.
+
+```{r}
+n = 1000
+p = 0.7
+
+set.seed(314159) 
+
+dati.Be = rbinom(n, size = 1, prob = p)
+barplot(table( dati.Be ), main = 
+           'Barplot frequenze assolute lanci moneta', 
+         ylab = 'Frequenze assolute', 
+         names.arg = c( 'Croce', 'Testa' ))
+```
+
+Calcoliamo la media campionaria delle osservazioni (ovvero la proporzione di successi) dopo 1 lancio, dopo 2 lanci, ... fino a $n$.
+
+Per calcolare la media campionaria dividiamo la somma cumulata, ottenuta tramite `cumsum`, per il numero di lanci corrispondente
+
+```{r}
+somma.Be= cumsum(dati.Be)
+n.lanci= 1:n
+media.camp= somma.Be/n.lanci
+```
+
+Visualizziamo la media campionaria al variare del numero di lanci, aggiungiamo una retta orizzontale (rossa) corrispondente al valore teorico di $p$.
+
+```{r}
+plot(n.lanci, media.camp, type= 'l', lwd = 2,
+      main= 'Simulazione: la Legge dei Grandi Numeri', xlab= 'numero lanci',
+      ylab= 'proporzione di successi', ylim= c(0,1))
+abline(h= p, col= 'red', lty=2, lwd=2)
+```
+
+# Teorema Centrale del Limite
+
+*Siano $X_1, ..., X_n$ variabili aleatorie indipendenti e identicamente distribuite con
+media $\mu$ e varianza $\sigma^2$, allora la distribuzione di $\frac{\overline{X} -\mu }{\sigma/\sqrt{n}}$ converge alla distribuzione di una normale standard $N(0,1)$, per $n$ che tende all'infinito.*
+Inoltre, per il Teorema Centrale del Limite, la legge della somma di variabili aleatorie indipendenti e identicamente distribuite converge alla distribuzione di una normale di media $n \mu$ e varianza $n \sigma^2$.
+
+Studiamo la legge della somma di $n$ variabili aleatorie indipendenti con distribuzione Bernoulli di parametro $p=0.7$, al variare di $n$. 
+
+Per valutare la legge della somma, generiamo un certo numero $N$ di realizzazioni della somma e tracciamo un istogramma che viene confrontato all'andamento della densità di probabilità di una $N(np, np(1-p))$. 
+
+Si ricordi che per definizione una una $Bin(n,p)$ è la somma di $n$ variabili aleatorie indipendenti $Be(p)$.
+Per ogni valore di $n$ generiamo $N=500$ realizzazioni di una $Bin(n,p)$, in modo da avere $N$ realizzazione della somma di $n$ Bernoulli. I dati generati sono salvati in un'unica matrice $N\times 4$, in cui la colonna $j$-esima contiene le N realizzazioni della $Bin(n_j,p)$.
+
+```{r}
+n= c(5, 50, 500, 5000)
+p= 0.7
+N= 500
+
+set.seed(314159) 
+
+dati= matrix(0, nrow=N, ncol=length(n))
+for(i in 1:length(n)){
+  dati[,i]= rbinom(N, size= n[i], prob= p)
+}
+
+```
+
+Verifichiamo graficamente il Teorema Centrale del Limite:
+per ogni $n$ considerato, tracciamo l'istogramma delle realizzazioni ottenute per la somma di Bernoulli e sovrapponiamo la densità di una $N(np, np(1-p))$.
+
+```{r, fig.width=9,fig.height=7}
+par(mfrow=c(2,2))
+
+x= seq(min(dati[,1]), max(dati[,1]), .01)
+media = n[1]*p
+devstand= sqrt(n[1]*p*(1-p))
+density= dnorm(x, mean= media, sd= devstand)
+
+hist( dati[,1], prob= TRUE, main= 'TCL applicato a somma di Bernoulli\n n = 5',
+      xlab = 'somma di n bernoulli',
+      ylim = c(0,max(max(density), max(hist(dati[ ,1], plot= F)$density))),
+      breaks = seq(min(dati[,1])-.5, max(dati[,1])+ .5, by= 1))
+lines(x, density, col = 'red', lwd= 2)
+
+x= seq( min(dati[,2]), max(dati[,2]), .01)
+media= n[2]*p
+devstand= sqrt(n[2]*p*(1-p))
+density= dnorm( x, mean = media, sd = devstand)
+hist(dati[,2] , prob = TRUE, main = 'TCL applicato a somma di Bernoulli\n n = 50',
+     xlab = 'somma di n bernoulli',
+     ylim = c(0, max(max(density),max(hist(dati[,2],plot=F)$density))))
+lines( x, density, col= 'red', lwd= 2 )
+
+x= seq(min(dati[,3]), max(dati[,3]), .01)
+media= n[3]*p
+devstand= sqrt( n[3]*p*(1-p))
+density= dnorm(x, mean = media, sd = devstand)
+hist(dati[,3], prob = TRUE, main = 'TCL applicato a somma di Bernoulli\n n = 500',
+      xlab= 'somma di n bernoulli',
+      ylim= c(0, max( max( density), max(hist(dati[,3], plot=F)$density))))
+lines(x, density, col= 'red', lwd= 2)
+
+x= seq(min(dati[,4]), max(dati[,4]), .01 )
+media= n[4]*p
+devstand= sqrt( n[4]*p*(1-p))
+density= dnorm(x, mean = media, sd = devstand)
+hist(dati[,4], prob = TRUE, main = 'TCL applicato a somma di Bernoulli\n n = 5000',
+      xlab = 'somma di n bernoulli',
+      ylim = c(0, max(max(density), max(hist(dati[,4], plot=F)$density))))
+lines(x, density, col= 'red', lwd= 2)
+```
+
+Oltre al confronto qualitativo tra gli istogrammi, la bontà dell'adattamento della legge della somma alla normale può essere valutata anche con un q-q plot.
+Tracciamo dunque il q-q plot della somma di $n$ Bernoulli per ciascun valore di $n$ considerato. Notiamo come l'adattamento alla normale migliori al crescere di $n$.
+
+```{r, fig.height=7, fig.width=9}
+par(mfrow= c( 2, 2 ))
+qqnorm(dati[,1], main= 'TCL applicato a somma di Bernoulli\n n = 5')
+qqline(dati[,1], lwd= 2, col= 'red' )
+qqnorm(dati[,2], main= 'TCL applicato a somma di Bernoulli\n n = 50')
+qqline(dati[,2], lwd= 2, col= 'red' )
+qqnorm(dati[,3], main= 'TCL applicato a somma di Bernoulli\n n = 500')
+qqline(dati[,3], lwd= 2, col= 'red' )
+qqnorm(dati[,4], main= 'TCL applicato a somma di Bernoulli\n n = 5000')
+qqline(dati[,4], lwd= 2, col= 'red' )
+```
+
+In accordo al TCL, si noti che per $n$ grande risulta sempre meno evidente la distinzione fra l'andamento dei quantili empirici della somma di Bernoulli e quelli di una distribuzione gaussiana.
+
+Consideriamo la Media Campionaria delle $n$ Bernoulli. Verifichiamo, al crescere di $n$, l'approssimazione di $\overline{X}$ con una Normale $N\left(p,\frac{p(1-p)}{n}\right)$.
+
+```{r, fig.width=9,fig.height=7}
+mean_ = matrix(0,nrow=N,ncol=length(n))
+for(j in 1:length(n))
+  mean_[,j]= dati[,j]/n[j]
+
+mu = p
+var = p*(1-p)
+
+x_ = seq(from=0,to=1, length.out=1000)
+par(mfrow=c(2,2))
+for(i in 1:length(n)){
+  density = dnorm(x_, mean=mu, sd=sqrt(var/n[i]))
+  hist(mean_[,i], probability = TRUE,
+       xlab="p", main=paste('TCL: Media Campionaria di Bernoulli\n','n = ', n[i], sep=""),
+       xlim = c(0,1), ylim = c( 0, max(max(density),max(hist(mean_[,i],plot=F)$density))))
+  lines(x_, density, col="red", lwd=2)
+}
+```
+
+

@@ -1,0 +1,118 @@
+---
+title: "Laboratorio 3"
+subtitle: "Esercizi"
+author: ""
+date: ""
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Esercizio 1 - Stima del Numero di Nepero tramite MC
+
+Sapendo che $\int_0^1 (e^x+1)dx=e$ (provare per credere). Si richiede di:
+
+1. Stimare Numero di Nepero tramite integrazione Monte Carlo considerando $n=1000$ punti campionati da una distribuzione uniforme $U(0,1)$ per la valutazione della funzione $g(x)=e^x+1$.
+
+2. Mostrare andamento della stima del Numero di Nepero per ogni $n=1, \dots, 1000$. \textit{Suggerimento}: utilizzare `cumsum` come visto durante laboratorio
+
+3. Fissando $n=1000$, ripetere $M=500$ volte l'approssimazione del Numero di Nepero e salvare i risultati ottenuti in un vettore. 
+
+4. Costruire il qqnorm delle stime del Numero di Nepero ottenute al punto precendente. 
+
+1. 
+
+```{r}
+
+
+```
+
+2.
+
+```{r}
+
+
+```
+
+3. 
+
+```{r}
+
+
+```
+
+4.
+```{r}
+
+
+```
+
+
+# Esercizio 2 
+
+Sia $g(x) = 0.5 f(x)$, dove $f(x)$ è la distribuzione di probabilità di una
+Normale standard. Si richiede di:
+
+1. Stimare l'integrale di $g(x)$ tramite integrazione Monte Carlo considerando $n=1000$ punti campionati da una distribuzione uniforme $U(-5,5)$ per la valutazione della funzione $g(x)$. \textit{Suggerimento}: Ricordare che la funzione `dnorm(x,mu,sigma)` restituisce il valore della densità di probabilità di una Normale di media mu e dev. standard sigma valutata in x. 
+
+2. Mostrare andamento della stima dell'intergrale per ogni $n=1, \dots, 1000$. \textit{Suggerimento}: utilizzare `cumsum` come visto durante laboratorio
+
+3. Ripetere punto 2. campionando i punti utili alla valutazione della funzione $g(x)$ da una $N(0,1)$ e confronta i risultati con quelli ottenuti al punto precedente.
+
+1.
+
+```{r}
+
+
+```
+
+
+
+2.
+
+```{r}
+
+
+```
+
+3.
+
+```{r}
+
+
+```
+
+# Esercizio 3 - TCL: Somma di Uniformi
+
+Verificare la legge asintotica della media campionaria per un campione di $n=5, 10, 50, 100$ variabili $U(0,1)$. Si richiede di:
+
+1. Per ogni valore $n$, ripetere campionamento da una $U(0,1)$ per $N=500$ volte in modo da ottenere $N=500$ osservazioni della media campionaria.
+
+2. Costruire l'istogramma delle osservazioni della media campionaria, per ogni valore di $n$ (facoltativo: per ogni valore di $n$, sovrapporre agli istogrammi, il grafico della densità Normale prevista dal TCL).
+
+3. Verifica graficamente l'ipotesi di normalità delle osservazioni della media campionaria, per ogni valore di $n$.
+
+4. Commentare i risultati ottenuti al punto 3. e al punto 4.
+
+1.
+
+```{r}
+
+
+```
+
+2. 
+
+```{r}
+
+
+```
+
+3.
+
+```{r}
+
+
+```
+

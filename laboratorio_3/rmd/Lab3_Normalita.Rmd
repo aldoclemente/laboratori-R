@@ -1,0 +1,140 @@
+---
+title: "Laboratorio 3"
+subtitle: "Verifica grafica Normalità"
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width= 4.5, 
+                                   fig.height= 3.5, 
+                                   fig.align= "center")
+```
+
+```{r, include=FALSE}
+rm(list=ls())
+graphics.off()
+```
+
+# Q-Q PLOT e verifica della normalità dei dati
+
+Il q-q plot (quantile-quantile plot) è un grafico che permette di visualizzare il buon adattamento
+di una serie di dati ad una distribuzione nota. La distibuzione di riferimento piu' utilizzata è quella normale. In questo caso il q-q plot prende anche il nome di normal probability plot (NPP).
+Nel q-q plot sono rappresentati in ascissa i quantili teorici di una normale standard e in ordinata i quantili campionari (che corrispondono ai dati osservati ordinati).
+
+Il metodo puo' essere applicato a qualsiasi distribuzione continua,
+sostituendo ai quantili teorici della normale standard
+quelli della funzione di ripartizione appropriata.
+
+Consideriamo 10000 realizzazioni di una variabile aleatoria Normale di media e varianza nota.
+
+```{r}
+set.seed(123) 
+mu = 0
+sigma = 1
+N = 10000
+dati.sim = rnorm(N, mean = mu, sd = sigma)
+```
+
+Costruiamo l'istogramma per valutare l'andamento della distribuzione dei dati campionati rispetto al modello teorico. La densità di probabilità di una Gaussiana di media $\mu$ e varianza $\sigma^2$ è disponibile tramite la funzione `dnorm`.
+
+```{r}
+hist(dati.sim, prob= T, main= 'Istogramma dati campionati da N(0,1)')
+x= seq(min(dati.sim)-.1, max(dati.sim)+.1,length = 100)
+y= dnorm(x, mean= mu, sd= sigma)
+lines(x, y, col= 'red', lwd= 2)
+```
+
+Costruiamo il q-q plot tramite la funzione `qqnorm`, che di default rappresenta in ascissa i quantili teorici di una normale standard e in ordinata i quantili empirici. Inoltre, la funzione `qqline` aggiunge al grafico precedente una retta che approssima il grafico dei quantili empirici rispetto ai quantili teorici (di default è la retta che passa per il primo e per il terzo quartile)
+
+```{r}
+qqnorm(dati.sim)
+qqline(dati.sim, col= 'red', lwd= 2 )
+```
+
+Campioniamo ora da una gaussiana non standard.
+
+```{r}
+mu2 = 5
+sigma2 = 2
+dati.sim2 = rnorm( N, mean = mu2, sd = sigma2 )
+
+
+# Istogramma
+x = seq(min(dati.sim2)-.1, max(dati.sim2)+.1, length = 100 )
+dens = dnorm(x, mean = mu2, sd = sigma2 )
+
+hist(dati.sim2, prob = T, main = 'Istogramma dati camptionati da N(5,4)',
+     xlab="x", ylab="Densità")
+lines( x, dens, col = 'red', lwd = 2 )
+```
+
+Consideriamo il q-q plot in questo caso: andamento dei quantili empirici è sempre lineare ma la retta non coincide con la bisetrice del primo e terzo quadrante (tracciata in verde da `abline`)
+
+```{r}
+qqnorm(dati.sim2)
+qqline(dati.sim2, col= 'red', lwd= 2)
+abline(0, 1, lwd= 2, col= 'green', lty= 2)
+```
+
+Costruiamo i grafici precedenti considerando i dati standardizzati: $\frac{x_i - \overline{x}}{s}$. 
+```{r}
+dati.stand= (dati.sim2 - mean(dati.sim2))/sd(dati.sim2)
+
+qqnorm(dati.stand)
+qqline(dati.stand, col = 'red', lwd= 2)
+abline(0, 1, col = 'green', lty= 4, lwd= 2)
+```
+
+Abbiamo due possibilità per verificare graficamente la normalità dei dati:
+
+* possiamo considerare i dati standardizzati e confrontare l'andamento del qqplot con la bisettrice del primo e terzo quadrante.
+
+* possiamo verificare che il qqplot abbia un andamento lineare.
+
+# Q-Q PLOT di dati provenienti da distribuzioni note non Gaussiane
+
+Campioniamo 1000 osservazioni da una normale standard, altrettante da una U(-2,2) e altrettante da una Exp(1/3).
+
+```{r}
+set.seed(123) 
+
+z = rnorm(1000)
+u = runif(1000, -2, 2)
+g = rexp(1000, 1/3)
+```
+
+Tracciamo i grafici delle densità, sovrapposti al grafico della distribuzione di una normale standard, e successivamente i relativi qqplot.
+```{r, fig.width=9, fig.height=7}
+x = seq(from=-5, to=5, length=1000)
+
+par(mfrow= c(2, 3))
+plot(x, dnorm(x), type="l", lwd=2, col = 2,
+     ylab = "densità", main = 'Normale')
+
+plot(x, dnorm(x), type="l", lwd=2,
+     ylab = "densità", main = 'Uniforme')
+lines(x, dunif(x,min=-2,max=2), lwd=2, col = 2)
+legend(1, 0.4, c("N(0,1)", "U(-2,2)"), col= c(1, 2), 
+       lwd = 4, x.intersp = 0.5, seg.len=0.6)
+
+plot(x, dnorm(x), type="l", lwd=2,
+     ylab = "densità", main = 'Esponenziale')
+lines(x, dexp(x,1/3), lwd=2, col = 2)
+legend(1, 0.4, c( "N(0,1)", "Exp(1/3)" ), col = c(1, 2), 
+       lwd = 4, x.intersp = 0.5, seg.len=0.6)
+
+qqnorm(z)
+qqline(z, col= 'red', lwd=2)
+qqnorm(u)
+qqline(u, col= 'red', lwd=2)
+qqnorm(g)
+qqline(g, col= 'red', lwd=2)
+
+```
+UNIFORME
+Quando i dati provengono da una distribuzione con code meno pesanti (più basse) di quelle della gaussiana otteniamo un qq-plot a forma di S.
+
+ESPONENZIALE
+Quando i dati provengono da una distribuzione asimmetrica a dx otteniamo un qq-plot a forma di mezza U (funzione convessa). Se i dati provenissero da una distribuzione asimmetrica a sinistra otterremmo un qq-plot a forma di radice quadrata

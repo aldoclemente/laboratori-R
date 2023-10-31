@@ -1,0 +1,112 @@
+---
+title: "Laboratorio 3"
+subtitle: "Metodo Monte Carlo"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduzione Metodi Monte Carlo 
+
+I metodi Monte Carlo possono essere pensati come una collezione di tecniche computazionali per l'approssimazione di soluzioni di problemi matematici, che fanno uso di un campione casuale.
+Due classi di problemi sono spesso considerati in questa ambientazione: integrazione e ottimizzazione. In questo corso considereremo il solo problema di integrazione: approssimiamo il calcolo di un integrale utizzando una collezione di campioni casuali. I Metodi Monte Carlo invertono il problema della statistica: piuttosto che estimare quantità casuali in maniera deterministica, quantità casualo vengono utilizzate per fornire stime di quantità deterministiche.
+
+# Integrazione numerica tramite metodo MC
+
+Indichiamo con $I$ il valore esatto dell'integrale (definito) di una funzione $g$ reale di variabile reale.
+$$ I = \int_a^b g(x) dx$$
+L'idea dietro l'integrazione tramite metodo Monte Carlo è di approssimare il valore dell'integrale tramite la media delle valutazioni della funzione in $n$ punti campionati da una variabile aleatoria $X$ avente una funzione di densità $f(x)$. 
+Il caso più semplice prevede il campionamento dei punti $x_i$, per $i=1,\dots,n$, 
+per la valutazione della funzione da una distribuzione uniforme, ovvero $X \sim U([a,b])$. 
+In quest'ultimo caso, la stima dell'integrale tramite metodo Monte Carlo è la seguente:
+
+$$ \hat{I}_{\small{MC}}= \frac{b-a}{n}  \sum_{i=1}^{n}g(x_i). $$
+
+In generale, sia $f(x)$ la funzione di densità di probabilità della variabile aleatoria $X$ da cui vengono campionati i punti $x_i$, per $i=1,\dots,n$, utili alla valuzione della funzione $g(x)$. Allora, vale la seguente formula:
+
+$$ I = \int_a^b g(x) dx = \int_a^b \frac{g(x)}{f(x)}  f(x) dx  .$$
+Consideriamo un campione $X_1,\dots,X_n$ di variabili aleatorie indipendenti e identicamente distribuite con densità di probabilità $f(x)$. Allora $Y_1=h(X_1),\dots, Y_n=h(X_n)$, con $h(x)=g(x)/f(x)$, è un campione di variabili aleatorie indipendenti e identicamente distribuite. Può essere facilemente dimostrato che $\mathbb{E}[Y]=I$. Quindi, definiamo lil seguente stimatore (Monte Carlo):
+
+$$\hat{I}_{\small{MC}} = \frac{1}{n}\sum_{i=1}^{n}Y_i=\frac{1}{n}\sum_{i=1}^{n}\frac{g(X_i)}{f(X_i)}.$$
+
+
+Questo è uno stimatore puntuale e non distorto di $I$ e inoltre, per la Legge dei Grandi Numeri tale stimatore converge in probabilità ad $I$. Di conseguenza, osservati $\{x_i\}_{i=1}^{n}$, approssimiamo il valore dell'integrale I nel seguente modo:
+
+$$  \hat{I}_{\small{MC}} = \frac{1}{n} \sum_{i=1}^{n} \frac{g(x_i)} {f(x_i)}.$$ 
+Infine, supponendo che la variabile aleatoria $Y=h(X) = \frac{g(X)}{f(X)}$ abbia varianza $\sigma^2/n$, introduciamo la seguente definizione di errore associata alla stima dell'integrale tramite metodo Monte Carlo:
+
+$$ Err =  \frac{\sigma}{\sqrt{n}}  .$$
+
+
+### Esempio
+Stimare l'intergrale della funzione $g(x) = cos(x)$ in $[ -\pi/2,  \pi/2 ]$ tramite Monte Carlo campionando i punti da una distribuzione uniforme $U ( [ -\pi/2, \pi/2 ] )$ .
+
+```{r}
+n = 1000
+a= -pi/2
+b= pi/2
+
+set.seed(0)
+
+x = runif(n, min= a, max= b)
+h_ = cos(x)*(b-a) #h(x) = g(x)/f(x)
+
+I_mc = sum(h_)/n
+I_mc # il vero integrale è ...
+
+# errore
+sd(h_)/sqrt(n)
+
+```
+
+### Esempio
+
+Stimare l'integrale della funzione $g(x) = 2 + sin{(10 x^2)} e^{x} \sqrt{x}$ in $[0,1]$ tramite  metodo Monte Carlo campionando i punti sia da una distribuzione uniforme $U([0,1])$ sia da una distribuzione triangolare di parametri $a=0,b=1,c=0.1$, utilizzare il pacchetto `triangle` per il campionamento di punti da una distribuzione triangolare. Mostrare andamento della stima al crescere del di $n$, numero di punti campionati in $[0,1]$.
+
+```{r}
+if(system.file(package = "triangle") == ""){ 
+  install.packages("triangle")  
+}
+library(triangle)
+
+g <- function(x){
+  return(2 + sin(10*x^2)*exp(x)*sqrt(x))
+}
+
+set.seed(1234)
+
+n = 5000
+
+# uniforme
+x_unif = runif(n)
+h_unif = g(x_unif)*(1) 
+
+I_unif = sum(h_unif)/n
+I_unif
+
+# triangolare
+x_tri = rtriangle(n, a=0, b=1, c=0.1)
+h_tri = g(x_tri)/dtriangle(x_tri, a=0, b=1, c=0.1)
+
+I_tri = sum(h_tri)/n
+I_tri
+
+# andamento al crescere di n
+n.prove = 1:n 
+
+I_unif = cumsum(h_unif)/n.prove 
+I_tri = cumsum(h_tri)/n.prove
+
+plot(I_unif, type="l", col="red", lwd=2, 
+     xlab="Iterazioni", ylab="Stima Integrale", 
+     main="" )
+points(I_tri, type="l", col="black", lwd=2)
+legend("bottomright", legend=c("Uniforme", "Triangolare"), 
+       col=c("red","black"), lwd=2, lty=1)
+
+```
+Si noti che la velocità di convergenza dipende dalla distribuzione di probabilità da cui vengono campionati i punti per la valutazione della funzione.
+
+

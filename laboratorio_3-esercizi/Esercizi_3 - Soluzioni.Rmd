@@ -1,0 +1,218 @@
+---
+title: "Laboratorio 3"
+subtitle: "Soluzioni Esercizi"
+author: ""
+date: ""
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Esercizio 1 - Stima del Numero di Nepero tramite MC
+
+Sapendo che $\int_0^1 (e^x+1)dx=e$ (provare per credere). Si richiede di:
+
+1. Stimare Numero di Nepero tramite integrazione Monte Carlo considerando $n=5000$ punti campionati da una distribuzione uniforme $U(0,1)$ per la valutazione della funzione $g(x)=e^x+1$.
+
+2. Mostrare andamento della stima del Numero di Nepero per ogni $n=1, \dots, 1000$. \textit{Suggerimento: utilizzare `cumsum` come visto durante laboratorio} 
+
+3. Fissando $n=1000$, ripetere $M=500$ volte l'approssimazione del Numero di Nepero e salvare i risultati ottenuti in un vettore. 
+
+4. Costruire il qqnorm delle stime del Numero di Nepero ottenute al punto precendente. 
+
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. 
+
+```{r}
+g = function(x){
+  return(exp(x) + 1.)
+}
+
+n = 1000
+set.seed(1234)
+x_unif = runif(n) # vettore
+ 
+e_MC = sum(g(x_unif))/n #scalare
+
+# errore assoluto
+abs(e_MC - exp(1))
+```
+
+
+2. 
+
+```{r}
+e_MC = cumsum(g(x_unif))/1:n #vettore
+
+plot(1:n, e_MC, type="l", lwd=2, ylab="", xlab="n",
+     main="Approssimazione Numero Nepero tramite MC")
+abline(h=exp(1), col="red", lty=2, lwd=2)
+```
+
+3.
+
+```{r}
+n = 1000
+M = 500
+e_MC = vector(mode="numeric",length=M)
+
+for(i in 1:M){
+    x_unif = runif(n)
+    e_MC[i] = sum(g(x_unif))/n
+}
+```
+4. 
+
+```{r}
+qqnorm(e_MC)
+qqline(e_MC, col="red")
+```
+
+# Esercizio 2 
+
+Sia $g(x) = 0.5 f(x)$, dove $f(x)$ è la distribuzione di probabilità di una
+Normale standard. Si richiede di:
+
+1. Stimare l'integrale di $g(x)$ tramite integrazione Monte Carlo considerando $n=1000$ punti campionati da una distribuzione uniforme $U(-5,5)$ per la valutazione della funzione $g(x)$. \textit{Suggerimento}: Ricordare che la funzione `dnorm(x,mu,sigma)` restituisce il valore della densità di probabilità di una Normale di media mu e dev. standard sigma valutata in x. 
+
+2. Mostrare andamento della stima dell'intergrale per ogni $n=1, \dots, 1000$. \textit{Suggerimento}: utilizzare `cumsum` come visto durante laboratorio
+
+3. Ripetere punto 2. campionando i punti utili alla valutazione della funzione $g(x)$ da una $N(0,1)$ e confronta i risultati con quelli ottenuti al punto precedente.
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. 
+
+```{r}
+g = function(x){
+   return(1/2 * dnorm(x) )
+ }
+
+set.seed(314159)
+x = seq(-6,6,length.out=1000)
+plot(x,g(x), type="l", lwd=2, main="", xlab="x", ylab="", 
+     ylim=c(0, max( max(g(x)),dnorm(x)) ))
+lines(x,dnorm(x), col="red", lwd=2)
+lines(x, dunif(x,-5,5), col="blue", lwd=2)
+legend("topright", legend=c("N(0,1)", "U(-5,5)","g(x)"),
+       lty=1, lwd=2, col=c("red","blue","black"))
+```
+1.
+
+```{r}
+n = 500
+x_unif = runif(n,-5,5)
+I_unif = 10*sum(g(x_unif))/n #scalare
+I_unif
+```
+
+2.
+```{r}
+I_unif = 10 * cumsum(g(x_unif))/1:n #vettore
+plot(1:n,I_unif, type="l", lwd=2, col="blue",
+     xlab="n", ylab="Approssimazione",
+     main="Campionamento Uniforme")
+abline(h=0.5, lty=2, col="red",lwd=2)
+```
+
+3.
+```{r}
+x_norm = rnorm(n)
+I_norm = (cumsum(g(x_norm)/dnorm(x_norm)))/1:n #vettore 
+range(I_norm) # I_norm contiene SOLO 0.5 per ogni valore di n
+
+# Confronto
+plot(1:n,I_unif, type="l", lwd=2, col="blue",
+     xlab="n", ylab="Approssimazione",
+     main="Campionamento Uniforme vs Campionamento Normale")
+points(1:n, I_norm, type="l", lwd=2, col="red")
+legend("topright", c("Uniforme","Normale"), lty=1, lwd=3,col=c("blue","red"))
+```
+
+
+# Esercizio 3 - TCL: Somma di Uniformi
+
+Verificare la legge asintotica della media campionaria per un campione di $n=5, 10, 50, 100$ variabili $U(0,1)$. Si richiede di:
+
+1. Per ogni valore $n$, ripetere campionamento da una $U(0,1)$ per $N=500$ volte in modo da ottenere $N=500$ osservazioni della media campionaria.
+
+2. Costruire l'istogramma delle osservazioni della media campionaria, per ogni valore di $n$ (facoltativo: per ogni valore di $n$, sovrapporre agli istogrammi, il grafico della densità Normale prevista dal TCL).
+
+3. Verifica graficamente l'ipotesi di normalità delle osservazioni della media campionaria, per ogni valore di $n$.
+
+4. Commentare i risultati ottenuti al punto 3. e al punto 4.
+
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. 
+
+```{r}
+set.seed(0)
+n = c(5,10,50,100)
+N = 500          # Ripeto campionamento N volte per generare osservazioni della media campionaria
+mean_ = matrix(0, nrow=N,ncol=length(n))
+
+for(j in 1:length(n)){
+  for(i in 1:N){
+    x_unif = runif(n[j])
+    mean_[i,j] = mean(x_unif) #oppure: sum(x_unif)/n[j] 
+  }
+}
+
+```
+
+2. 
+```{r}
+mu = 1/2    # (a+b)/2
+var = 1/12  # (b-a)^2 / 12
+x_ = seq(from=0,to=1, length.out=1000)
+
+par(mfrow=c(2,2))
+for(i in 1:length(n)){
+  hist(mean_[,i], probability = T,
+       xlim = c(0,1),
+       xlab="x", ylab="Densità",
+       main=paste('TCL: Media Campionaria di Uniformi\n','n = ', n[i],sep=""))
+}
+
+# facoltativo
+par(mfrow=c(2,2))
+for(i in 1:length(n)){
+  density = dnorm(x_, mean=mu, sd=sqrt(var)/sqrt(n[i]))
+  hist(mean_[,i], probability = T,
+       xlim = c(0,1),
+       ylim = c( 0, max(max(density),max(hist(mean_[,i],plot=F)$density))),
+       xlab="x", ylab="Densità",
+       main=paste('TCL: Media Campionaria di Uniformi\n','n = ', n[i],sep=""))
+  lines(x_, density,
+        col="red", lwd=2)
+}
+```
+
+
+3.
+
+```{r}
+par(mfrow=c(2,2))
+for(i in 1:length(n)){
+  qqnorm(mean_[,i],  
+         main = paste('TCL: Media Campionaria di Uniformi\n','n = ', n[i],sep=""))
+  qqline(mean_[,i], lwd = 2, col = 'red' )
+}
+```

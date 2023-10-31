@@ -1,0 +1,618 @@
+---
+title: "Laboratorio 2"
+subtitle: "Soluzioni Esercizi"
+author: ""
+date: ""
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ESERCIZIO 1: ANALISI COMBUSTIONE
+Analisi dei dati contenuti nel file \texttt{combustione.txt}. Il dataset contiene 20 osservazioni del tempo di combustione di due diversi composti:
+
+ * \texttt{Tempo}:  tempo di combustione
+ * \texttt{Formula}: tipo di composto ( A o B )
+
+Si richiede di:
+
+1. Importare il dataset e salvarlo in un dataframe.
+
+2. Suddividere i composti in base al tipo (A o B).
+
+3. Costruire una tabella delle frequenze relative per ciascun sottogruppo.
+
+4. Costruire gli istogrammi affiancati della variabile \texttt{Tempo} per ciascun sottogruppo. Costruire i boxplot affiancati della variabile \texttt{Tempo} per ciascun sottogruppo.
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. Si importa il dataset tramite la funzione `read.table`.
+
+```{r}
+combustione = read.table( file = 'combustione.txt', header = TRUE )
+
+head( combustione )
+
+dim( combustione )
+```
+2. Salviamo la colonna `Formula` del dataset come factor.
+
+```{r}
+class(combustione$Formula)
+is.factor(combustione$Formula)
+
+combustione$Formula = as.factor(combustione$Formula)
+```
+
+3. Costruiamo la tabella delle frequenze relative come segue.
+
+```{r}
+freq_ass = table(combustione$Formula)
+
+freq_rel = freq_ass  / length(combustione$Formula)
+freq_rel
+```
+4. Costruiamo i grafici richiesti come segue
+```{r}
+tipo_ = levels(combustione$Formula) 
+tipo_ # tipo_[1] contiene "A", tipo_[2] contiene "B"
+
+par(mfrow=c(2,1))
+hist(combustione$Tempo[combustione$Formula == tipo_[1] ], 
+     probability = T,
+     xlab= "Tempo",
+     ylab= "Densità",
+     main= paste("Istogramma Formula", tipo_[1], sep=""),
+     col=2,
+     breaks = seq(from= min(combustione$Tempo),
+                  to= max(combustione$Tempo), length.out=6))
+
+hist(combustione$Tempo[combustione$Formula == tipo_[2] ], 
+     probability = T,
+     xlab= "Tempo",
+     ylab= "Densità",
+     main= paste("Istogramma Formula", tipo_[2], sep=""),
+     col=4,
+     breaks = seq(from= min(combustione$Tempo),
+                  to= max(combustione$Tempo), length.out=6))
+```
+
+```{r}
+boxplot(combustione$Tempo ~ combustione$Formula,
+        names = tipo_,
+        main= "Box plot\nTEMPO",
+        xlab="", ylab="Tempo",
+        col = c(2,4))
+
+```
+
+
+## ESERCIZIO 2: ANALISI TEMPERATURA
+Analisi dei dati contenuti nel file \texttt{temperatura.txt}. Il dataset contiene 130 osservazioni di 3 variabili:
+* \texttt{Temperatura}: temperatura corporea ( in gradi Fahrenheit )
+* \texttt{Sesso}: sesso del paziente ( U = uomo, D = donna )
+* \texttt{Freq\_cardiaca}: frequenza cardiaca ( battiti al minuto )
+
+Si richiede di:
+
+1. Importare il dataset e salvarlo in un dataframe. [Attenzione: si noti che nel dataset indicato il carattere separatore per le cifre decimali è la \textit{virgola}, leggere `help("read.table")`]
+ 
+2. Suddividere i pazienti in base al sesso.
+
+3. Costruire una tabella delle frequenze relative per ciascun sottocampione individuato dal genere.
+
+4. Costruire gli istogrammi affiancati della variabile \texttt{Temperatura} nei due sottocampioni individuati dal genere. Costruire i boxplot affiancati della variabile \texttt{Temperatura} nei due sottocampioni individuati dal genere. Costruire un unico grafico contenente istogrammi i boxplots, ruotati in orizzontale, per ciascun sottogruppo.
+
+5. Commentare i risultati.
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+```{r, include=FALSE}
+rm(list=ls())
+```
+
+Si importa il dataset tramite la funzione `read.table`. Attenzione, la colonna `Temperatura `viene salvata come `character` a meno che non venga specificato il corretto carattere separatore per le cifre decimali che in questo caso è la "virgola".
+Il valore di default per il parametro `sep` è il punto, ovvero `"."` (si veda `help("read.table")`.
+1. 
+```{r}
+temperatura = read.table("temperatura.txt", header=T, dec = ",")
+head(temperatura) 
+```
+
+2. Salviamo la colonna `Sesso` del dataset come factor modificando i livelli in `"D"` e `"U"` per le femmine e i maschi, rispettivamente. 
+
+```{r}
+class(temperatura$Sesso)
+is.factor(temperatura$Sesso)
+table(temperatura$Sesso)
+
+temperatura$Sesso = as.factor(temperatura$Sesso)
+```
+
+3. Costruiamo la tabella delle frequenze relative sfruttando le funzioni `table` e `sum`.
+
+```{r}
+freq_ass = table(temperatura$Sesso)
+freq_rel = freq_ass / sum(freq_ass)
+freq_rel
+```
+
+
+4. Costruiamo i grafici richiesti come segue. Si noti l'utilizzo dei vettori (di booleani) `Donne_` e `Uomini_` per la selezione delle donne e degli uomini, rispettivamente, all'interno del dataset. Le due variabili introdotte sono variabili ausiliare che rendono la lettura del codice più semplice. 
+
+```{r}
+Donne_ = temperatura$Sesso == "D"
+Uomini_ = temperatura$Sesso == "U"
+
+dev.new()
+par(mfrow=c(2,1))
+hist(temperatura$Temperatura[Donne_], probability = T,
+     xlab="", ylab="Densità",
+     main="Istogramma Temperatura\nDonne",
+     col="pink",
+     breaks = seq(from=min(temperatura$Temperatura), max(temperatura$Temperatura),
+                  length.out=11))
+hist(temperatura$Temperatura[Uomini_], probability = T,
+     xlab="", ylab="Densità",
+     main="Istogramma Temperatura\nUomini",
+     col="lightblue",
+     breaks = seq(from=min(temperatura$Temperatura), max(temperatura$Temperatura),
+                  length.out=11))
+```
+
+```{r}
+boxplot(temperatura$Temperatura ~ temperatura$Sesso,
+        names=c("Donne", "Uomini"),
+        main="Boxplot: TEMPERATURA\n(Donne vs. Uomini) ",
+        ylab="Temperatura [°F]", xlab="",
+        col= c("pink", "lightblue"))
+
+```
+
+```{r}
+par(mfrow=c(2,2))
+hist(temperatura$Temperatura[Donne_], probability = T,
+     xlab="", ylab="Densità",
+     main="Istogramma Temperatura\nDonne",
+     col="pink",
+     breaks = seq(from=min(temperatura$Temperatura), max(temperatura$Temperatura),
+                  length.out=10))
+hist(temperatura$Temperatura[Uomini_], probability = T,
+     xlab="", ylab="Densità",
+     main="Istogramma Temperatura\nDonne",
+     col="lightblue",
+     breaks = seq(from=min(temperatura$Temperatura), max(temperatura$Temperatura),
+                  length.out=10))
+boxplot(temperatura$Temperatura[Donne_],
+        names="Donne",
+        main="Box plot\nTEMPERATURA DONNA",
+        xlab="Temperatura [°F]",ylab="",
+        col= "pink",
+        horizontal = T)
+
+boxplot(temperatura$Temperatura[Uomini_],
+        names= "Uomini",
+        main="Box plot\nTEMPERATURA UOMINI",
+        xlab="Temperatura [°F]", ylab="",
+        col= "lightblue",
+        horizontal = T)
+        
+```
+
+
+## ESERCIZIO 3: ANALISI DEL COLESTEROLO
+
+Considerare il livello di \texttt{Colesterolo} nel sangue dei primi 100 studenti
+presenti nel file di testo \texttt{studenti.txt}.
+
+Si richiede di:
+
+1. Importare il dataset e salvarlo in un dataframe.
+
+2. Suddividere gli studenti in maschi e femmine.
+
+3. Costruire una tabella delle frequenze relative per ciascun sottogruppo.
+
+4. Costruire gli istogrammi affiancati della variabile \texttt{Colesterolo} per
+maschi e femmine.
+
+5. Esiste una relazione tra la variabile \texttt{Sesso} dello studente e
+la variabile \texttt{Colesterolo}?
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. Per prima cosa, si importa il dataset originale e si selezionano le prime 100
+osservazioni (righe).
+
+```{r}
+studenti_full = read.table( file = 'studenti.txt', header = TRUE )
+
+studenti = studenti_full[ 1:100, ]
+
+head( studenti )
+
+dim( studenti )
+```
+
+2. Ora si ottiene la suddivisione in due sottogruppi sulla base del genere degli
+studenti (variabile \texttt{Sesso}) attraverso la funzione \texttt{which()}.
+
+```{r}
+femmine = studenti[ which( studenti$Sesso == 'F' ), ]
+maschi = studenti[ which( studenti$Sesso == 'M' ), ]
+```
+
+3. La tabella delle frequenze relative mostra che il 46\% del campione di 100
+studenti ha genere femminile, mentre il restante 54\% è costituito da maschi.
+
+```{r}
+table(studenti$Sesso)/length(studenti$Sesso)
+```
+
+4. Gli istogrammi richiesti si costruiscono mediante la funzione
+\texttt{hist()}, come segue.
+
+```{r}
+par ( mfrow = c( 2, 1 ) )
+hist( femmine$Colesterolo, prob = TRUE, col = 'pink',
+      xlim = range( studenti$Colesterolo ), ylim = c( 0, 0.045 ),
+      breaks = seq( min( studenti$Colesterolo ), max( studenti$Colesterolo ),
+                    length = 10 ),
+      main = 'Istogramma: COLESTEROLO (Femmine)',
+      xlab = '', ylab = 'Densità' )
+abline( v = median( femmine$Colesterolo ), col = 'red', lty = 2, lwd = 2 )
+abline( v = mean( femmine$Colesterolo ), col = 'yellow', lty = 2, lwd = 2 )
+hist( maschi$Colesterolo, prob = TRUE, col = 'lightblue',
+      xlim = range( studenti$Colesterolo ), ylim = c( 0, 0.045 ),
+      breaks = seq( min( studenti$Colesterolo ), max( studenti$Colesterolo ),
+                    length = 10 ),
+      main = 'Istogramma: COLESTEROLO (Maschi)',
+      xlab = '', ylab = 'Densità' )
+abline( v = median( maschi$Colesterolo ), col = 'red', lty = 2, lwd = 2 )
+axis( 1, median( maschi$Colesterolo ), 'mediana', col = 'red', las = 3 )
+abline( v = mean( maschi$Colesterolo ), col = 'yellow', lty = 2, lwd = 2 )
+axis( 1, mean( maschi$Colesterolo ), 'media', col = 'yellow', las = 3 )
+```
+Il primo grafico mostra la simmetria della distribuzione del livello di
+colesterolo nelle femmine, con i valori di media e mediana molto vicini tra
+loro (rispettivamente 201.7 circa e 201.5). Diversamente, il secondo grafico
+mostra che la distribuzione del colesterolo nei maschi è caratterizzata da
+asimmetria positiva (o asimmetria a destra), con coda più lunga posta a destra
+rispetto al valore mediano. Infatti, la media di \texttt{Colesterolo} nei maschi
+è maggiore della mediana.
+
+```{r}
+median( maschi$Colesterolo )
+mean( maschi$Colesterolo )
+```
+
+5. Per rispondere all'ultima domanda, è possibile costruire il box plot che
+segue.
+
+```{r}
+boxplot( studenti$Colesterolo ~ studenti$Sesso, col = c( 'pink', 'lightblue' ),
+         xlab = 'Sesso', ylab = 'Colesterolo',
+         main = 'Boxplot: COLESTEROLO\n(Femmine vs. Maschi)' )
+```
+
+Quindi, a partire dagli istogrammi e dai box plot, si conclude che:
+
+1. La distribuzione del colesterolo delle femmine non presenta particolari 
+asimmetrie (media e mediana sono simili). Non si evidenzia presenza di outliers.
+
+2. La distribuzione del colesterolo dei maschi risulta, invece, più asimmetrica
+(in particolare, asimmetria verso destra, con media > mediana). Non si evidenzia
+presenza di outliers.
+
+3. Dal confronto tra le due distribuzioni, si osserva che in media il
+colesterolo delle femmine è più alto di quello dei maschi.
+
+Infine, si rimuovono tutte le variabili dal \texttt{workspace} e si chiudono le
+finestre grafiche aperte in precedenza.
+
+```{r}
+rm( list = ls( ) )
+graphics.off()
+```
+
+## ESERCIZIO 4: ANALISI DELLE ABITUDINI DI STUDENTI
+Considerare i dati contenuti nel file di testo
+\texttt{'abitudini\_studenti.txt'}. Le variabili presenti sono le seguenti:
+ 
+* \texttt{Altezza} (in cm)
+
+* \texttt{Sesso} ("F" o "M")
+
+* \texttt{Sonno} (valutazione del sonno studenti espresso tramite voto /10)
+
+* \texttt{Studio} (ore di studio effettuate durante lo scorso semestre)
+
+* \texttt{Lavoro} (ore di lavoro effettuate durante lo scorso semestre)
+
+* \texttt{Bevanda} ("acqua", "birra" o "vino")
+
+* \texttt{Caffè} (numero di caffè bevuti al giorno)
+
+Si richiede di:
+
+1. Importare il dataset e salvarlo in un dataframe.
+
+2. Calcolare i seguenti indici di posizione per la variabile \texttt{Studio}:
+media campionaria, massimo, minimo, mediana, primo e terzo quartile e il
+quantile di ordine 0.9.
+
+3. Calcolare i seguenti indici di dispersione per la variabile \texttt{Studio}:
+varianza campionaria, deviazione standard, range e range interquartile.
+
+4. Costruire un istogramma che illustri le frequenze relative della variabile
+\texttt{Studio}. Ricavare le seguenti informazioni: punti centrali, frequenza
+relativa e frequenza assoluta di ogni classe. Quali considerazioni si possono
+trarre dall'istogramma?
+
+5. Costruire un box plot con le osservazioni della variabile \texttt{Studio}.
+Quali considerazioni si possono trarre dal box plot?
+
+6. Calcolare i seguenti indici di posizione per la variabile \texttt{Studio} nei
+due sottocampioni individuati dal genere: media campionaria, massimo, minimo,
+mediana, primo e terzo quartile e il quantile di ordine 0.9.
+
+7. Calcolare i seguenti indici di dispersione per la variabile \texttt{Studio}
+nei due sottocampioni individuati dal genere: varianza campionaria, deviazione
+standard, range e range interquartile.
+
+8. Costruire gli istogrammi che illustrino le frequenze relative della
+variabile \texttt{Studio} nei due sottocampioni individuati dal genere. Quali
+considerazioni si possono fare confrontando i due istogrammi?
+
+9. Costruire i box plot con le osservazioni della variabile \texttt{Studio} per
+i due sottocampioni individuati dal genere. Quali considerazioni si possono fare
+confrontando i due box plot?
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. Per prima cosa, si importa il dataset originale con le informazioni sulle
+abitudini di 559 studenti.
+
+```{r}
+studenti = read.table( file = 'abitudini_studenti.txt', header = TRUE )
+
+head( studenti )
+
+dim( studenti )
+```
+
+2. Gli indici statistici di posizione per la variabile \texttt{Studio} vengono
+così calcolati.
+
+```{r}
+# Variabile di interesse
+studio = studenti$Studio
+
+# Media campionaria
+mean(studio)
+
+# Massimo
+max(studio)
+
+# Minimo
+min(studio)
+
+# Mediana
+median(studio)
+
+# Primo quartile
+quantile(studio, probs = 0.25)
+
+# Terzo quartile
+quantile(studio, probs = 0.75)
+
+# Quantile di ordine 0.9
+quantile(studio, probs = 0.9)
+
+# Sintesi
+summary(studio)
+```
+
+3. Gli indici statistici di dispersione per la variabile \texttt{Studio} vengono
+così calcolati.
+
+```{r}
+# Varianza campionaria
+var(studio)
+
+# Deviazione standard
+sd(studio)
+
+# Range
+diff(range(studio))
+
+# Range interquartile
+IQR(studio)
+```
+
+4. Il grafico richiesto si ricava tramite funzione \texttt{hist()}, come segue.
+
+```{r}
+hist( studio, prob = TRUE, col = 'yellow', xlab = 'Studio', ylab = 'Densità',
+      main = 'Istogramma:\nSTUDIO' )
+abline( v = mean( studio ), col = 'blue', lty = 2, lwd = 2 )
+axis( 1, mean( studio ), 'media', col = 'blue', las = 3 )
+abline( v = median( studio ), col = 'red', lty = 2, lwd = 2 )
+axis( 1, median( studio ), 'mediana', col = 'red', las = 3 )
+```
+
+Si ricorda che l'area di ogni rettangolo corrisponde alla frequenza relativa
+della classe. Inoltre si ottengono le informazioni:
+
+```{r}
+info = hist( studio,  plot = FALSE )
+info
+```
+
+L'istogramma è costruito usando 9 classi con estremi, punti medi, frequenze
+assolute, densità e frequenze relative dati da:
+
+```{r}
+info$breaks
+
+info$mids
+
+info$counts
+
+info$density 
+
+freq_rel = info$density*( diff( info$breaks ) ) # oppure: info$counts / sum( info$counts )
+
+sum( freq_rel )
+```
+
+Nelle prime due classi si concentra la maggior parte delle osservazioni (circa
+l'82%) con a seguire una lunga coda a destra. Pertanto, la distribuzione di
+\texttt{Studio} è caratterizzata da forte asimmetria positiva, in accordo con la
+forma dell'istogramma e dei valori di media campionaria e mediana.
+
+```{r}
+freq_rel[1] + freq_rel[2]
+```
+
+5. Il grafico richiesto si ricava tramite funzione \texttt{boxplot()}, come segue.
+
+```{r}
+boxplot( studio, main ='Box plot:\nSTUDIO', ylab = 'Studio', col = 'yellow')
+abline( h = mean( studio ), col = 'blue', lty = 2 )
+text( 1.45, 34, 'media', col = 'blue' )
+abline( h = median( studio ), col = 'red', lty = 2 )
+text( 1.45, 10, 'mediana', col = 'red' )
+```
+
+Dal grafico si nota la presenza di molti (59) outliers, con valori dati da:
+
+```{r}
+boxplot( studio, plot = FALSE )$out
+
+length( boxplot( studio, plot = FALSE )$out )
+```
+
+Ciò fornisce un'ulteriore conferma in merito alla marcata asimmetria a destra
+della distribuzione della variabile \texttt{Studio}.
+
+6. Gli indici statistici di posizione per la variabile \texttt{Studio} vengono
+così calcolati nei due sottocampioni individuati dal genere.
+
+```{r}
+# Media campionaria
+tapply( studenti$Studio, studenti$Sesso, mean )
+
+# Massimo
+tapply( studenti$Studio, studenti$Sesso, max )
+
+# Minimo
+tapply( studenti$Studio, studenti$Sesso, min )
+
+# Mediana
+tapply( studenti$Studio, studenti$Sesso, median )
+
+# Primo quartile
+tapply( studenti$Studio, studenti$Sesso, quantile, probs = 0.25, type=2)
+
+# Terzo quartile
+tapply( studenti$Studio, studenti$Sesso, quantile, probs = 0.75, type=2)
+
+# Quantile di ordine 0.9
+tapply( studenti$Studio, studenti$Sesso, quantile, probs = 0.9, type=2)
+
+# Sintesi
+tapply( studenti$Studio, studenti$Sesso, summary)
+```
+
+7. Gli indici statistici di dispersione per la variabile \texttt{Studio} vengono
+così calcolati nei due sottocampioni individuati dal genere.
+
+```{r}
+# Varianza campionaria
+tapply( studenti$Studio, studenti$Sesso, var )
+
+# Deviazione standard
+tapply( studenti$Studio, studenti$Sesso, sd )
+
+# Range
+diff( tapply( studenti$Studio, studenti$Sesso, range )$F )
+diff( tapply( studenti$Studio, studenti$Sesso, range )$M )
+
+# Range interquartile
+tapply( studenti$Studio, studenti$Sesso, IQR )
+```
+
+8. Il grafico richiesto si ricava tramite funzione \texttt{hist()}, come segue.
+
+```{r}
+par ( mfrow = c( 2, 1 ) )
+hist( studenti$Studio[which(studenti$Sesso=='F')], prob = TRUE,
+      col = 'pink', xlim = range( studenti$Studio ), ylim = c( 0, 0.05 ),
+      breaks = seq( min( studenti$Studio), max( studenti$Studio), length = 10 ),
+      main = 'Istogramma: STUDIO (Femmine)', xlab = 'Studio', ylab = 'Densità' )
+abline( v = median( studenti$Studio[ which( studenti$Sesso == 'F' ) ] ),
+        col = 'red', lty = 2, lwd = 2 )
+axis( 1, median( studenti$Studio[ which( studenti$Sesso == 'F' ) ] ), 'mediana',
+      col = 'red', las = 3 )
+abline( v = mean( studenti$Studio[ which( studenti$Sesso == 'F' ) ] ),
+        col = 'green', lty = 2, lwd = 2 )
+axis( 1, mean( studenti$Studio[ which( studenti$Sesso == 'F' ) ] ), 'media',
+      col = 'green', las = 3 )
+hist( studenti$Studio[ which( studenti$Sesso == 'M' ) ], prob = TRUE,
+      col = 'lightblue', xlim = range( studenti$Studio ), ylim = c( 0, 0.05 ),
+      breaks = seq( min( studenti$Studio), max( studenti$Studio), length = 10 ),
+      main = 'Istogramma: STUDIO (Maschi)', xlab = 'Studio', ylab = 'Densità' )
+abline( v = median( studenti$Studio[ which( studenti$Sesso == 'M' ) ] ),
+        col = 'red', lty = 2, lwd = 2 )
+axis( 1, median( studenti$Studio[ which( studenti$Sesso == 'M' ) ] ) - 4,
+      'mediana', col = 'red', las = 3 )
+abline( v = mean( studenti$Studio[ which( studenti$Sesso == 'M' ) ] ),
+        col = 'green', lty = 2, lwd = 2 )
+axis( 1, mean( studenti$Studio[ which( studenti$Sesso == 'M' ) ] ) + 4,
+      'media', col = 'green', las = 3 )
+```
+
+La variabile \texttt{Studio} è molto più bassa nei maschi e quasi totalmente
+concentrata nelle prime due classi. I dati di \texttt{Studio} delle femmine sono
+più dispersi. Inoltre, mediamente le femmine hanno dedicato più ore di studio
+rispetto ai maschi durante lo scorso semestre.
+
+9. Il grafico richiesto si ricava tramite funzione \texttt{boxplot()}, come segue.
+
+```{r}
+boxplot( studenti$Studio ~ studenti$Sesso, col = c( 'pink', 'lightblue' ),
+         main = 'Box plot:\nSTUDIO (Femmine vs. Maschi)',
+         names = c( 'Femmine', 'Maschi' ), xlab = 'Sesso', ylab = 'Studio' )
+```
+
+Si possono dunque trarre conclusioni del tutto analoghe rispetto a quanto
+scritto per il precedente punto. Le femmine presentano molti più dati outliers
+e di nuovo si osserva che in media le femmine hanno valori della variabile
+\texttt{Studio} maggiori rispetto ai maschi.
+
+```{r}
+length( boxplot( studenti$Studio[ which( studenti$Sesso == 'F' ) ],
+                 plot = FALSE )$out )
+
+length( boxplot( studenti$Studio[ which( studenti$Sesso == 'M' ) ],
+                 plot = FALSE )$out )
+```

@@ -62,9 +62,9 @@
 #    il percorso della cartella di lavoro
 
 
-# le seguenti due righe di codice righe permettono di selezionare come working directory
-# la cartella in cui il 'Laboratorio_0.R' e' salvato.
-if(!require(pacman)) install.packages("pacman")
+# le seguenti righe di codice righe permettono di selezionare 
+# come working directory la cartella in cui il 'Laboratorio_0.R' e' salvato.
+if(!require(pacman, quietly = TRUE)) install.packages("pacman")
 pacman::p_load("rstudioapi") 
 setwd(dirname(getActiveDocumentContext()$path))
 
