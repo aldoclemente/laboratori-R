@@ -1,12 +1,7 @@
-###############################################################
-##################    CORSO DI STATISTICA    ##################
-################## per INGEGNERIA MATEMATICA ##################
-###############################################################
-
-###############################################################
-#########               LABORATORIO 1               ###########
-######### INTRODUZIONE A R & STATISTICA DESCRITTIVA ###########
-###############################################################
+#'###########################################################'#
+#'########               LABORATORIO 1               ########'#
+#'######## INTRODUZIONE A R & STATISTICA DESCRITTIVA ########'#
+#'###########################################################'#
 
 # Argomenti del primo laboratorio:
 # 0 - Introduzione a R
@@ -18,15 +13,11 @@
 # 6 - Analisi descrittiva di una variabile numerica
 # 7 - Analisi descrittiva di una variabile categorica
 
-###############################################################
-####################### 0 - BASI DI R #########################
-###############################################################
+# 0 - BASI DI R -----------------------------------------------
 
 # Vedi slide
 
-###############################################################
-###################### 1 - PRIMI PASSI ########################
-###############################################################
+# 1 - PRIMI PASSI ---------------------------------------------
 
 # La console di R può essere utilizzata come semplice calcolatrice. 
 # E' un ambiente interattivo, ossia i comandi producono una risposta
@@ -74,9 +65,8 @@ exp(0)
 # Operazioni aritmetiche “impossibili”, come ad esempio le divisioni per zero,
 # restituiscono il valore NaN che significa che “non `e un numero” ( “Not a Number”).
 
-###############################################################
-################# 2 - OGGETTI E ASSEGNAZIONI ##################
-###############################################################
+
+# 2 - OGGETTI E ASSEGNAMENTO ----------------------------------
 
 # Ogni entità che il programma crea e manipola è definita un oggetto, 
 # che può essere un numero, una variabile, una funzione, o più in generale, 
@@ -118,9 +108,7 @@ variabile.stringa
 # tutto ciò che si trova dopo questo simbolo e fino alla riga successiva viene
 # ignorato da R.
 
-###############################################################
-################### 3 - LINEA DI COMANDO ######################
-###############################################################
+# 3 - LINEA DI COMANDO ----------------------------------------
 
 ls() # Fornisce la lista dei nomi degli oggetti in memoria
 rm(variabile.numerica, variabile.logica) # Rimuove tutti gli oggetti tra parentesi
@@ -145,9 +133,7 @@ help(cbind) # oppure
 
 rm(list = ls())
 
-###############################################################
-###################### 4 - WORKSPACE ##########################
-###############################################################
+# 4 - WORKSPACE -----------------------------------------------
 
 # Gli oggetti creati dall’utente vengono temporaneamente salvati nello
 # spazio di lavoro (workspace).
@@ -170,9 +156,7 @@ setwd(dirname(getActiveDocumentContext()$path))
 
 dir() # mostra il nome dei file presenti nella directory di lavoro.
 
-###############################################################
-################## 5 - TIPOLOGIE DI DATI ######################
-###############################################################
+# 5 - TIPOLOGIE DI DATI ---------------------------------------
 
 # 5.1 VARIABILI
 # contengono un singolo dato
@@ -348,16 +332,13 @@ help(read.table)
 
 # Prima di importare i dati, guardare il file che viene importato!
 vitamina <- read.table('vitaminaD.txt', header = TRUE)
-View(vitamina)
 
 head(vitamina)
 dim(vitamina)
 colnames(vitamina)
 rownames(vitamina)
 
-###############################################################
-#### 6 - ANALISI DESCRITTIVA DI UNA VARIABILE QUANTITATIVA ####
-###############################################################
+# 6 - ANALISI DESCRITTIVA DI UNA VARIABILE QUANTITATIVA -------
 
 # Le variabili quantitative possono essere descritte numericamente,
 # utilizzando opportuni indici di posizione e di dispersione
@@ -370,27 +351,25 @@ rownames(vitamina)
 # Fonte: Bland (1995) An introduction to Medical Statistics.
 # Oxford University Press
 
-attach(vitamina)
-
 # Media
-mean(Vitamina_D)
+mean(vitamina$Vitamina_D)
 
 # Mediana
-median(Vitamina_D)
+median(vitamina$Vitamina_D)
 
 # Minimo
-min(Vitamina_D)
+min(vitamina$Vitamina_D)
 
 # Massimo
-max(Vitamina_D)
+max(vitamina$Vitamina_D)
 
 # Primo quartile Q1 (venticinquesimo percentile delle osservazioni)
-Q1 <- quantile(Vitamina_D, prob = 0.25)
+Q1 <- quantile(vitamina$Vitamina_D, prob = 0.25)
 Q1
 names(Q1) <- NULL
 
 # Terzo quartile Q3 (settantacinquesimo percentile delle osservazioni)
-Q3 <- quantile(Vitamina_D, prob = 0.75)
+Q3 <- quantile(vitamina$Vitamina_D, prob = 0.75)
 Q3
 names(Q3) <- NULL
 
@@ -399,15 +378,15 @@ IQR <- Q3 - Q1
 IQR
 
 # Funzione summary: riassunto di min, max, quartili e media
-summary(Vitamina_D)
+summary(vitamina$Vitamina_D)
 
 # Disegnare un istogramma dei dati
-hist(Vitamina_D) # In ordinata ci sono le frequenze assolute
-hist(Vitamina_D, prob = TRUE) # In ordinata ci sono le densità in modo che l'area totale sommi a 1.
+hist(vitamina$Vitamina_D) # In ordinata ci sono le frequenze assolute
+hist(vitamina$Vitamina_D, prob = TRUE) # In ordinata ci sono le densità in modo che l'area totale sommi a 1.
 
 # Parametri estetici del grafico
 hist(
-  Vitamina_D,
+  vitamina$Vitamina_D,
   prob = TRUE,
   xlab = 'Concentrazione',
   ylab = 'Densità',
@@ -421,7 +400,7 @@ hist(
 # Regola euristica: numero di classi circa uguale alla radice quadrata della dimensione del campione
 par(mfrow = c(2, 2)) # Quattro grafici in una sola finestra
 hist(
-  Vitamina_D,
+  vitamina$Vitamina_D,
   prob = TRUE,
   xlab = 'Concentrazione',
   ylab = 'Densità',
@@ -429,7 +408,7 @@ hist(
   breaks = 2
 )
 hist(
-  Vitamina_D,
+  vitamina$Vitamina_D,
   prob = TRUE,
   xlab = 'Concentrazione',
   ylab = 'Densità',
@@ -437,7 +416,7 @@ hist(
   breaks = 8
 )
 hist(
-  Vitamina_D,
+  vitamina$Vitamina_D,
   prob = TRUE,
   xlab = 'Concentrazione',
   ylab = 'Densità',
@@ -445,7 +424,7 @@ hist(
   breaks = 12
 )
 hist(
-  Vitamina_D,
+  vitamina$Vitamina_D,
   prob = TRUE,
   xlab = 'Concentrazione',
   ylab = 'Densità',
@@ -456,7 +435,7 @@ hist(
 graphics.off()
 
 # Costruire un boxplot dei dati
-boxplot(Vitamina_D)
+boxplot(vitamina$Vitamina_D)
 # Linea nera: mediana
 # Scatola: Primo e terzo quartile
 # Baffo inferiore: massimo tra minimo e valore minimo osservato entro Q1-1.5*IQR
@@ -464,11 +443,8 @@ boxplot(Vitamina_D)
 # Potenziali outlier: osservazioni fuori dal baffi
 
 graphics.off()
-detach(vitamina)
 
-###############################################################
-##### 7 - ANALISI DESCRITTIVA DI UNA VARIABILE CATEGORICA #####
-###############################################################
+# 7 - ANALISI DESCRITTIVA DI UNA VARIABILE CATEGORICA ---------
 
 # Creo un vettore di realizzazioni di una variabile categorica
 province <-  c("MI",
@@ -547,34 +523,3 @@ pie(
 )
 
 graphics.off()
-
-###############################################################
-#################### 8 - ESERCIZI PER CASA ####################
-###############################################################
-
-# 1 ESERCIZIO
-# Importare i dati di anagrafica.txt, selezionare e condurre un'analisi
-# descrittiva delle variabili quantitative:
-# a) ETA'
-# b) PESO
-# c) ALTEZZA
-# Commentare i risultati alla luce di quanto osservato.
-
-# Suggerimenti:
-# - importare il dataset
-# - selezionare la colonna corrispondente alla variabile di interesse
-# - fare un summary della variabile
-# - graficare il boxplot
-# - graficare l'istogramma con il numero corretto di intervalli
-
-# 2 ESERCIZIO
-# Importare i dati di anagrafica.txt, selezionare e condurre un'analisi
-# descrittiva della variabile quantitativa SESSO.
-# Commentare i risultati alla luce di quanto osservato
-
-
-
-
-
-
-

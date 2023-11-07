@@ -1,12 +1,7 @@
-###############################################################
-##################    CORSO DI STATISTICA    ##################
-################## per INGEGNERIA MATEMATICA ##################
-###############################################################
-
-###############################################################
-#########               LABORATORIO 2               ###########
-#########            STATISTICA DESCRITTIVA         ###########
-###############################################################
+#'###########################################################'#
+#'########               LABORATORIO 2               ########'#
+#'########            STATISTICA DESCRITTIVA         ########'#
+#'###########################################################'#
 
 rm( list = ls() )
 graphics.off()
@@ -22,14 +17,13 @@ graphics.off()
 # 8 - Alcuni esempi più complessi
 
 # set working directory
+
 if(!require(pacman, quietly = TRUE)) install.packages("pacman")
 pacman::p_load("rstudioapi") 
 setwd(dirname(getActiveDocumentContext()$path))
 
+## 1 - PACCHETTI ----------------------------------------------
 
-###############################################################
-################        1 - PACCHETTI        ##################
-###############################################################
 # In generale, funzioni e dati di nostro interesse sono contenuti nei 
 # 'pacchetti' R, che possono essere pensati come dei veri e propri archivi. 
 
@@ -47,13 +41,15 @@ setwd(dirname(getActiveDocumentContext()$path))
 # library(MioPacchetto) # carico MioPacchetto nella sessione corrente
 
 # installiamo il pacchetto MASS (contiene vari datasets)
-install.packages("MASS") 
+# install.packages("MASS") 
 
 # carico il pacchetto
-library(MASS)
-###############################################################
-################ 2 - I CICLI E LE CONDIZIONI ##################
-###############################################################
+# library(MASS)
+
+# Installo e carico il pacchetto sfruttando il pacchetto pacman
+pacman::p_load("MASS") 
+
+## 2 - I CICLI E LE CONDIZIONI --------------------------------
 
 # IL FOR: itera su un contatore
 
@@ -103,9 +99,7 @@ if (i < 5){
 }
 i
 
-###############################################################
-################        3 - FUNZIONI         ##################
-###############################################################
+## 3 - FUNZIONI -----------------------------------------------
 
 #NOME_FUNZIONE = function(parametro_1, paramentro_2, ...){
 #             ... CORPO FUNZIONE ...
@@ -114,16 +108,16 @@ i
 
 # Esempio 1
 
-Hello_ = function(Nome="Mario Rossi"){ 
+Hello = function(Nome="world"){ 
 
-    cat(paste("Ciao ", Nome, "!",sep=""))
+    cat(paste("Hello ", Nome, "!\n",sep=""))
 
 }
 
 # viene utilizzato il parametro indicato come default  
-Hello_()
+Hello()
 
-Hello_(Nome="Aldo")
+Hello(Nome="Mario Rossi")
 
 # Esempio 2: Calcolo della frequenza cumulata (Esercizio 1 - Esercitazione 1)
 
@@ -140,7 +134,7 @@ SommaCumulata = function(Vettore){
    if(i == 1){
      risultato[i] = Vettore[i]
    }else{  
-   risultato[i] = risultato[i-1] + Vettore[i] #i>=2
+   risultato[i] = risultato[i-1] + Vettore[i] 
    } 
   }
   
@@ -160,9 +154,8 @@ freq_rel = freq_ass / sum(freq_ass)
 system.time(SommaCumulata(freq_rel))
 system.time(cumsum(freq_rel))
 
-###############################################################
-#### 4 - ANALISI DESCRITTIVA DI DUE VARIABILI QUANTITATIVE ####
-###############################################################
+# 4 - ANALISI DESCRITTIVA DI DUE VARIABILI QUANTITATIVE -------
+
 # Analisi dei dati quantitativi contenuti nel file 'record.txt'.
 # Il dataset contiene i record dei tempi ottenuti da rappresentanti di diverse nazioni
 # in varie discipline di corsa di velocità e resistenza
@@ -303,12 +296,9 @@ plot( record100200[ ,1] , record100200[ ,2] ,
       ylab = 'Records 200m' )
 }
 
-###############################################################
-### 5 - ANALISI DESCRITTIVA DI PIU' VARIABILI QUANTITATIVE ####
-###############################################################
+## 5 - ANALISI DESCRITTIVA DI PIU' VARIABILI QUANTITATIVE -----
 
 # Consideriamo il dataset completo, con tutte le variabili
-
 head(record)
 
 # PLOT: subplot degli scatterplot appaiati tra tutte le variabili
@@ -330,9 +320,7 @@ boxplot(record, main = 'Boxplot records',
 # I tempi per percorrere le gare di velocità e quelle di resistenza
 # aumentano esponenzialmente
 
-###############################################################
-########### 6 - ESEMPIO DI CONFRONTO TRA DUE GRUPPI ###########
-###############################################################
+## 6 - ESEMPIO DI CONFRONTO TRA DUE GRUPPI --------------------
 
 # Analisi dei dati quantitativi contenuti nel file 'anagrafica.txt'.
 # I dati consistono in osservazioni di 4 variabili:
@@ -357,28 +345,23 @@ head( anagrafica )
 dim( anagrafica )
 names( anagrafica )
 
-attach(anagrafica)
-
 # Codifichiamo la variabile categoriale SESSO  come factor e
 # aggiungiamo delle etichette ai livelli
-table(SESSO)
-SESSO[ SESSO == 1 ] = 'F' # SESSO == 1  restituisce un vettore di booleani (TRUE / FALSE) 
+table(anagrafica$SESSO)
+anagrafica$SESSO[ anagrafica$SESSO == 1 ] = 'F' 
+                           # SESSO == 1  restituisce un vettore di booleani (TRUE / FALSE) 
                            # Vengono selezionate tutte le posizioni di SESSO in corrispondenza di 1
                            # quindi vengono sostituiti gli "1" con le "F"
-SESSO[ SESSO == 2 ] = 'M'
+anagrafica$SESSO[ anagrafica$SESSO == 2 ] = 'M'
 
-SESSO = as.factor(SESSO)   
-summary(SESSO)
-
-# OPPURE 
-SESSO = factor(anagrafica$SESSO, labels = c("F","M"))
-summary(SESSO)
+anagrafica$SESSO = as.factor(anagrafica$SESSO)   
+summary(anagrafica$SESSO)
 
 # Coloriamo lo scatter plot in base al sottogruppo
 col = rep( 0, nrow(anagrafica)) # Nota. nrow(anagrafica) restituisce il numero di righe di anagrafica
 
-col [ SESSO == 'F' ] = 'pink'           
-col [ SESSO == 'M' ] = 'lightblue'
+col [ anagrafica$SESSO == 'F' ] = 'pink'           
+col [ anagrafica$SESSO == 'M' ] = 'lightblue'
 class(col)
 
 dev.new()
@@ -399,18 +382,18 @@ cor(anagrafica[,1:3])
 
 dev.new()
 par( mfrow = c( 2, 1 ) )
-hist( ALTEZZA[ SESSO == 'F' ] , prob = TRUE,
+hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ] , prob = TRUE,
       xlab = 'Altezza [ cm ] ', 
       ylab = 'Densità', 
       main = 'Istogramma Altezza Femmine',
-      col = 'pink', xlim = range( ALTEZZA ),
+      col = 'pink', xlim = range( anagrafica$ALTEZZA ),
       breaks = seq( 150, 195, by = 5 ) )
 
-hist( ALTEZZA[ SESSO == 'M' ] , prob = TRUE, 
+hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] , prob = TRUE, 
       xlab = 'Altezza [ cm ] ', 
       ylab = 'Densità',
       main = 'Istogramma Altezza Maschi',
-      col = 'lightblue', xlim = range( ALTEZZA ),
+      col = 'lightblue', xlim = range( anagrafica$ALTEZZA ),
       breaks = seq( 150, 195, by = 5 ) )
 
 # Istogrammi -> tendenza delle donne ad essere più basse rispetto agli uomini
@@ -422,7 +405,8 @@ hist( ALTEZZA[ SESSO == 'M' ] , prob = TRUE,
 
 # Boxplot
 dev.new()
-boxplot( ALTEZZA[ SESSO == 'F' ] , ALTEZZA[ SESSO == 'M' ] , 
+boxplot( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ] , 
+         anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] , 
          names = c( 'Femmine', 'Maschi' ), 
          main = 'Boxplot Altezza',
          col = c( 'pink', 'lightblue' ), 
@@ -431,7 +415,7 @@ boxplot( ALTEZZA[ SESSO == 'F' ] , ALTEZZA[ SESSO == 'M' ] ,
 
 # Oppure utilizzo la formula per specificare il fattore di raggruppamento
 dev.new()
-boxplot( ALTEZZA ~ SESSO, 
+boxplot( anagrafica$ALTEZZA ~ anagrafica$SESSO, 
          names = c( 'Femmine', 'Maschi' ), 
          main = 'Boxplot Altezza',
          col = c( 'pink', 'lightblue' ), 
@@ -447,21 +431,21 @@ boxplot( ALTEZZA ~ SESSO,
 # Quattro Grafici nella stessa finestra grafica con boxplot (orizzontali)
 dev.new()
 par(mfrow=c(2,2))
-hist( ALTEZZA[ SESSO == 'F' ] , prob = TRUE,
+hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ] , prob = TRUE,
       xlab = 'Altezza [ cm ] ', 
       ylab = 'Densità', 
       main = 'Istogramma Altezza Femmine',
-      col = 'pink', xlim = range( ALTEZZA ),
+      col = 'pink', xlim = range( anagrafica$ALTEZZA ),
       breaks = seq( 150, 195, by = 5 ) )
   
-hist( ALTEZZA[ SESSO == 'M' ] , prob = TRUE, 
+hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] , prob = TRUE, 
       xlab = 'Altezza [ cm ] ', 
       ylab = 'Densità',
       main = 'Istogramma Altezza Maschi',
-      col = 'lightblue', xlim = range( ALTEZZA ),
+      col = 'lightblue', xlim = range( anagrafica$ALTEZZA ),
       breaks = seq( 150, 195, by = 5 ) )
   
-boxplot( ALTEZZA[ SESSO == 'F' ], 
+boxplot( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ], 
          names = 'Femmine', 
          main = 'Boxplot Altezza\n Femmine',
          col = 'pink' , 
@@ -469,7 +453,7 @@ boxplot( ALTEZZA[ SESSO == 'F' ],
          ylim = c( 150, 195 ),
          horizontal = TRUE)
   
-boxplot(ALTEZZA[ SESSO == 'M' ] , 
+boxplot(anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] , 
         names =  'Maschi' , 
         main = 'Boxplot Altezza\n Maschi',
         col =  'lightblue' , 
@@ -480,14 +464,10 @@ boxplot(ALTEZZA[ SESSO == 'M' ] ,
 
 # Scatter plot
 dev.new()
-plot( ALTEZZA, ETA, main = 'Scatter plot altezza-eta', 
+plot( anagrafica$ALTEZZA, anagrafica$ETA, main = 'Scatter plot altezza-eta', 
       xlab = 'Altezza', ylab = 'Eta' )
 
-detach(anagrafica)
-
-###############################################################
-########### 7 - ESEMPIO DI CONFRONTO TRA PIU' GRUPPI ##########
-###############################################################
+## 7 - ESEMPIO DI CONFRONTO TRA PIU' GRUPPI -------------------
 
 rm( list = ls( ) )
 graphics.off( )
@@ -513,26 +493,24 @@ names(iris)
 # Per avere una descrizione completa del dataset:
 help(iris)
 
-attach(iris)
-
 # Ispezioniamo il dataset con le funzioni viste:
-table(Species) # Il dataset è bilanciato rispetto alle diverse tipologie di fiore
+table(iris$Species) # Il dataset è bilanciato rispetto alle diverse tipologie di fiore
 
 # Possiamo calcolare i principali indici di posizione su tutte le
 # variabili contemporaneamente sfruttando la funzione tapply
 
-tapply(Sepal.Width, Species, summary) 
+tapply(iris$Sepal.Width, iris$Species, summary) 
 # summary, terzo parametro della funzione, viene applicato a Sepal.Width, primo parametro della funzione,
 # per ciascun livello contenuto in Species, secondo parametro della funzione
 
-tapply(Sepal.Width, Species, sd)
+tapply(iris$Sepal.Width, iris$Species, sd)
 
 
 # A) Confrontiamo la variabile Sepal.Width tra le diverse specie, ovver stratificando
 # per la variabile Species
 # Confrontiamo i  tre gruppi tramite l'istogramma dei dati
 
-######################################## 
+#                                      # 
 #         INSERISCI CODICE QUI         #
 #                                      #
 # dev.new()
@@ -547,39 +525,39 @@ tapply(Sepal.Width, Species, sd)
 
 dev.new()
 par(mfrow= c(3,1))
-hist(Sepal.Width[Species=="setosa"],
+hist(iris$Sepal.Width[iris$Species=="setosa"],
      probability = T,
      main = 'Larghezza sepalo Iris Setosa',
      xlab = 'Iris Setosa',
      ylab = 'Densità',
      col = 2,
-     breaks = seq(min(Sepal.Width), 
-                  max(Sepal.Width), length.out=12)) 
+     breaks = seq(min(iris$Sepal.Width), 
+                  max(iris$Sepal.Width), length.out=12)) 
 
-hist(Sepal.Width[Species=="versicolor"],
+hist(iris$Sepal.Width[iris$Species=="versicolor"],
      probability = T,
      main = 'Larghezza sepalo Iris Versicolor',
      xlab = 'Iris Versicolor',
      ylab = 'Densità',
      col = 3,
-     breaks = seq(min(Sepal.Width), 
-                  max(Sepal.Width), length.out=12))
+     breaks = seq(min(iris$Sepal.Width), 
+                  max(iris$Sepal.Width), length.out=12))
 
-hist(Sepal.Width[Species=="virginica"],
+hist(iris$Sepal.Width[iris$Species=="virginica"],
      probability = T,
      main = 'Larghezza sepalo Iris Virginica',
      xlab = 'Iris Virginica',
      ylab = 'Densità',
      col = 4,
-     breaks = seq(min(Sepal.Width), 
-                  max(Sepal.Width), length.out=12))
+     breaks = seq(min(iris$Sepal.Width), 
+                  max(iris$Sepal.Width), length.out=12))
 
 # Istogramma -> Gli iris setosa sembrano avere un sepalo più largo delle altre due specie.
 #               Non si vede alcuna differenza tra le altre due specie.
 
 # Confrontiamo i  tre gruppi tramite il boxplot dei dati
 dev.new()
-boxplot( Sepal.Width ~ Species, 
+boxplot( iris$Sepal.Width ~ iris$Species, 
          ylab = 'Larghezza sepalo', 
          main = 'Boxplot Larghezza sepalo', 
          col = c( 2, 3, 4 ))
@@ -602,9 +580,9 @@ boxplot( Sepal.Width ~ Species,
 
 # Scatter plot
 col=rep(0, nrow(iris))
-col[Species=='setosa']     = 2 #rosso
-col[Species=='versicolor'] = 3 #verde
-col[Species=='virginica']  = 4 #blu
+col[iris$Species=='setosa']     = 2 #rosso
+col[iris$Species=='versicolor'] = 3 #verde
+col[iris$Species=='virginica']  = 4 #blu
 
 dev.new()
 pairs( iris [,1:4], 
@@ -613,23 +591,19 @@ pairs( iris [,1:4],
        pch = 16 )
     
 # Matrice di correlazione per specie
-cor(iris[Species== 'setosa', 1:4])
-cor(iris[Species== 'versicolor', 1:4])
-cor(iris[Species== 'virginica', 1:4])
+cor(iris[iris$Species== 'setosa', 1:4])
+cor(iris[iris$Species== 'versicolor', 1:4])
+cor(iris[iris$Species== 'virginica', 1:4])
 
-detach(iris)
-      
 rm(list = ls() )
 graphics.off()
 
-###############################################################
-############### 8 - ALCUNI ESEMPI PIU' COMPLESSI ##############
-###############################################################
+## 8 - ALCUNI ESEMPI PIU' COMPLESSI ---------------------------
 
-############### ESEMPIO 1 ###############
+# ESEMPIO 1
 
 # Carichiamo il dataset GEYSER
-library(MASS) # Pacchetto che contiene molti dataset
+pacman::p_load("MASS") # Pacchetto che contiene molti dataset
 data(geyser)
 
 head(geyser)
@@ -639,24 +613,22 @@ names(geyser)
 # Per avere una descrizione completa del dataset:
 help(geyser)
 
-attach(geyser)
-
 # PLOT:
 # 1. Consideriamo la variabile duration e ispezioniamo i dati tramite boxplot
 dev.new()
-boxplot(duration, ylab = 'Tempi ( sec )', main = 'Boxplot Durata eruzione')
+boxplot(geyser$duration, ylab = 'Tempi ( sec )', main = 'Boxplot Durata eruzione')
 
 # Boxplot -> Distribuzione asimmetrica verso sinistra:
 # mediana molto spostata verso l'alto
 
 #install.packages("beeswarm")
-library(beeswarm)
-beeswarm(duration, add = T, col = "indianred3")
+pacman::p_load("beeswarm")
+beeswarm(geyser$duration, add = T, col = "indianred3")
 # Aggiungiamo le osservazioni per vedere come sono distribuite
 
 # 2. Consideriamo la variabile duration e ispezioniamo i dati tramite istogramma
 hist(
-  duration,
+  geyser$duration,
   prob = TRUE,
   main = 'Durata eruzione',
   xlab = 'Tempi ( min )',
@@ -666,14 +638,14 @@ hist(
 # Istogramma -> distribuzione bimodale
 
 # 3. Consideriamo la variabile waiting e ispezioniamo i dati tramite boxplot
-boxplot(waiting, ylab = 'Tempi ( sec )', main = 'Boxplot Attesa eruzione')
+boxplot(geyser$waiting, ylab = 'Tempi ( sec )', main = 'Boxplot Attesa eruzione')
 
 # Boxplot -> Distribuzione asimmetrica verso sinistra (mediana molto spostata verso l'alto)
-beeswarm(waiting, add = T, col = "indianred3")
+beeswarm(geyser$waiting, add = T, col = "indianred3")
 
 # 4. Consideriamo la variabile waiting e ispezioniamo i dati tramite istogramma
 hist(
-  waiting,
+  geyser$waiting,
   prob = TRUE,
   main = 'Attesa eruzione',
   xlab = 'Tempi ( min )',
@@ -685,18 +657,16 @@ hist(
 # 5. Indaghiamo (in modo esplorativo) sulla bimodalità della distribuzione,
 # tenendo conto simultaneamente delle due variabili (waiting e duration), 
 # ispezionando i dati tramite scatterplot
-plot(duration,
-     waiting,
+plot(geyser$duration,
+     geyser$waiting,
      main = 'Scatter plot geyser',
      xlab = 'Durata',
      ylab = 'Attesa')
 
-
-detach(geyser)
 rm(list = ls())
 graphics.off()
 
-############### ESEMPIO 2 ###############
+# ESEMPIO 2 
 
 # Analisi dei dati contenuti nel dataset 'airquality',
 # già presente in R nel pacchetto di base 'datasets'
@@ -729,7 +699,7 @@ airquality <-
 rm(list = ls())
 graphics.off()
 
-############### ESEMPIO 3 ###############
+# ESEMPIO 3 
 
 # Analisi dei dati contenuti nel dataset 'ChickWeight' 
 # già presente in R nel pacchetto di base 'datasets'
@@ -754,11 +724,9 @@ names( ChickWeight )
 #     weight e Time sono variabili quantitative
 #     Chick e Diet sono variabili categoriche
 
-attach( ChickWeight )
-
 # Scatter plot
 dev.new()
-plot( Time, weight, 
+plot( ChickWeight$Time, ChickWeight$weight, 
       main = 'Scatter plot ChickWeight', 
       xlab = 'Giorni', 
       ylab = 'Peso' )
@@ -768,17 +736,18 @@ plot( Time, weight,
 
 # Numero di pulcini per ogni dieta
 for(i in 1:4){
-  print(length( unique( Chick[Diet==i]) ))
+  print(length( unique( ChickWeight$Chick[ChickWeight$Diet==i]) ))
 }
 
 # Selezioniamo il pulcino con identificatore 1
-ChickWeight [Chick==1, ]
+ChickWeight[ChickWeight$Chick==1, ]
 dev.new()
-plot( Time [Chick==1], weight[Chick==1], 
+plot( ChickWeight$Time[ChickWeight$Chick==1], 
+      ChickWeight$weight[ChickWeight$Chick==1], 
       main = 'ChickWeight', 
       xlab = 'Tempo',
       ylab = 'Peso', 
-      ylim = range( weight ),
+      ylim = range( ChickWeight$weight ),
       type = 'l', lty= 1,      # oppure lty = "dashed"
       col=2,
       lwd=2)
@@ -790,30 +759,28 @@ plot( Time [Chick==1], weight[Chick==1],
 
 colors_ = 2:5 # 1 colore per ogni Dieta
 for ( i in 2:50 ){
-  points(Time[which(Chick==i)], weight[which(Chick==i)], 
+  points(ChickWeight$Time[which(ChickWeight$Chick==i)], 
+         ChickWeight$weight[which(ChickWeight$Chick==i)], 
        type = 'l', lwd=2,
-       col=colors_[ unique(Diet[ which(Chick==i)]) ])
-  legend("topleft", legend=levels(Diet), lty=1, lwd=3, col=colors_)
+       col=colors_[ unique(ChickWeight$Diet[ which(ChickWeight$Chick==i)]) ])
+  legend("topleft", legend=levels(ChickWeight$Diet), lty=1, lwd=3, col=colors_)
 }
 # NOTA: points(...) AGGIUNGE le linee alla finestra grafica attualmente attiva
 
 # Consideriamo per ora solo il peso finale
-TF = max( Time )
+TF = max( ChickWeight$Time )
 TF
 
-ChickWeight_TF = ChickWeight[Time==TF,]
-
-detach( ChickWeight )
-attach( ChickWeight_TF )
+ChickWeight_TF = ChickWeight[ChickWeight$Time==TF,]
 
 # Numero di pulcini per ogni dieta
 for(i in 1:4){
-  print(length( unique( Chick[Diet==i]) ))
+  print(length( unique( ChickWeight_TF$Chick[ChickWeight_TF$Diet==i]) ))
 }
 
 # oppure
 # count_chicks <- function(x){length(unique(x))}
-# tapply(Chick, Diet, count_chicks)
+# tapply(ChickWeight_TF$Chick, ChickWeight_TF$Diet, count_chicks)
 # Alla misurazione finale sono arrivati un numero di polli diverso per le varie diete...
 
 # Istogramma dei dati per sottogruppi
@@ -822,12 +789,12 @@ for(i in 1:4){
 dev.new()
 par( mfrow = c(4,1))
 for(i in 1:4){
-  hist( weight [Diet == i] , prob = TRUE, 
+  hist( ChickWeight_TF$weight [ChickWeight_TF$Diet == i] , prob = TRUE, 
         xlab = 'Peso', 
         ylab = 'Densità', 
         main = paste('Istogramma Peso Dieta ', i),
         col = colors_[i], 
-        xlim = range( weight ), breaks = seq( 50, 400, by = 50 ) )
+        xlim = range( ChickWeight_TF$weight ), breaks = seq( 50, 400, by = 50 ) )
 }
 # Istogrammi -> tendenza della dieta 3 a dare una crescita maggiore delle altre diete.
 #        Maggiore simmetria nella distribuzione della dieta 4
@@ -836,7 +803,7 @@ for(i in 1:4){
 # Boxplot dei dati per sottogruppi
 
 dev.new()
-boxplot( weight ~ Diet, 
+boxplot( ChickWeight_TF$weight ~ ChickWeight_TF$Diet, 
          names = c( 'Diet 1', 'Diet 2', 'Diet 3', 'Diet 4' ), 
          main = 'Boxplot Peso',
          col = colors_, 
@@ -845,8 +812,6 @@ boxplot( weight ~ Diet,
 #            La distribuzione del peso nelle diete 2 e 4 sono abbastanza simmetriche, 
 #            almeno nella parte centrale, mentre le diete 1 e 3 sono più asimmetriche.
 #            La variabilità nella dieta 4 è minore che per le altre diete.
-
-detach( ChickWeight_TF )
 
 rm(list = ls())
 graphics.off()
