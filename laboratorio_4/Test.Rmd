@@ -1,0 +1,199 @@
+---
+output:
+  html_document
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(fig.width = 6.5, message = FALSE, warning = FALSE)
+
+options(warn = -1)
+library(plotly, quietly = T)
+library(latex2exp, quietly = T)
+mu <- seq(-3,3, by=0.05)
+alpha <- c(0.1, 0.05, 0.01)
+N <- c(5,30,50, 100)
+```
+
+#### Test Bilatero (Popolazione Gaussiana, varianza nota)
+
+$$
+\begin{cases}
+H_0: \mu = \mu_0 \\
+H_1: \mu \neq \mu_0
+\end{cases}
+$$
+$$
+ \frac{\overline{X} - \mu_0}{\sigma/\sqrt{n}} \sim N(0,1)
+$$
+
+```{r, echo=FALSE}
+aval <- list()
+for(step in 1:length(N)){
+  n <- N[step]
+  aval[[step]] <-list(visible = FALSE,
+                      name = 'power',
+                      x=mu,
+                      power.1=1 -pnorm(qnorm(1-alpha[1]/2) - mu*sqrt(n)) + 
+                  pnorm(qnorm(alpha[1]/2) - mu*sqrt(n)),
+                      power.2=1 -pnorm(qnorm(1-alpha[2]/2) - mu*sqrt(n)) + 
+                        pnorm(qnorm(alpha[2]/2) - mu*sqrt(n)),
+                      power.3=1 -pnorm(qnorm(1-alpha[3]/2) - mu*sqrt(n)) + 
+                  pnorm(qnorm(alpha[3]/2) - mu*sqrt(n)))
+                      
+}
+aval[1][[1]]$visible = TRUE
+
+# create steps and plot all traces
+steps <- list()
+fig <- plot_ly()
+for (i in 1:length(N)) {
+ fig <- add_lines(fig,x=aval[[i]]$x,  y=aval[[i]]$power.1, visible = aval[[i]]$visible, 
+                 type = 'scatter', mode = 'lines', name= "alpha = 0.1",
+                 line=list(color='black', width=3))
+
+ fig <- add_lines(fig,x=aval[[i]]$x,  y=aval[[i]]$power.2, visible = aval[[i]]$visible, 
+                 type = 'scatter', mode = 'lines', name= "alpha = 0.05",
+                 line=list(color='red', width=3))
+
+ 
+ fig <- add_lines(fig,x=aval[[i]]$x,  y=aval[[i]]$power.3, visible = aval[[i]]$visible, 
+                 type = 'scatter', mode = 'lines',name= "alpha = 0.01",
+                 line=list(color='blue', width=3))
+ 
+  step <- list(args = list('visible', rep(FALSE, 3*length(aval))),
+               method = 'restyle', label=N[i])
+  step$args[[2]][3*i-2] = TRUE
+  step$args[[2]][3*i-1] = TRUE
+  step$args[[2]][3*i] = TRUE
+  steps[[i]] = step
+}  
+
+
+fig <- fig %>%
+  layout(sliders = list(list(active = 0,
+                             currentvalue = list(prefix="n = "),
+                             steps = steps, pad=list(t=60))))
+
+fig %>%  layout(title = 'Potenza del Test',
+                xaxis = list(title = plotly::TeX("\\mu - \\mu_0")))
+#%>%
+#         config(mathjax = 'cdn')
+
+```
+
+#### Test Unilateri (Popolazione Gaussiana, varianza nota)
+$$
+\begin{cases}
+H_0: \mu = \mu_0 \\
+H_1: \mu < \mu_0
+\end{cases}
+$$
+
+```{r, echo=FALSE}
+aval <- list()
+for(step in 1:length(N)){
+  n <- N[step]
+  aval[[step]] <-list(visible = FALSE,
+                      name = 'power',
+                      x=mu,
+                      power.1= pnorm(qnorm(alpha[1]) - mu*sqrt(n)),
+                      power.2= pnorm(qnorm(alpha[2]) - mu*sqrt(n)),
+                      power.3= pnorm(qnorm(alpha[3]) - mu*sqrt(n)))
+                      
+}
+aval[1][[1]]$visible = TRUE
+
+# create steps and plot all traces
+steps <- list()
+fig <- plot_ly()
+for (i in 1:length(N)) {
+ fig <- add_lines(fig,x=aval[[i]]$x,  y=aval[[i]]$power.1, visible = aval[[i]]$visible, 
+                 type = 'scatter', mode = 'lines', name= "alpha = 0.1",
+                 line=list(color='black', width=3))
+
+ fig <- add_lines(fig,x=aval[[i]]$x,  y=aval[[i]]$power.2, visible = aval[[i]]$visible, 
+                 type = 'scatter', mode = 'lines', name= "alpha = 0.05",
+                 line=list(color='red', width=3))
+
+ 
+ fig <- add_lines(fig,x=aval[[i]]$x,  y=aval[[i]]$power.3, visible = aval[[i]]$visible, 
+                 type = 'scatter', mode = 'lines',name= "alpha = 0.01",
+                 line=list(color='blue', width=3))
+ 
+  step <- list(args = list('visible', rep(FALSE, 3*length(aval))),
+               method = 'restyle', label=N[i])
+  step$args[[2]][3*i-2] = TRUE
+  step$args[[2]][3*i-1] = TRUE
+  step$args[[2]][3*i] = TRUE
+  steps[[i]] = step
+}  
+
+
+fig <- fig %>%
+  layout(sliders = list(list(active = 0,
+                             currentvalue = list(prefix="n = "),
+                             steps = steps, pad=list(t=60))))
+
+fig %>%  layout(title = 'Potenza del Test',
+                xaxis = list(title = plotly::TeX("\\mu - \\mu_0"))) %>%
+         config(mathjax = 'cdn')
+
+```
+
+$$
+\begin{cases}
+H_0: \mu = \mu_0 \\
+H_1: \mu > \mu_0
+\end{cases}
+$$
+
+```{r, echo=FALSE}
+aval <- list()
+for(step in 1:length(N)){
+  n <- N[step]
+  aval[[step]] <-list(visible = FALSE,
+                      name = 'power',
+                      x=mu,
+                      power.1=1 -pnorm(qnorm(1-alpha[1]) - mu*sqrt(n)),
+                      power.2=1 -pnorm(qnorm(1-alpha[2]) - mu*sqrt(n)),
+                      power.3=1 -pnorm(qnorm(1-alpha[3]) - mu*sqrt(n)))
+                      
+}
+aval[1][[1]]$visible = TRUE
+
+# create steps and plot all traces
+steps <- list()
+fig <- plot_ly()
+for (i in 1:length(N)) {
+ fig <- add_lines(fig,x=aval[[i]]$x,  y=aval[[i]]$power.1, visible = aval[[i]]$visible, 
+                 type = 'scatter', mode = 'lines', name= "alpha = 0.1",
+                 line=list(color='black', width=3))
+
+ fig <- add_lines(fig,x=aval[[i]]$x,  y=aval[[i]]$power.2, visible = aval[[i]]$visible, 
+                 type = 'scatter', mode = 'lines', name= "alpha = 0.05",
+                 line=list(color='red', width=3))
+
+ 
+ fig <- add_lines(fig,x=aval[[i]]$x,  y=aval[[i]]$power.3, visible = aval[[i]]$visible, 
+                 type = 'scatter', mode = 'lines',name= "alpha = 0.01",
+                 line=list(color='blue', width=3))
+ 
+  step <- list(args = list('visible', rep(FALSE, 3*length(aval))),
+               method = 'restyle', label=N[i])
+  step$args[[2]][3*i-2] = TRUE
+  step$args[[2]][3*i-1] = TRUE
+  step$args[[2]][3*i] = TRUE
+  steps[[i]] = step
+}  
+
+
+fig <- fig %>%
+  layout(sliders = list(list(active = 0,
+                             currentvalue = list(prefix="n = "),
+                             steps = steps, pad=list(t=60))))
+
+fig %>%  layout(title = 'Potenza del Test',
+                xaxis = list(title = plotly::TeX("\\mu - \\mu_0"))) %>%
+         config(mathjax = 'cdn')
+
+```
