@@ -222,20 +222,20 @@ is.numeric(vettore.stringhe)
 is.character(vettore.stringhe)
 
 # Aritmetica dei vettori
-campione <- c (6, 1, 5, 9, 4, 7, 8, 2, 5, 8)
-campione^2 # elevamento al quadrato
-min(campione) # valore minimo
-max(campione) # valore massimo
-length(campione) # numero di valori (lunghezza del vettore)
-sum(campione) # somma degli elementi
-mean(campione) # media
-median(campione) # mediana
-range(campione) # restituisce un vettore di due elementi, il min e max
-sd(campione) # deviazione standard
-var(campione) # varianza
-sum((campione - mean(campione))^2)/(length(campione)-1)
-sort(campione) # mette in ordine crescente i valori del vettore
-order(campione) # restituisce l’ordine dei valori nel vettore
+dati <- c (6, 1, 5, 9, 4, 7, 8, 2, 5, 8)
+dati^2 # elevamento al quadrato
+min(dati) # valore minimo
+max(dati) # valore massimo
+length(dati) # numero di valori (lunghezza del vettore)
+sum(dati) # somma degli elementi
+mean(dati) # media
+median(dati) # mediana
+range(dati) # restituisce un vettore di due elementi, il min e max
+sd(dati) # deviazione standard
+var(dati) # varianza
+sum((dati - mean(dati))^2)/(length(dati)-1)
+sort(dati) # mette in ordine crescente i valori del vettore
+order(dati) # restituisce l’ordine dei valori nel vettore
 
 # Operazioni tra vettori: il RECYCLING
 # Quando si compiono operazioni tra due vettori, il primo elemento dell’uno
@@ -326,17 +326,10 @@ rm(list = ls())
 # 5.5 DATAFRAMES
 # sono matrici bidimensionali dove ogni colonna può avere un tipo di dato
 # diverso dalle altre
-
-# Importiamo il data.frame da un file .txt, utilizzando il comando read.table().
+dataframe <- data.frame( temp = c(36.5, 36.1, 36.7), 
+                         sesso = c("M", "F", "M"))
+# Un data.frame puo' essere importato da un file .txt, utilizzando il comando read.table().
 help(read.table)
-
-# Prima di importare i dati, guardare il file che viene importato!
-vitamina <- read.table('vitaminaD.txt', header = TRUE)
-
-head(vitamina)
-dim(vitamina)
-colnames(vitamina)
-rownames(vitamina)
 
 # 6 - ANALISI DESCRITTIVA DI UNA VARIABILE QUANTITATIVA -------
 
@@ -351,25 +344,33 @@ rownames(vitamina)
 # Fonte: Bland (1995) An introduction to Medical Statistics.
 # Oxford University Press
 
+dati <- read.table('vitaminaD.txt', header = TRUE)
+
+head(dati)
+dim(dati)
+colnames(dati)
+rownames(dati)
+
+
 # Media
-mean(vitamina$Vitamina_D)
+mean(dati$Vitamina_D)
 
 # Mediana
-median(vitamina$Vitamina_D)
+median(dati$Vitamina_D)
 
 # Minimo
-min(vitamina$Vitamina_D)
+min(dati$Vitamina_D)
 
 # Massimo
-max(vitamina$Vitamina_D)
+max(dati$Vitamina_D)
 
 # Primo quartile Q1 (venticinquesimo percentile delle osservazioni)
-Q1 <- quantile(vitamina$Vitamina_D, prob = 0.25)
+Q1 <- quantile(dati$Vitamina_D, prob = 0.25)
 Q1
 names(Q1) <- NULL
 
 # Terzo quartile Q3 (settantacinquesimo percentile delle osservazioni)
-Q3 <- quantile(vitamina$Vitamina_D, prob = 0.75)
+Q3 <- quantile(dati$Vitamina_D, prob = 0.75)
 Q3
 names(Q3) <- NULL
 
@@ -378,20 +379,17 @@ IQR <- Q3 - Q1
 IQR
 
 # Funzione summary: riassunto di min, max, quartili e media
-summary(vitamina$Vitamina_D)
+summary(dati$Vitamina_D)
 
 # Disegnare un istogramma dei dati
-hist(vitamina$Vitamina_D) # In ordinata ci sono le frequenze assolute
-hist(vitamina$Vitamina_D, prob = TRUE) # In ordinata ci sono le densità in modo che l'area totale sommi a 1.
+hist(dati$Vitamina_D) # In ordinata ci sono le frequenze assolute
+hist(dati$Vitamina_D, prob = TRUE) # In ordinata ci sono le densità in modo che l'area totale sommi a 1.
 
 # Parametri estetici del grafico
-hist(
-  vitamina$Vitamina_D,
-  prob = TRUE,
+hist(dati$Vitamina_D, prob = TRUE,
   xlab = 'Concentrazione',
   ylab = 'Densità',
-  main = 'Istogramma Vitamina D'
-)
+  main = 'Istogramma Vitamina D')
 
 # R decide automaticamente il numero di classi in cui dividere i dati e la loro dimensione
 
@@ -399,32 +397,25 @@ hist(
 # Non esiste un numero di classi 'giusto', la scelta sta alla sensibilità dello statistico
 # Regola euristica: numero di classi circa uguale alla radice quadrata della dimensione del campione
 par(mfrow = c(2, 2)) # Quattro grafici in una sola finestra
-hist(
-  vitamina$Vitamina_D,
-  prob = TRUE,
+hist(dati$Vitamina_D, prob = TRUE,
   xlab = 'Concentrazione',
   ylab = 'Densità',
   main = 'Istogramma Vitamina D',
-  breaks = 2
-)
-hist(
-  vitamina$Vitamina_D,
-  prob = TRUE,
+  breaks = 2)
+
+hist(dati$Vitamina_D, prob = TRUE,
   xlab = 'Concentrazione',
   ylab = 'Densità',
   main = 'Istogramma Vitamina D',
-  breaks = 8
-)
-hist(
-  vitamina$Vitamina_D,
-  prob = TRUE,
+  breaks = 8)
+
+hist(dati$Vitamina_D, prob = TRUE,
   xlab = 'Concentrazione',
   ylab = 'Densità',
   main = 'Istogramma Vitamina D',
-  breaks = 12
-)
+  breaks = 12)
 hist(
-  vitamina$Vitamina_D,
+  dati$Vitamina_D,
   prob = TRUE,
   xlab = 'Concentrazione',
   ylab = 'Densità',
@@ -435,7 +426,7 @@ hist(
 graphics.off()
 
 # Costruire un boxplot dei dati
-boxplot(vitamina$Vitamina_D)
+boxplot(dati$Vitamina_D)
 # Linea nera: mediana
 # Scatola: Primo e terzo quartile
 # Baffo inferiore: massimo tra minimo e valore minimo osservato entro Q1-1.5*IQR
@@ -447,21 +438,8 @@ graphics.off()
 # 7 - ANALISI DESCRITTIVA DI UNA VARIABILE CATEGORICA ---------
 
 # Creo un vettore di realizzazioni di una variabile categorica
-province <-  c("MI",
-               "MI",
-               "VA",
-               "BG",
-               "LO",
-               "LO",
-               "CR",
-               "CR",
-               "MI",
-               "CR",
-               "LO",
-               "VA",
-               "MI",
-               "LO",
-               "MI")
+province <-  c("MI", "MI", "VA", "BG", "LO", "LO", "CR", "CR", "MI",
+               "CR", "LO", "VA", "MI", "LO", "MI")
 province
 
 province <- factor(province)
@@ -488,38 +466,30 @@ plot(province)
 # disegna il barplot corrispondente alla frequenza assoluta di ogni livello.
 
 # Ulteriori parametri della funzione
-plot(
-  province,
-  col = 'red',
+plot(province, col = 'red',
   xlab = 'province',
   ylab = 'frequenze assolute',
-  main = 'Grafico a barre Province'
-)
+  main = 'Grafico a barre Province')
 # col = '...' serve per cambiare il colore
 # xlab = '...' serve per cambiare la scritta sotto l'asse delle ascisse
 # ylab = '...' serve per cambiare la scritta sotto l'asse delle ordinate
 # main = '...' serve per dare un titolo al grafico
 
 # grafico a barre con le frequenze relative
-barplot(
-  province.relative,
-  col = 'blue',
+barplot(province.relative, col = 'blue',
   xlab = 'province',
   ylab = 'frequenze relative',
-  main = 'Grafico a barre Province'
-)
+  main = 'Grafico a barre Province')
 
 graphics.off()
 
 pie(province.relative) # Grafico a torta semplice
 
-pie(
-  province.relative,
-  # Grafico a torta personalizzato
+# Grafico a torta personalizzato
+pie(province.relative,
   labels = c('BG', 'CR', 'LO', 'MI', 'VA'),
   radius = 1,
   col = c('red', 'orange', 'yellow', 'green', 'lightblue', 'violet'),
-  main = 'Grafico a torta Province'
-)
+  main = 'Grafico a torta Province')
 
 graphics.off()

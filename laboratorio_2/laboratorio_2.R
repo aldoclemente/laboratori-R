@@ -41,10 +41,10 @@ setwd(dirname(getActiveDocumentContext()$path))
 # library(MioPacchetto) # carico MioPacchetto nella sessione corrente
 
 # installiamo il pacchetto MASS (contiene vari datasets)
-# install.packages("MASS") 
+install.packages("MASS") 
 
 # carico il pacchetto
-# library(MASS)
+library(MASS)
 
 # Installo e carico il pacchetto sfruttando il pacchetto pacman
 pacman::p_load("MASS") 
@@ -166,16 +166,16 @@ rm( list = ls() )   # elimina variabili dall'ambiente di lavoro
 graphics.off()      # chiude le finestre grafiche attive 
 
 # Importiamo il dataset
-record = read.table( 'record.txt', header = TRUE )
+dati = read.table( 'record.txt', header = TRUE )
 
-head( record )
-dim( record )
+head( dati )
+dim( dati )
 
 # Consideriamo le variabili 100m e 200m.
 
-record100200 = record[,1:2] # SALVO una parte di record in una nuova variabile.
+record100200 = dati[,1:2] # SALVO una parte di dati in una nuova variabile.
                             # In particolare, record100200 contiene
-                            # TUTTE le righe e le prime DUE COLONNE di record
+                            # TUTTE le righe e le prime DUE COLONNE di dati
 head(record100200)
 dim(record100200)
 # LE STATISTICHE:
@@ -299,21 +299,21 @@ plot( record100200[ ,1] , record100200[ ,2] ,
 ## 5 - ANALISI DESCRITTIVA DI PIU' VARIABILI QUANTITATIVE -----
 
 # Consideriamo il dataset completo, con tutte le variabili
-head(record)
+head(dati)
 
 # PLOT: subplot degli scatterplot appaiati tra tutte le variabili
 dev.new()
-pairs(record)
+pairs(dati)
 
 # LE STATISTICHE:
-colMeans(record)
-cov(record)
-cor(record)
+colMeans(dati)
+cov(dati)
+cor(dati)
 
 # I PLOT:
 # 1. Boxplot
 dev.new()
-boxplot(record, main = 'Boxplot records', 
+boxplot(dati, main = 'Boxplot records', 
         xlab = 'Categorie', 
         ylab = 'Tempo ( sec )' )
 
@@ -339,38 +339,38 @@ rm( list = ls( ) )
 graphics.off( )
 
 # Importiamo il dataset
-anagrafica = read.table( 'anagrafica.txt', header = TRUE )
+dati = read.table( 'anagrafica.txt', header = TRUE )
 
-head( anagrafica )
-dim( anagrafica )
-names( anagrafica )
+head( dati )
+dim( dati )
+names( dati )
 
 # Codifichiamo la variabile categoriale SESSO  come factor e
 # aggiungiamo delle etichette ai livelli
-table(anagrafica$SESSO)
-anagrafica$SESSO[ anagrafica$SESSO == 1 ] = 'F' 
+table(dati$SESSO)
+dati$SESSO[ dati$SESSO == 1 ] = 'F' 
                            # SESSO == 1  restituisce un vettore di booleani (TRUE / FALSE) 
                            # Vengono selezionate tutte le posizioni di SESSO in corrispondenza di 1
                            # quindi vengono sostituiti gli "1" con le "F"
-anagrafica$SESSO[ anagrafica$SESSO == 2 ] = 'M'
+dati$SESSO[ dati$SESSO == 2 ] = 'M'
 
-anagrafica$SESSO = as.factor(anagrafica$SESSO)   
-summary(anagrafica$SESSO)
+dati$SESSO = as.factor(dati$SESSO)   
+summary(dati$SESSO)
 
 # Coloriamo lo scatter plot in base al sottogruppo
-col = rep( 0, nrow(anagrafica)) # Nota. nrow(anagrafica) restituisce il numero di righe di anagrafica
+col = rep( 0, nrow(dati)) # Nota. nrow(dati) restituisce il numero di righe di dati
 
-col [ anagrafica$SESSO == 'F' ] = 'pink'           
-col [ anagrafica$SESSO == 'M' ] = 'lightblue'
+col [ dati$SESSO == 'F' ] = 'pink'           
+col [ dati$SESSO == 'M' ] = 'lightblue'
 class(col)
 
 dev.new()
-pairs( anagrafica[ ,1:3] , main = 'Scatter plot', 
+pairs( dati[ ,1:3] , main = 'Scatter plot', 
        col = col, 
        pch = 16 )
 
 # Matrice di correlazione
-cor(anagrafica[,1:3]) 
+cor(dati[,1:3]) 
 
 # A) Confrontiamo la variabile ALTEZZA tra maschi e femmine, ovvero stratificando
 # per la variabile SESSO
@@ -382,18 +382,18 @@ cor(anagrafica[,1:3])
 
 dev.new()
 par( mfrow = c( 2, 1 ) )
-hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ] , prob = TRUE,
+hist( dati$ALTEZZA[ dati$SESSO == 'F' ] , prob = TRUE,
       xlab = 'Altezza [ cm ] ', 
       ylab = 'Densità', 
       main = 'Istogramma Altezza Femmine',
-      col = 'pink', xlim = range( anagrafica$ALTEZZA ),
+      col = 'pink', xlim = range( dati$ALTEZZA ),
       breaks = seq( 150, 195, by = 5 ) )
 
-hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] , prob = TRUE, 
+hist( dati$ALTEZZA[ dati$SESSO == 'M' ] , prob = TRUE, 
       xlab = 'Altezza [ cm ] ', 
       ylab = 'Densità',
       main = 'Istogramma Altezza Maschi',
-      col = 'lightblue', xlim = range( anagrafica$ALTEZZA ),
+      col = 'lightblue', xlim = range( dati$ALTEZZA ),
       breaks = seq( 150, 195, by = 5 ) )
 
 # Istogrammi -> tendenza delle donne ad essere più basse rispetto agli uomini
@@ -405,8 +405,8 @@ hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] , prob = TRUE,
 
 # Boxplot
 dev.new()
-boxplot( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ] , 
-         anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] , 
+boxplot( dati$ALTEZZA[ dati$SESSO == 'F' ] , 
+         dati$ALTEZZA[ dati$SESSO == 'M' ] , 
          names = c( 'Femmine', 'Maschi' ), 
          main = 'Boxplot Altezza',
          col = c( 'pink', 'lightblue' ), 
@@ -415,7 +415,7 @@ boxplot( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ] ,
 
 # Oppure utilizzo la formula per specificare il fattore di raggruppamento
 dev.new()
-boxplot( anagrafica$ALTEZZA ~ anagrafica$SESSO, 
+boxplot( dati$ALTEZZA ~ dati$SESSO, 
          names = c( 'Femmine', 'Maschi' ), 
          main = 'Boxplot Altezza',
          col = c( 'pink', 'lightblue' ), 
@@ -431,21 +431,21 @@ boxplot( anagrafica$ALTEZZA ~ anagrafica$SESSO,
 # Quattro Grafici nella stessa finestra grafica con boxplot (orizzontali)
 dev.new()
 par(mfrow=c(2,2))
-hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ] , prob = TRUE,
+hist( dati$ALTEZZA[ dati$SESSO == 'F' ] , prob = TRUE,
       xlab = 'Altezza [ cm ] ', 
       ylab = 'Densità', 
       main = 'Istogramma Altezza Femmine',
-      col = 'pink', xlim = range( anagrafica$ALTEZZA ),
+      col = 'pink', xlim = range( dati$ALTEZZA ),
       breaks = seq( 150, 195, by = 5 ) )
   
-hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] , prob = TRUE, 
+hist( dati$ALTEZZA[ dati$SESSO == 'M' ] , prob = TRUE, 
       xlab = 'Altezza [ cm ] ', 
       ylab = 'Densità',
       main = 'Istogramma Altezza Maschi',
-      col = 'lightblue', xlim = range( anagrafica$ALTEZZA ),
+      col = 'lightblue', xlim = range( dati$ALTEZZA ),
       breaks = seq( 150, 195, by = 5 ) )
   
-boxplot( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ], 
+boxplot( dati$ALTEZZA[ dati$SESSO == 'F' ], 
          names = 'Femmine', 
          main = 'Boxplot Altezza\n Femmine',
          col = 'pink' , 
@@ -453,7 +453,7 @@ boxplot( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ],
          ylim = c( 150, 195 ),
          horizontal = TRUE)
   
-boxplot(anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] , 
+boxplot(dati$ALTEZZA[ dati$SESSO == 'M' ] , 
         names =  'Maschi' , 
         main = 'Boxplot Altezza\n Maschi',
         col =  'lightblue' , 
@@ -464,7 +464,7 @@ boxplot(anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] ,
 
 # Scatter plot
 dev.new()
-plot( anagrafica$ALTEZZA, anagrafica$ETA, main = 'Scatter plot altezza-eta', 
+plot( dati$ALTEZZA, dati$ETA, main = 'Scatter plot altezza-eta', 
       xlab = 'Altezza', ylab = 'Eta' )
 
 ## 7 - ESEMPIO DI CONFRONTO TRA PIU' GRUPPI -------------------
