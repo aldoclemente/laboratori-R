@@ -1,12 +1,7 @@
-###############################################################
-##################    CORSO DI STATISTICA    ##################
-################## per INGEGNERIA MATEMATICA ##################
-###############################################################
-
-#####################################################################
-#########               LABORATORIO 4                     ###########
-#########    INFERENZA E TEST PER UNA E DUE POPOLAZIONI   ###########
-#####################################################################
+#'###########################################################'#
+#'#####                 LABORATORIO 4                   #####'#
+#'#####    INFERENZA E TEST PER UNA E DUE POPOLAZIONI   #####'#
+#'###########################################################'#
 
 # Argomenti del quarto laboratorio:
 # 1.1 - IC e test per la media di una popolazione normale a varianza nota
@@ -23,11 +18,9 @@ if(!require(pacman, quietly = TRUE)) install.packages("pacman")
 pacman::p_load("rstudioapi") 
 setwd(dirname(getActiveDocumentContext()$path))
 
-###############################################################
-######## 1 - IC E TEST PER LA MEDIA DI UNA POPOLAZIONE ########
-###############################################################
+## 1 - IC E TEST PER LA MEDIA DI UNA POPOLAZIONE -------------------------------
 
-################ 1.1 VARIANZA NOTA
+### 1.1 VARIANZA NOTA ----------------------------------------------------------
 
 # install.packages("BSDA")
 # install.packages("EnvStats")
@@ -52,30 +45,28 @@ dim(dati)
 n <- dim(dati)[1] # n è il numero di lampadine (dimensione del campione)
 names(dati)
 
-attach(dati)
-
 # Il testo dell'esercizio dice che i dati sono campionati da una normale, quindi potrei non 
 # verificare la normalità. Per scrupolo facciamo comunque una verifica:
 
 # Tramite Q-Q plot:
-qqnorm(tempo_vita)
-qqline(tempo_vita)
+qqnorm(dati$tempo_vita)
+qqline(dati$tempo_vita)
 
 # Tramite Shapiro test:
-shapiro.test(tempo_vita) # posso supporre i dati normali!
+shapiro.test(dati$tempo_vita) # posso supporre i dati normali!
 
 # Consideriamo il test:
 # H_0: mu = 1000     vs     H_1: mu != 1000
 
 alpha <- 0.05 
 help(z.test)
-z.test(x = tempo_vita,
+z.test(x = dati$tempo_vita,
        alternative = "two.sided", 
        mu = 1000, 
        sigma.x = 25, 
        conf.level = 1-alpha)
 
-res <- z.test(x = tempo_vita, 
+res <- z.test(x = dati$tempo_vita, 
               alternative = "two.sided", 
               mu = 1000,
               sigma.x = 25, 
@@ -91,10 +82,10 @@ res$conf.int # stima intervallare
 # Possiamo anche costruire l'intervallo di confidenza "a mano":
 sigma <- 25
 z.alpha <- qnorm(1-alpha/2)
-IC.alpha <- c( mean(tempo_vita) - z.alpha*sigma/sqrt(n),  mean(tempo_vita) + z.alpha*sigma/sqrt(n))
+IC.alpha <- c( mean(dati$tempo_vita) - z.alpha*sigma/sqrt(n),  mean(dati$tempo_vita) + z.alpha*sigma/sqrt(n))
 
 # Plottiamo IC e dati
-plot(rep(1,n),tempo_vita,col=4,lwd=2,ylim=range(tempo_vita),xlab='') 
+plot(rep(1,n),dati$tempo_vita,col=4,lwd=2,ylim=range(dati$tempo_vita),xlab='') 
 points(res$estimate,pch=4,lwd=3)
 points(rep(1,2),res$conf.int,type='l',lwd=2)
 points(1000,pch=4,lwd=3,col="red")
@@ -104,7 +95,7 @@ points(1000,pch=4,lwd=3,col="red")
 # Consideriamo il test unilatero:
 # H_0: mu = 1000     vs     H_1: mu > 1000
 
-z.test(x = tempo_vita, 
+z.test(x = dati$tempo_vita, 
        alternative = "greater",
        mu = 1000, 
        sigma.x = 25, 
@@ -115,7 +106,7 @@ z.test(x = tempo_vita,
 # Consideriamo il test unilatero:
 # H_0: mu = 1000     vs     H_1: mu < 1000
 
-z.test(x = tempo_vita, 
+z.test(x = dati$tempo_vita, 
        alternative = "less", 
        mu = 1000, 
        sigma.x = 25,
@@ -124,7 +115,7 @@ z.test(x = tempo_vita,
 rm(list=ls())
 graphics.off()
 
-################ 1.2 VARIANZA INCOGNITA
+### 1.2 VARIANZA INCOGNITA -----------------------------------------------------
 
 # Carichiamo i dati contenuti nel file temperatura.txt:
 # Essi rappresentano la temperatura corporea (espressa in gradi Fahrenheit)
@@ -140,35 +131,30 @@ dim(dati)
 n <- dim(dati)[1] # n è il numero di pazienti (dimensione del campione)
 names(dati)
 
-attach(dati)
-
 # Per impostare un test corretto per la media della variabile Temperatura, 
 # dobbiamo sapere se la variabile Temperatura può essere considerata normale
 
 par(mfrow = c(1,2))
-hist(Temperatura,prob=TRUE)
-qqnorm(Temperatura)
-qqline(Temperatura,lwd=2,col='red')
+hist(dati$Temperatura,prob=TRUE)
+qqnorm(dati$Temperatura)
+qqline(dati$Temperatura,lwd=2,col='red')
 
-shapiro.test(Temperatura)
+shapiro.test(dati$Temperatura)
 # pvalue abbastanza alto quindi possiamo assumere che i dati siano normali
 
 # effettuo un test per verificare l'ipotesi
 #       H_0: mu = 98.6 F     vs     H_1: mu != 98.6 F
 
 alpha<-0.05
-t.test(x = Temperatura, alternative = "two.sided", mu = 98.6, conf.level = 1-alpha)
+t.test(x = dati$Temperatura, alternative = "two.sided", mu = 98.6, conf.level = 1-alpha)
 
 # il p-value è circa 0, per cui ho forte evidenza per affermare che la media vera
 # sia diversa da 98.6.
 
-detach(dati)
 rm(list=ls())
 graphics.off()
 
-###############################################################
-############## 2 - IC E TEST PER UNA PROPORZIONE ##############
-###############################################################
+## 2 - IC E TEST PER UNA PROPORZIONE -------------------------------------------
 
 # Carichiamo i dati contenuti nel file penicillina.txt:
 # Essi rappresentano la temperatura corporea (espressa in gradi Fahrenheit)
@@ -186,8 +172,6 @@ dim(dati)
 n <- dim(dati)[1] # n è il numero di pazienti (dimensione del campione)
 names(dati)
 
-attach(dati)
-
 # effettuo un test per verificare l'ipotesi
 #        H_0: p = 0.6 vs H_1: p > 0.6
 
@@ -200,18 +184,15 @@ n*p.0>5
 n*(1-p.0)>5
 # sono tutte soddisfatte
 
-z.test(x=Rid_Temp, alternative = "greater", mu = p.0, sigma.x = sqrt(p.0*(1 - p.0)))
+z.test(x=dati$Rid_Temp, alternative = "greater", mu = p.0, sigma.x = sqrt(p.0*(1 - p.0)))
 
 # ad un livello di significatività del 5%,  non possiamo rifiutare l'ipotesi nulla
 # ad un livello di significatività del 10%, possiamo rifiutare l'ipotesi nulla
 
-detach(dati)
 rm(list=ls())
 graphics.off()
 
-###############################################################
-## 3 - IC E TEST PER LA VARIANZA DI UNA POPOLAZIONE NORMALE ###
-###############################################################
+## 3 - IC E TEST PER LA VARIANZA DI UNA POPOLAZIONE NORMALE --------------------
 
 # Carichiamo il dataset funi.txt
 # Esso i risultati di 25 prove di rottura (risultati espressi 
@@ -233,22 +214,20 @@ dim(dati)
 n <- dim(dati)[1] # n è il numero di pazienti (dimensione del campione)
 names(dati)
 
-attach(dati)
-
 # verifica normalità
 par(mfrow = c(1,2))
-hist(resistenza,prob=TRUE)
-qqnorm(resistenza)
-qqline(resistenza, lwd=2, col='red')
+hist(dati$resistenza,prob=TRUE)
+qqnorm(dati$resistenza)
+qqline(dati$resistenza, lwd=2, col='red')
 
-shapiro.test(resistenza)
+shapiro.test(dati$resistenza)
 # pvalue abbastanza alto quindi possiamo assumere che i dati siano normali
 
 # 1) Vogliamo effettuare un test sulla media 
 # H0: mu=1730  contro  H1: mu>1730 
 
 mu0 <- 1730
-t.test(resistenza, mu=mu0, alternative="greater")
+t.test(dati$resistenza, mu=mu0, alternative="greater")
 
 # Si conclude che il processo produttivo ha significativamente migliorato  
 # la qualità delle funi.
@@ -262,7 +241,7 @@ help(varTest)
 sigma2_0 <- 28900
 
 alpha<-0.05
-varTest(x = resistenza, alternative = "less", conf.level = 1-alpha, 
+varTest(x = dati$resistenza, alternative = "less", conf.level = 1-alpha, 
         sigma.squared = sigma2_0)
 
 # A livello 5% viene rifiutata l'ipotesi nulla e si può quindi dichiarare che
@@ -270,17 +249,14 @@ varTest(x = resistenza, alternative = "less", conf.level = 1-alpha,
 
 # 3) Intervallo di confidenza bilatero per la varianza al 95%
 
-varTest(x = resistenza, alternative = "two.sided", conf.level = 1-alpha)
+varTest(x = dati$resistenza, alternative = "two.sided", conf.level = 1-alpha)
 
-detach(dati)
 rm(list=ls())
 graphics.off()
 
-###############################################################
-# 4 - IC E TEST PER LA DIFFERENZA TRA DUE POPOLAZIONI NORMALI #
-###############################################################
+## 4 - IC E TEST PER LA DIFFERENZA TRA DUE POPOLAZIONI NORMALI -----------------
 
-################ 4.1 DATI ACCOPPIATI
+### 4.1 DATI ACCOPPIATI --------------------------------------------------------
 
 # Analizziamo il dataset jogging.txt.
 # Questo dataset contiene le misurazioni della frequenza cardiaca a riposo
@@ -304,18 +280,15 @@ dim(dati)
 n <- dim(dati)[1] # n ? il numero di pazienti (dimensione del campione)
 names(dati)
 
-attach(dati)
-
 # 1): Esplorazione grafica della frequenza cardiaca prima e dopo
 # il programma di jogging
-
 
 boxplot(dati, col=c('green','orange'))
 
 dev.new()
 par(mfrow=c(2,1))
-hist(prima, prob=T, xlim=c(50,120), breaks=seq(50,120,by=5), col='green')
-hist(dopo, prob=T, xlim=c(50,120), breaks=seq(50,120,by=5), col='orange')
+hist(dati$prima, prob=T, xlim=c(50,120), breaks=seq(50,120,by=5), col='green')
+hist(dati$dopo, prob=T, xlim=c(50,120), breaks=seq(50,120,by=5), col='orange')
 
 # Dopo il mese di attività sportiva la mediana della frequenza cardiaca è leggermente
 # diminuita ma è aumentata la variabilità del campione.
@@ -327,7 +300,7 @@ hist(dopo, prob=T, xlim=c(50,120), breaks=seq(50,120,by=5), col='orange')
 # Si può quindi creare una nuova variabile diff che rappresenta la differenza 
 # tra la frequenza prima dell'attività sportiva e dopo.
 
-diff <- prima-dopo
+diff <- dati$prima-dati$dopo
 
 diff.media <- mean(diff)
 diff.media
@@ -352,21 +325,20 @@ t.test(diff, mu=0, alternative = "greater")
 # Ad un livello di significatività del 5%,  non possiamo rifiutare l'ipotesi nulla
 
 # O in alternativa:
-t.test(prima, dopo, mu=0, alternative = "greater", paired = TRUE)
+t.test(dati$prima, dati$dopo, mu=0, alternative = "greater", paired = TRUE)
 
-# N.B. Attenzione alla concordanza tra l'ordine di prima, dopo e l'alternative hypothesis.
+# N.B. Attenzione alla concordanza tra l'ordine di "prima", "dopo" e l'alternative hypothesis.
 
 # 3): IC bilatero per la differenza delle medie al 90%
 alpha <- 0.10
-t.test(prima, dopo, mu=0, alternative = "two.sided", paired = TRUE, conf.level = 1-alpha)
+t.test(dati$prima, dati$dopo, mu=0, alternative = "two.sided", paired = TRUE, conf.level = 1-alpha)
 
 # IC 90% per (prima-dopo) = [-1.157734; 7.917734]
 
-detach(dati)
 rm(list=ls())
 graphics.off()
 
-################ 4.2 DATI NON ACCOPPIATI 
+### 4.2 DATI NON ACCOPPIATI ---------------------------------------------------- 
 
 # Riprendiamo i dati del file temperatura.txt.
 # Carichiamo i dati contenuti nel file temperatura.txt:
@@ -389,16 +361,14 @@ dim(dati)
 n <- dim(dati)[1] # n è il numero di pazienti (dimensione del campione)
 names(dati)
 
-attach(dati)
-
 # 1): Rappresentiamo gli istogrammi delle due popolazioni e i boxplot
 # e facciamo un test d'ipotesi per la differenza tra le medie
 # delle temperature corporee nelle due sottopopolazioni individuate
 # dal sesso.
 
 # Consideriamo innanzitutto i due campioni distinti per sesso
-temp.m <- Temperatura[which(Sesso=='U')]
-temp.f <- Temperatura[which(Sesso=='D')]
+temp.m <- dati$Temperatura[which(dati$Sesso=='U')]
+temp.f <- dati$Temperatura[which(dati$Sesso=='D')]
 # ora ho due campioni di ampiezza dimezzata
 n.m <- length(temp.m)
 n.f <- length(temp.f)
@@ -410,10 +380,10 @@ dev.new()
 par(mfrow=c(2,1))
 hist(temp.f, prob=TRUE, main='Istogramma Temperatura Donne',
      xlab='temperatura corporea [gradi F]',
-     ylab='Densità', col='pink', xlim=range(Temperatura), breaks=seq(96,101,.25))
+     ylab='Densità', col='pink', xlim=range(dati$Temperatura), breaks=seq(96,101,.25))
 hist(temp.m, prob=TRUE, main='Istogramma Temperatura Uomini',
      xlab='temperatura corporea [gradi F]',
-     ylab='Densità', col='lightblue', xlim=range(Temperatura), breaks=seq(96,101,.25))
+     ylab='Densità', col='lightblue', xlim=range(dati$Temperatura), breaks=seq(96,101,.25))
 
 dev.new()
 par(mfrow=c(1,1))
@@ -472,11 +442,8 @@ t.test(temp.f, temp.m, mu=0, alternative = "greater",
 # corporea media delle donne è superiore a quella degli uomini.
 # Al livello 1% non avrei rifiutato H_0.
 
-detach(dati)
+## 5 - CALCOLO DELLA POTENZA E DELLA CURVA DI POTENZA VIA MONTE CARLO ----------
 
-######################################################################
-# 5 - CALCOLO DELLA POTENZA E DELLA CURVA DI POTENZA VIA MONTE CARLO # 
-######################################################################
 rm(list=ls())
 graphics.off()
 
@@ -591,9 +558,8 @@ points(mu,power_40,pch=20,col="blue")
 lines(mu,power_40,col="blue")
 legend("bottomright",legend = c("n=20","n=40"),col=c("red","blue"),lwd=2)
 
-#######################################################################
-#### 6- CALCOLO DEL LIVELLO DI SIGNIFICATIVITA' REALE VIA MONTE CARLO #
-#######################################################################
+## 6- CALCOLO DEL LIVELLO DI SIGNIFICATIVITA' REALE VIA MONTE CARLO ------------
+
 rm(list=ls())
 graphics.off()
 
@@ -648,6 +614,3 @@ alpha.camp
 
 # la stima di alpha è vicina all'errore di primo tipo reale,
 # provare a cambiare N e vedere come cambia la stima. 
-
-
-

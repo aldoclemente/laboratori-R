@@ -1,16 +1,11 @@
-###############################
-##    CORSO DI STATISTICA    ##
-## per INGEGNERIA MATEMATICA ##
-###############################
-
-###############################################
-#                 LABORATORIO 3               #
-#    CAMPIONAMENTO DI VARIABILI ALEATORIE     #
-#          INTEGRAZIONE MONTE CARLO           #
-#      Q-Q PLOT e VERIFICA DI NORMALITA'      #
-#           LEGGE DEI GRANDI NUMERI           #
-#         TEOREMA CENTRALE DEL LIMITE         #
-###############################################
+#'###########################################################'#
+#'#######               LABORATORIO 3                 #######'#
+#'#######      CAMPIONAMENTO DI VARIABILI ALEATORIE   #######'#
+#'#######           INTEGRAZIONE MONTE CARLO          #######'#
+#'#######       Q-Q PLOT e VERIFICA DI NORMALITA'     #######'#
+#'#######         LEGGE DEI GRANDI NUMERI             #######'#
+# #######        TEOREMA CENTRALE DEL LIMITE          #######'#
+#'###########################################################'#
 
 # Argomenti trattati nel laboratorio 3:
 # 1- Campionamento di variabili aleatorie
@@ -24,10 +19,8 @@ if(!require(pacman, quietly = TRUE)) install.packages("pacman")
 pacman::p_load("rstudioapi") 
 setwd(dirname(getActiveDocumentContext()$path))
 
-#####################################################
-####  0 - CAMPIONAMENTO DI VARIABILI ALEATORIE   ####
-####  Uniforme, Normale, Esponenziale, Binomiale ####
-#####################################################
+##    0 - CAMPIONAMENTO DI VARIABILI ALEATORIE NOTE  ---------------------------
+#    Uniforme, Normale, Esponenziale, Binomiale 
 
 # Uniforme
 
@@ -103,15 +96,12 @@ points(x_exp, rep(0,n), pch=16, col="red")
 # qbinom(alpha, mu, sd)   restituisce valore del quantile di ordine alpha
 #                         di una Bi(N,p)
 
-##################################################
-#### 1 - CAMPIONAMENTO DI VARIABILI ALEATORIE ####
-##################################################
+## 1 - CAMPIONAMENTO DI VARIABILI ALEATORIE ------------------------------------
+
 rm( list = ls() )
 graphics.off()
 
-#------------------------------------#
-### METODO DELLA FUNZIONE INVERSA  ###
-#------------------------------------#
+### METODO DELLA FUNZIONE INVERSA ----------------------------------------------
 
 ### Esempio 1: Campionamento da v.a. Continua
 # Vogliamo campionare da una v.a. che ha funzione di densità
@@ -200,9 +190,8 @@ freq_relative
 barplot(freq_relative)
 lines( x=c(1,2,3), y=c(0.5, 0.2, 0.3), col = 'red', type = 'h', lwd = 2 )
 
-#--------------------------#
-### ACCEPT-REJECT METHOD ###
-#--------------------------#
+
+### ACCEPT-REJECT METHOD -------------------------------------------------------
 
 # Esempio 
 
@@ -261,9 +250,7 @@ abline(h=M, lty=2, col='blue')
 # che non conosciamo in forma chiusa perchè non non sappiamo normalizzare la f(x) 
 
 
-######################################
-#### 2 - INTEGRAZIONE MONTE-CARLO ####
-######################################
+## 2 - INTEGRAZIONE MONTE-CARLO ----------------------------------------------
 
 rm(list=ls())
 graphics.off()
@@ -434,9 +421,8 @@ for(i in 1:num_points){
 plot(xgrid, rip_func, xlab='x', ylab='F', 
      main='Funzione di ripartizione stimata', type='l', lwd=2, col='red')
 
-###########################################################
-#### 3 - Q-Q PLOT E VERIFICA DELLA NORMALITA' DEI DATI ####
-###########################################################
+## 3 - Q-Q PLOT E VERIFICA DELLA NORMALITA' DEI DATI ---------------------------
+
 graphics.off()
 rm(list=ls())
 
@@ -523,7 +509,7 @@ abline( 0, 1, col = 'green', lty = 3, lwd = 3 )
 # abbia un andamento lineare
 
 
-#### Q-Q PLOT DI DATI PROVENIENTE DA DISTRIBUZIONI NOTE NON GAUSSIANE ####
+### Q-Q PLOT DI DATI PROVENIENTE DA DISTRIBUZIONI NOTE NON GAUSSIANE -----------
 
 rm(list=ls())
 graphics.off()
@@ -583,12 +569,11 @@ qqline(g, col= 'red', lwd=2)
 # Se i dati provenissero da una distribuzione asimmetrica a sx
 # otterremmo un qq-plot a forma di radice quadrata
 
+## 4 - LEGGE DEI GRANDI NUMERI ( LGN ) -----------------------------------------
 
-#############################################
-#### 4 - LEGGE DEI GRANDI NUMERI ( LGN ) ####
-#############################################
 rm( list = ls())
 graphics.off()
+
 # Legge dei grandi numeri:
 # Se X1, ..., Xn sono variabili aleatorie indipendenti e identicamente distribuite
 # con media mu e varianza finita sigma^2.
@@ -637,11 +622,11 @@ plot(n.lanci, media.camp, type= 'l', lwd= 2,
      ylab= 'proporzione di successi', ylim = c(0,1))
 abline(h= p, col= 'red', lty=2, lwd=2)
 
-#################################################
-#### 5 - TEOREMA CENTRALE DEL LIMITE ( TCL ) ####
-#################################################
+## 5 - TEOREMA CENTRALE DEL LIMITE ( TCL ) -------------------------------------
+
 rm(list = ls())
 graphics.off()
+
 # Teorema centrale del limite:
 # Se X1, ..., Xn sono variabili aleatorie indipendenti e identicamente distribuite
 # con media mu e varianza sigma^2.

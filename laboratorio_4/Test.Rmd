@@ -1,9 +1,10 @@
 ---
 output:
-  html_document
+  html_document: default
+  pdf_document: default
 ---
 
-```{r setup, echo=FALSE}
+```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(fig.width = 6.5, message = FALSE, warning = FALSE)
 
 options(warn = -1)
@@ -74,8 +75,8 @@ fig <- fig %>%
                              currentvalue = list(prefix="n = "),
                              steps = steps, pad=list(t=60))))
 
-fig %>%  layout(title = 'Potenza del Test',
-                xaxis = list(title = plotly::TeX("\\mu - \\mu_0")))
+fig %>%  layout(title = 'Potenza',
+                xaxis = list(title = "Differenza"))
 #%>%
 #         config(mathjax = 'cdn')
 
@@ -134,8 +135,8 @@ fig <- fig %>%
                              currentvalue = list(prefix="n = "),
                              steps = steps, pad=list(t=60))))
 
-fig %>%  layout(title = 'Potenza del Test',
-                xaxis = list(title = plotly::TeX("\\mu - \\mu_0"))) %>%
+fig %>%  layout(title = 'Potenza',
+                xaxis = list(title = "Differenza")) %>%
          config(mathjax = 'cdn')
 
 ```
@@ -192,8 +193,8 @@ fig <- fig %>%
                              currentvalue = list(prefix="n = "),
                              steps = steps, pad=list(t=60))))
 
-fig %>%  layout(title = 'Potenza del Test',
-                xaxis = list(title = plotly::TeX("\\mu - \\mu_0"))) %>%
+fig %>%  layout(title = 'Potenza',
+                xaxis = list(title = "Differenza")) %>%
          config(mathjax = 'cdn')
 
 ```
