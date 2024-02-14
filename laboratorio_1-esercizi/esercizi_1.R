@@ -1,18 +1,9 @@
-###############################################################
-##################    CORSO DI STATISTICA    ##################
-################## per INGEGNERIA MATEMATICA ##################
-###############################################################
+#'#############################################################'#
+#'########               LABORATORIO 1               ##########'#
+#'########                 ESERCIZI                  ##########'#
+#'#############################################################'#
 
-###############################################################
-#########               LABORATORIO 1               ###########
-#########                 ESERCIZI                  ###########
-###############################################################
-
-
-
-#########################################
-#############  ESERCIZIO 1  #############
-#########################################
+# ESERCIZIO 1 ------------------------------------------------------------------
 # Importare i dati di anagrafica.txt.
 # I dati consistono in osservazioni di 4 variabili:
 #    ETA
@@ -30,12 +21,7 @@
 #  Commentare i risultati alla luce di quanto osservato.
 
 
-
-
-
-#########################################
-#############  ESERCIZIO 2  #############
-#########################################
+# ESERCIZIO 2  -----------------------------------------------------------------
 
 # Importare i dati di anagrafica.txt.
 # I dati consistono in osservazioni di 4 variabili:
@@ -51,12 +37,7 @@
 
 
 
-
-
-#########################################
-#############  ESERCIZIO 3  #############
-#########################################
-# ESPOSIZIONE A PESTICIDI
+# ESERCIZIO 3 (ESPOSIZIONE A PESTICIDI) ----------------------------------------
 # L'esposizione cronica a pesticidi pu? comportare alterazioni di svariati
 # organi e sistemi dell'organismo umano, quali ad esempio quello nervoso (NER),
 # endocrino (END), immunitario (IMM), riproduttivo (RIP), renale (REN),
@@ -80,14 +61,7 @@ sistemi = c( 'NER', 'NER', 'END', 'NER', 'END', 'NER', 'IMM', 'NER', 'IMM',
 # 4. Eliminare dal campione tutti i sistemi di tipo RIP e RES.
 # 5. Creare le tabelle di frequenze assolute e relative del nuovo campione.
 
-
-
-
-
-#########################################
-#############  ESERCIZIO 4  #############
-#########################################
-# ANALISI DI DELFINI
+# ESERCIZIO 4 (DELFINI)
 # Si consideri il dataset contenuto nel file di testo "delfini.txt" relativo
 # a 100 delfini avvistati al largo delle isole Azzorre. Le variabili osservate
 # sono le seguenti:
@@ -101,7 +75,7 @@ sistemi = c( 'NER', 'NER', 'END', 'NER', 'END', 'NER', 'IMM', 'NER', 'IMM',
 #    (0 = maschi, 1 = femmine).
 # 2. Creare un grafico a torta delle frequenze relative del sesso dei delfini. 
 #    Creare un grafico a barre delle frequenze assolute del sesso dei delfini.
-# 3. Estrarre i dati relativi ai delfini che hanno pi? di 16 anni (age >= 16).
+# 3. Estrarre i dati relativi ai delfini che hanno piu' di 16 anni (age >= 16).
 #    [Suggerimento: utilizzare la funzione which() per selezionare le righe
 #    desiderate; se necessario usare help(which) per capirne meglio il
 #    funzionamento.]

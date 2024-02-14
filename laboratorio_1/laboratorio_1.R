@@ -4,492 +4,504 @@
 #'###########################################################'#
 
 # Argomenti del primo laboratorio:
-# 0 - Introduzione a R
-# 1 - Primi passi 
-# 2 - Oggetti e assegnazioni
-# 3 - Linea di comando
-# 4 - Workspace
-# 5 - Tipologie di dati
-# 6 - Analisi descrittiva di una variabile numerica
-# 7 - Analisi descrittiva di una variabile categorica
+# 1 - Primi passi: variabili, vettori, matrici 
+# 2 - Dataframe 
+# 3 - Analisi descrittiva di una variabile categorica
+# 4 - Analisi descrittiva di una variabile numerica
 
-# 0 - BASI DI R -----------------------------------------------
+# IMPOSTARE LA WORKING DIRECTORY (CARTELLA DI LAVORO): -------------------------
+# Da interfaccia:
+# 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
 
-# Vedi slide
+# Da console:
+# setwd( 'C:/percorso/file' )
 
-# 1 - PRIMI PASSI ---------------------------------------------
-
-# La console di R può essere utilizzata come semplice calcolatrice. 
-# E' un ambiente interattivo, ossia i comandi producono una risposta
-# immediata:
-
-# 1.1 SOMMA
-2+2
-
-# 1.2 MOLTIPLICAZIONE
-2*2
-
-# 1.3 SOTTRAZIONE E DIVISIONE
-(2 - 3)/6
-
-# 1.4 ELEVAMENTO A POTENZA
-2^2
-
-# Esistono diverse funzioni per le principali operazioni matematiche
-# e trigonometriche. Per dare solo qualche esempio:
-
-# 1.5 RADICE QUADRATA
-sqrt(9)
-
-# 1.6 LOGARITMO
-log(1)
-
-# 1.7 ESPONENZIALE
-exp(0)
-
-# 1.8 OPERATORI LOGICI
-# minore: <
-# minore o uguale: <=
-# maggiore: >
-# maggiore o uguale: >=
-# uguale: ==
-# diverso: !=
-# è l’intersezione (AND): &
-# è l’unione (OR): |
-# è la negazione (NOT): !
-
-# In R i valori mancanti sono rappresentati dal valore NA (“Not Available”).
-# Le operazioni logiche eseguite su valori mancanti o comunque non utilizzabili,
-# restituiscono ancora il valore NA.
-
-# Operazioni aritmetiche “impossibili”, come ad esempio le divisioni per zero,
-# restituiscono il valore NaN che significa che “non `e un numero” ( “Not a Number”).
-
-
-# 2 - OGGETTI E ASSEGNAMENTO ----------------------------------
-
-# Ogni entità che il programma crea e manipola è definita un oggetto, 
-# che può essere un numero, una variabile, una funzione, o più in generale, 
-# strutture costruite a partire da tali componenti.
-
-# I nomi degli oggetti non devono contenere spazi vuoti, simboli matematici
-# e non devono iniziare con un numero:
-pro va = 2
-x-y = 2
-2x = 2
-
-# Alcuni nomi hanno un significato in R e non sono quindi utilizzabili:
-for = 3
-
-# Tutte le lettere ed i numeri possono essere utilizzati per dare nomi
-# a variabili, funzioni e procedure; sono però esclusi gli spazi e tutti
-# i segni di punteggiatura ad eccezione del punto, comunemente usato per
-# separare le parole che compongono il nome.
-
-# VARIABILE NUMERICA
-variabile.numerica <- 2 # oppure
-variabile.numerica = 2
-variabile.numerica
-
-# VARIABILE LOGICA
-variabile.logica <- 3>5 # oppure
-variabile.logica = 3>5
-variabile.logica
-
-# STRINGHE (ovvero insieme di caratteri)
-variabile.stringa <- "pippo" # oppure
-variabile.stringa = "pippo"
-variabile.stringa
-
-# Ogni comando deve essere separato da un punto e virgola (“;”) oppure
-# deve essere su una nuova linea.
-
-# Testi di commento possono essere aggiunti dopo il simbolo cancelletto (“#”),
-# tutto ciò che si trova dopo questo simbolo e fino alla riga successiva viene
-# ignorato da R.
-
-# 3 - LINEA DI COMANDO ----------------------------------------
-
-ls() # Fornisce la lista dei nomi degli oggetti in memoria
-rm(variabile.numerica, variabile.logica) # Rimuove tutti gli oggetti tra parentesi
-ls()
-rm(list = ls()) # Cancella tutti gli oggetti nello spazio di lavoro
-ls()
-
-# Ogni installazione di R contiene ottima ed abbondante documentazione.
-# Inoltre, è disponibile un help in linea consultabile con la funzione help():
-
-# help(nome.funzione) # oppure
-# ?nome.funzione
-
-help(cbind) # oppure
-?cbind
-
-# Le funzioni di R, come si può osservare dall’help, si compongono in:
-# funzione(argomento1 = ..., argomento2 = ..., ...)
-# L’ordine degli argomenti è importante all’interno di una funzione se
-# non viene indicato il nome dell’argomento, mentre se questo viene
-# specificato, la sua posizione è indifferente.
-
-rm(list = ls())
-
-# 4 - WORKSPACE -----------------------------------------------
-
-# Gli oggetti creati dall’utente vengono temporaneamente salvati nello
-# spazio di lavoro (workspace).
-
-getwd() # mostra il percorso della cartella nel computer che è stata
-# automaticamente selezionata al momento dell’installazione del programma.
-
-setwd() # per modificare lo spazio di lavoro, e cambiare directory. 
-setwd("path/to/laboratorio_1/")
-
-# In alternativa, dal menu in alto:
-#       "Session" -> "Set Working Directory" -> "To Source File Location"
-# seleziona come working directory la cartella in cui il 'laboratorio_1.R' e' salvato.
-
-# In alternativa, le seguenti righe di codice righe permettono di selezionare 
-# come working directory la cartella in cui il 'laboratorio_1.R' e' salvato.
-if(!require(pacman, quietly = TRUE)) install.packages("pacman")
-pacman::p_load("rstudioapi") 
+# Da pacchetto:
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load("rstudioapi")
 setwd(dirname(getActiveDocumentContext()$path))
 
-dir() # mostra il nome dei file presenti nella directory di lavoro.
+# CONOSCERE LA WORKING DIRECTORY (CARTELLA DI LAVORO):
+getwd()
 
-# 5 - TIPOLOGIE DI DATI ---------------------------------------
+# CONOSCERE I FILES PRESENTI NELLA DIRECTORY:
+dir()
 
-# 5.1 VARIABILI
-# contengono un singolo dato
-variabile.numerica <- 42
-variabile.numerica
+# HELP 
+# help( nome_comando )
 
-stringa <- "stringa"
-stringa
+help( getwd )
 
-# 5.2 VETTORI
-# insieme lineare di elementi omogenei per tipologia (tutti numeri, tutte
-# stringhe, ecc.)
+?getwd
 
-# Definizione di un vettore (colonna)
-vettore.colonna <- c(1,2,3,4,5,6,7,8,9,10)
-vettore.colonna
-vettore.riga <- t(vettore.colonna)
-vettore.riga
+# 1 - PRIMI PASSI ------------------------------------------------------------------
+(17*0.35)+(1/2)-exp(1)+log(3)-2^2
 
-vettore.stringhe <- c("pippo", "topolino", "pluto", "paperino")
-vettore.stringhe
+### OGGETTI IN R: ASSEGNARE VALORI A VARIABILI ---------------------------------
+# 1. Scalari
+a = 1
 
-# Definizione tramite funzioni ad hoc
-vec1 <- seq(from = 3, to = 15, by = 3)
-vec1
-vec2 <- seq(from = 3, to = 15, length = 5)
-vec2
-vec1 == vec2
+b = 3
 
-vec <- 1:5
-vec
+a + b
 
-vec.ones <- rep(x = 1, times = 5)
-vec.ones
+a = b
 
-vec.rep <- rep(c(1, 2), 2)
-vec.rep
+# 2. Vettori
+v = c( 6, 1, -7, 12 )
+v
 
-# Concatenare due vettori
-contatenata = c(vettore.colonna, vettore.stringhe) 
-contatenata
-# i valori sono diventati tutti stringhe
+length(v)
 
-# Selezionare un elemento del vettore
-vettore.colonna[1]
+# 3. Matrici
+M = matrix( data = c( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ),
+            nrow = 4, ncol = 3, byrow = FALSE)
+M
 
-which(vettore.stringhe == "pippo")
-which(vettore.stringhe == "pippo" | vettore.stringhe == "paperino")
+dim( M )
 
-# Selezionare diversi elementi del vettore
-vettore.colonna[c(6, 3)]
-vettore.stringhe[2:4]
+### ESTRAZIONE DI ELEMENTI DA UN VETTORE ---------------------------------------
 
-# Cancellare un valore dal vettore
-vettore.colonna[-4]
+# R è 1-indexed: il primo elemento di un vettore è in posizione 1
+# L'operatore () contraddistingue le chiamate a funzioni (es.: length())
+# L'operatore [] contraddistingue gli accessi a vettori/matrici
 
-# Accedere alla tipologia di vettore
-class(vettore.colonna)
-is.numeric(vettore.colonna)
+# 1. Accesso diretto agli elementi
+v
 
-class(vettore.stringhe)
-is.numeric(vettore.stringhe)
-is.character(vettore.stringhe)
+v[ 2 ]          # secondo elemento di v
 
-# Aritmetica dei vettori
-dati <- c (6, 1, 5, 9, 4, 7, 8, 2, 5, 8)
-dati^2 # elevamento al quadrato
-min(dati) # valore minimo
-max(dati) # valore massimo
-length(dati) # numero di valori (lunghezza del vettore)
-sum(dati) # somma degli elementi
-mean(dati) # media
-median(dati) # mediana
-range(dati) # restituisce un vettore di due elementi, il min e max
-sd(dati) # deviazione standard
-var(dati) # varianza
-sum((dati - mean(dati))^2)/(length(dati)-1)
-sort(dati) # mette in ordine crescente i valori del vettore
-order(dati) # restituisce l’ordine dei valori nel vettore
+v[ c( 1, 3 ) ]  # primo e terzo elemento di v
 
-# Operazioni tra vettori: il RECYCLING
-# Quando si compiono operazioni tra due vettori, il primo elemento dell’uno
-# viene operato con il primo elemento dell’altro, il secondo col secondo e
-# così fino alla fine. Se un vettore è più corto dell’altro, quando termina
-# viene riutilizzato dall’inizio.
-a <- c (10,10,10,10,10,10,10,10,10,10)
-b <- c (1,2)
-a * b
+v[ -1 ]         # tutto il vettore v tranne il primo elemento
 
-rm(list = ls())
+# 2. which()
+# La funzione which(condizione) restituisce gli INDICI di tutti gli elementi che
+# soddisfano la condizione logica specificata
+w = c( 5, 9, 9, 9, 9, 1, 1 )
 
-# 5.3 FATTORI
-# vettore utilizzato per classificare o suddividere in livelli gli elementi
-# di un altro vettore
-PROV <- c("RM", "RM", "TO", "NA", "TO", "NA")
-PROV <- factor(PROV)
-PROV
+which( w == 5 )
 
-# Accedere alla tipologia di vettore
-is.factor(PROV)
+which( w != 5 )  
 
-rm(list = ls())
+which( w > 1 ) 
 
-# 5.4 MATRICI
-# sono vettori multidimensionali, le matrici hanno due dimensioni: righe e colonne.
+which( w > 1 & w <= 5 )
 
-# Definizione di una matrice
-dati <- c(1,4,6,32,6,7,4,6,8,5,3,6,7,67,4)
-n.righe <- 5
-n.colonne <- 3
+which( w > 6 | w == 7 )
 
-matrice <- matrix(data=dati, nrow=n.righe, ncol=n.colonne)
-matrice
-# oppure
-matrice2 <- matrix(data=dati, nrow=n.righe, ncol=n.colonne, byrow=TRUE)
-matrice2
-# oppure
-matrice3 <- array(data=dati, dim=c(n.righe,n.colonne))
-matrice3
+# 3. unique()
+# La funzione unique(vettore) permette di determinare i valori univoci di un
+# vettore
+w
+unique( w )
 
-# Richiedere la dimensione dell’array o matrice
-dim(matrice)
+# E se volessimo sapere quanti elementi unici ci sono in un vettore?
+length( unique( w ) ) 
 
-# Trasporre la matrice
-t(matrice)
+# 4. Condizione logica sull'intero vettore
+w > 1
 
-# Selezionare un sottoinsieme di elementi di un array o matrice
-matrice[1,2] # estrazione dell’elemento sulla riga 1 e la colonna 2
-matrice[5,] # estrazione della riga 5
-matrice[,2] # estrazione della colonna 2
-matrice[4:5,2]
+w == 7
 
-# Operazioni su matrici
-matrice.b <- c(1,3,5,2)
-matrice.b[1] <- 100 
-matrice.b
+### ESTRAZIONE DI ELEMENTI DA UNA MATRICE --------------------------------------
 
-matrice.b - 1
-matrice.b * 2
-log(matrice.b)
+M
 
-matrice.c <- c(2,3,1,2)
-matrice.b * matrice.c # prodotto elemento per elemento
+# Accesso diretto ad elementi
+M[ 2, 3 ]
 
-inner.product <- t(matrice.b) %*% matrice.c # prodotto scalare b’c: moltiplico ogni
-# elemento di b per il corrispondente di c e sommo; ottengo uno scalare
-inner.product
+M[ 4, c( 1, 3 ) ]
 
-outer.product <- matrice.b %*% t(matrice.c) # bc’: moltiplico ogni elemento di b
-# per tutti gli elementi di t(c); ottengo una matrice 4x4
-outer.product
+# Accesso ad intere colonne o righe
+M[ 3, ]
 
-matrix.d <- cbind(outer.product[,1],outer.product[,4]) # genera una matrice 4x2 
-# selezionando le colonne 1 e 4 di outer.product e concatenandole per colonna
-matrix.d
-matrix.e <- rbind(outer.product[,1],outer.product[,4]) # stessa cosa con le righe
-matrix.e
+M[ , 2 ]
 
-# Altre operazioni di algebra lineare
-matrix.z <- matrix(c(3,4,6,7,1,12,4,9,21),3,3)
-diag(matrix.z) # ritorna la diagonale
-det(matrix.z) # calcola il determinante
-solve(matrix.z) # ritorna la matrice inversa
+# Visualizzazione e rimozione delle variabili
+ls()              # fornisce la lista delle variabili esistenti
 
-rm(list = ls())
+rm( a )           # rimuove la variabile a
 
-# 5.5 DATAFRAMES
-# sono matrici bidimensionali dove ogni colonna può avere un tipo di dato
-# diverso dalle altre
-dataframe <- data.frame( temp = c(36.5, 36.1, 36.7), 
-                         sesso = c("M", "F", "M"))
-# Un data.frame puo' essere importato da un file .txt, utilizzando il comando read.table().
-help(read.table)
+ls()
 
-# 6 - ANALISI DESCRITTIVA DI UNA VARIABILE QUANTITATIVA -------
+rm( list = ls() ) # rimuove tutte le variabili nel workspace
 
+# Pulizia della console
+# Windows: ctrl + l
+# macOS: Options + Command + l
+
+ls()
+# 2 - DATAFRAME ----------------------------------------------------------------
+
+### LA STRUTTURA DATI DATA.FRAME -----------------------------------------------
+# I dataframe sono oggetti costituiti da vettori di uguale lunghezza, ma non
+# necessariamente dello stesso tipo. Contrariamente alle matrici, il dataframe
+# è più flessibile e può essere utilizzato con dati di tipo diverso tra loro
+
+# Importazione di un nuovo dataframe
+# Prima si deve localizzare dove si trova il file da importare
+# setwd("C:/percorso/cartella/dove/si/trova/il/dataset")
+
+pazienti = read.table( "pazienti.txt", header = TRUE, stringsAsFactors = FALSE)
+# header = TRUE: il file importato contiene i nomi delle variabili nella prima riga
+# stringAsFactors = FALSE: le variabili character come stringhe (non come factor)
+
+names( pazienti ) # mostra i nomi delle variabili nel dataframe 
+
+head( pazienti )  # mostra le prime sei righe del dataframe
+
+tail( pazienti )  # mostra le ultime sei righe del dataframe
+
+pazienti
+
+# Accedere alle variabili del dataframe
+pazienti$Peso
+
+# Dati mancanti
+is.na( pazienti ) 
+
+sum( is.na( pazienti ) )
+
+# Che tipo di variabili ci sono nel nostro dataframe?
+# Quali sono variabili categoriche e quali numeriche?
+
+str( pazienti )
+
+class( pazienti )
+
+class( pazienti$Sesso )
+
+# Creazione di una variabile categorica tramite factor
+pazienti$Sesso = as.factor( pazienti$Sesso )
+
+class( pazienti$Sesso )
+
+levels( pazienti$Sesso ) # livelli/categorie della variabile qualitativa
+
+# VARIABILI CATEGORICHE 
+# Selezionare le femmine
+femmine = pazienti[ which( pazienti$Sesso == 'F' ) , ]
+
+dim( femmine )
+
+# Come calcolare il numero di femmine senza creare un nuovo dataframe? 
+length( which( pazienti$Sesso == 'F' ) )
+dim( femmine )[1]
+
+# Tabella di frequenza (per variabile categorica/factor)
+table( pazienti$Sesso )
+
+table( pazienti$Peso ) # non molto leggibile (variabile numerica)!
+
+# 3 - ANALISI DESCRITTIVA DI UNA VARIABILE QUALITATIVA (DATI CATEGORICI) -------
+
+# Analisi di variabili qualitative:
+# 1. Tabella di distribuzione di frequenze per le categorie della variabile
+# 2. Grafici (diagrammi a barre e a torta)
+
+### RICHIESTA 1: da quali province provengono gli pazienti?
+
+# factor() converte l'argomento in realizzazioni di una variabile categorica,
+# i cui valori possibili sono riportati in levels
+pazienti$Provincia = as.factor( pazienti$Provincia )
+
+# Specificare i levels non è necessario, ma permette di ordinare i levels 
+# come si vuole (default: ordine alfabetico)
+levels( pazienti$Provincia )
+
+# Tabella delle frequenze assolute
+freq_ass = table( pazienti$Provincia )
+freq_ass
+
+# Tabella delle frequenze relative
+freq_rel = table( pazienti$Provincia ) / length( pazienti$Provincia )   # oppure: prop.table( freq_ass )
+freq_rel
+
+sum( freq_rel )
+
+### RICHIESTA 2: rappresentare graficamente le frequenze assolute e relative
+
+# Primo grafico
+dev.new()
+par( mfrow = c( 1, 2 ) )
+barplot( table( pazienti$Provincia ),
+         col = rainbow( length( levels( as.factor( pazienti$Provincia ) ) ) ),
+         main = 'Frequenze assolute:\nPROVINCE' )
+barplot( table( pazienti$Provincia ) / sum( table( pazienti$Provincia ) ),
+         col = rainbow( length( levels( as.factor( pazienti$Provincia ) ) ) ),
+         main = 'Frequenze relative:\nPROVINCE' )
+
+# Secondo grafico
+dev.new()
+par( mfrow = c( 1, 2 ) )
+barplot( table( pazienti$Esito ), col = c( 'red', 'green' ),
+         main = 'Frequenze assolute:\nLIVELLO COLESTEROLO' )
+barplot( table( pazienti$Esito ) / sum( table( pazienti$Esito ) ), col = c( 'red', 'green' ),
+         main = 'Frequenze relative:\nLIVELLO COLESTEROLO' )
+
+# Terzo grafico
+dev.new()
+pie( table( pazienti$Provincia ) / sum( table( pazienti$Provincia ) ),
+     col = rainbow( length( levels( as.factor( pazienti$Provincia ) ) ) ),
+     main = 'Frequenze relative:\nPROVINCE' )
+
+# Quarto grafico
+dev.new()
+pie ( table( pazienti$Esito ) / sum( table( pazienti$Esito ) ), col = c( 'red', 'green' ),
+      main = 'Frequenze relative:\nLIVELLO COLESTEROLO' )
+
+
+# 4 - ANALISI DESCRITTIVA DI UNA VARIABILE QUANTITATIVA ------------------------
 # Le variabili quantitative possono essere descritte numericamente,
 # utilizzando opportuni indici di posizione e di dispersione
 # e, graficamente, mediante istogrammi e boxplot.
 
-# Analisi dei dati quantitativi contenuti nel file 'vitaminaD.txt'.
-# Il dataset contiene 26 osservazioni di una variabile,
-# che rappresenza la concentrazione della vitamina D in un campione di uomini sani.
+### RICHIESTA 1: calcolare i principali indici statistici di posizione e di
+### dispersione della variabile "Peso"
 
-# Fonte: Bland (1995) An introduction to Medical Statistics.
-# Oxford University Press
+N = dim( pazienti )[1]
 
-dati <- read.table('vitaminaD.txt', header = TRUE)
+# Media campionaria dei dati: media = sum_i(x_i) / N
+media = mean( pazienti$Peso )
+media
+# oppure:
+media = sum( pazienti$Peso ) / N
+media
 
-head(dati)
-dim(dati)
-colnames(dati)
-rownames(dati)
+# Varianza campionaria dei dati: varianza = sum_i(x_i - media)^2 / (N-1)
+varianza = var( pazienti$Peso )
+varianza
+# oppure:
+varianza = sum( ( pazienti$Peso - media )^2 ) / ( N - 1 )
+varianza
 
+# Deviazione standard campionaria: dev_std = sqrt( varianza )
+dev_std = sd( pazienti$Peso ) 
+dev_std
+# oppure:
+dev_std = sqrt(varianza)
+dev_std
 
-# Media
-mean(dati$Vitamina_D)
+# Range
+r = range( pazienti$Peso )
+r
+# oppure:
+r = c( min( pazienti$Peso ), max( pazienti$Peso ) )
+r
 
-# Mediana
-median(dati$Vitamina_D)
+# Differenza tra massimo e minimo elemento
+diff(r)
+# oppure:
+r[2]-r[1]
 
-# Minimo
-min(dati$Vitamina_D)
+# Mediana: valore centrale del dataset
+# Dopo aver ordinato i dati:
+#   - se N è DISPARI, mediana = (N+1)/2 -esima osservazione
+#   - se N è PARI,    mediana = media tra N/2 -esima osservazione e
+#                               (N/2 + 1) -esima osservazione
+median( pazienti$Peso )
 
-# Massimo
-max(dati$Vitamina_D)
+# Moda: valore che si verifica con maggiore frequenza nei dati
+# Nota: non per forza questo valore è unico
+freq_ass = table( pazienti$Peso )
+freq_ass
 
-# Primo quartile Q1 (venticinquesimo percentile delle osservazioni)
-Q1 <- quantile(dati$Vitamina_D, prob = 0.25)
-Q1
-names(Q1) <- NULL
+max_freq_ass = max( freq_ass )
+max_freq_ass
 
-# Terzo quartile Q3 (settantacinquesimo percentile delle osservazioni)
-Q3 <- quantile(dati$Vitamina_D, prob = 0.75)
-Q3
-names(Q3) <- NULL
+moda = freq_ass[ freq_ass == max_freq_ass ]
+moda
 
-# Range interquartile
-IQR <- Q3 - Q1
-IQR
+# Alternativamente, sarebbe più appropriato dividere i valori della variabile
+# "Peso" in intervalli, associando ogni intervallo ad una classe, per poi
+# identificare la classe modale (con frequenza maggiore)
 
-# Funzione summary: riassunto di min, max, quartili e media
-summary(dati$Vitamina_D)
+# Quantili e Quartili
+# Dopo aver ordinato i dati:
+#   - Primo quartile   (Q1)  :  x tale per cui il 25% dei dati è minore di x
+#   - Secondo quartile (Q2)  :  x tale per cui il 50% dei dati è minore di x
+#   - Terzo quartile   (Q3)  :  x tale per cui il 75% dei dati è minore di x
+# Nota: Q2 = mediana
+quantile( pazienti$Peso, probs = 0.25 ) # Q1
 
-# Disegnare un istogramma dei dati
-hist(dati$Vitamina_D) # In ordinata ci sono le frequenze assolute
-hist(dati$Vitamina_D, prob = TRUE) # In ordinata ci sono le densità in modo che l'area totale sommi a 1.
+quantile( pazienti$Peso, probs = 0.50 ) # Q2
+median( pazienti$Peso )
 
-# Parametri estetici del grafico
-hist(dati$Vitamina_D, prob = TRUE,
-  xlab = 'Concentrazione',
-  ylab = 'Densità',
-  main = 'Istogramma Vitamina D')
+quantile( pazienti$Peso, probs = 0.75 ) # Q3
 
-# R decide automaticamente il numero di classi in cui dividere i dati e la loro dimensione
+# Range interquartile: IQR = Q3 - Q1
+IQR = quantile( pazienti$Peso, probs = 0.75 ) - quantile( pazienti$Peso, probs = 0.25 )
+# oppure:
+IQR( pazienti$Peso )
 
-# Possiamo imporre all'istogramma un certo numero di classi usando l'argomento breaks
-# Non esiste un numero di classi 'giusto', la scelta sta alla sensibilità dello statistico
-# Regola euristica: numero di classi circa uguale alla radice quadrata della dimensione del campione
-par(mfrow = c(2, 2)) # Quattro grafici in una sola finestra
-hist(dati$Vitamina_D, prob = TRUE,
-  xlab = 'Concentrazione',
-  ylab = 'Densità',
-  main = 'Istogramma Vitamina D',
-  breaks = 2)
+# Quartili (riassunto)
+quantile( pazienti$Peso )
 
-hist(dati$Vitamina_D, prob = TRUE,
-  xlab = 'Concentrazione',
-  ylab = 'Densità',
-  main = 'Istogramma Vitamina D',
-  breaks = 8)
+# Quantile di ordine p: x tale per cui il 100p% dei dati è minore di x
+p = 0.85
+quantile( pazienti$Peso, probs = p )
 
-hist(dati$Vitamina_D, prob = TRUE,
-  xlab = 'Concentrazione',
-  ylab = 'Densità',
-  main = 'Istogramma Vitamina D',
-  breaks = 12)
-hist(
-  dati$Vitamina_D,
-  prob = TRUE,
-  xlab = 'Concentrazione',
-  ylab = 'Densità',
-  main = 'Istogramma Vitamina D',
-  breaks = 26
-)
+# Quantili di ordine 0%, 10%, 20%, ..., 80%, 90%, 100%
+p =  (0:10)  / 10
+quantile( pazienti$Peso, probs = p )
 
-graphics.off()
+# Valori di sintesi (media, minimo, massimo e tre quartili)
+summary( pazienti$Peso )
 
-# Costruire un boxplot dei dati
-boxplot(dati$Vitamina_D)
-# Linea nera: mediana
-# Scatola: Primo e terzo quartile
-# Baffo inferiore: massimo tra minimo e valore minimo osservato entro Q1-1.5*IQR
-# Baffo superiore: minimo tra massimo e valore massimo osservato entro Q3+1.5*IQR
-# Potenziali outlier: osservazioni fuori dal baffi
+### RICHIESTA 2: visualizzare graficamente la distribuzione della variabile
+### "Colesterolo"
 
-graphics.off()
+# 2.1 Istogramma
 
-# 7 - ANALISI DESCRITTIVA DI UNA VARIABILE CATEGORICA ---------
+# Istruzioni:
+#   - dividere il range dei dati in classi (intervalli)
+#   - calcolare, per ogni classe, le frequenze relative e densità
+#      [ densità = ( frequenza relativa ) / ( ampiezza intervallo classe ) ]
+#   - in corrispondenza di ogni classe disegnare rettangoli di area pari alla
+#      frequenza relativa della classe considerata (ovvero di altezza pari alla
+#      densità)
 
-# Creo un vettore di realizzazioni di una variabile categorica
-province <-  c("MI", "MI", "VA", "BG", "LO", "LO", "CR", "CR", "MI",
-               "CR", "LO", "VA", "MI", "LO", "MI")
-province
+# Istogramma con ordinata = frequenze assolute
+dev.new()
+hist( pazienti$Colesterolo,
+      xlab = 'Colesterolo', ylab = 'Frequenze assolute',
+      main = 'Istogramma:\nCOLESTEROLO' )
 
-province <- factor(province)
-province
+# Istogramma con ordinata = densità (freq_rel = densità * ampiezza intervallo classe ) 
+dev.new()
+hist( pazienti$Colesterolo, prob = TRUE,
+      xlab = 'Colesterolo', ylab = 'Densità',
+      main = 'Istogramma:\nCOLESTEROLO' )
 
-levels(province) # modalità della variabile categoriale
+# Istogramma con breaks = 7
+dev.new()
+par( mfrow = c( 1, 2 ) )
+hist( pazienti$Colesterolo, prob = TRUE, breaks = 7,
+      xlab = 'Colesterolo', ylab = 'Densità',
+      main = 'Istogramma (7 classi):\nCOLESTEROLO' )
 
-# Tabella delle frequenze assolute
-province.assolute <-  table(province)
-province.assolute
+# Istogramma con breaks = 30
+hist( pazienti$Colesterolo, prob = TRUE, breaks = 30,
+      xlab = 'Colesterolo', ylab = 'Densità',
+      main = 'Istogramma (30 classi):\nCOLESTEROLO' )
 
-# Calcoliamo la moda
-province.assolute[province.assolute == max(province.assolute)]
+# Possibili scelte del numero di classi:
+#   - breaks = sqrt(N)
+#   - breaks = ceiling( 1 + log2( N ) )
+#   - breaks = scelta manuale dell'utente
 
-# Tabella delle frequenze relative
-province.relative <- table(province) / length(province)
-province.relative
-# in alternativa
-province.relative <- prop.table(province.assolute)
-province.relative
+# Tabella di distribuzione di frequenze
+istogramma = hist( pazienti$Colesterolo, plot = FALSE )
 
-plot(province)
-# Il comando plot, se applicato ad una variabile creata con 'factor' o 'as.factor',
-# disegna il barplot corrispondente alla frequenza assoluta di ogni livello.
+# La funzione restituisce un oggetto con i seguenti attributi:
+# breaks: estremi delle classi
+# counts: frequenze assolute delle classi
+# density: densità associate alle classi
+# mids: valori centrali delle classi
+# xname: nome della variabile
+# equidist: TRUE se le classi hanno tutte la stessa ampiezza; FALSE altrimenti
 
-# Ulteriori parametri della funzione
-plot(province, col = 'red',
-  xlab = 'province',
-  ylab = 'frequenze assolute',
-  main = 'Grafico a barre Province')
-# col = '...' serve per cambiare il colore
-# xlab = '...' serve per cambiare la scritta sotto l'asse delle ascisse
-# ylab = '...' serve per cambiare la scritta sotto l'asse delle ordinate
-# main = '...' serve per dare un titolo al grafico
+estremi_classi = istogramma$breaks
+estremi_classi
 
-# grafico a barre con le frequenze relative
-barplot(province.relative, col = 'blue',
-  xlab = 'province',
-  ylab = 'frequenze relative',
-  main = 'Grafico a barre Province')
+freq_ass = istogramma$counts
+freq_ass
 
-graphics.off()
+N = sum( freq_ass )   # oppure: N = length( pazienti$Colesterolo )
+N
 
-pie(province.relative) # Grafico a torta semplice
+freq_rel = ( freq_ass ) / N
+freq_rel
 
-# Grafico a torta personalizzato
-pie(province.relative,
-  labels = c('BG', 'CR', 'LO', 'MI', 'VA'),
-  radius = 1,
-  col = c('red', 'orange', 'yellow', 'green', 'lightblue', 'violet'),
-  main = 'Grafico a torta Province')
+density = istogramma$density
+density
 
-graphics.off()
+# Dato che densità = freq_rel/(ampiezza intervallo classe), segue che:
+freq_rel2 = density * diff( estremi_classi )
+freq_rel
+freq_rel2
+
+# La distribuzione del colesterolo è simmetrica?
+Q1 = quantile( pazienti$Colesterolo, probs = 0.25, type = 2 ) # Q1
+Q2 = quantile( pazienti$Colesterolo, probs = 0.50, type = 2 ) # Q2
+Q3 = quantile( pazienti$Colesterolo, probs = 0.75, type = 2 ) # Q3
+
+dev.new()
+hist( pazienti$Colesterolo, prob = TRUE,
+      xlab = 'Colesterolo', ylab = 'Densità',
+      main = 'Istogramma:\nCOLESTEROLO' )
+abline( v = Q1, col = 'blue3', lwd = 2, lty = 2 )
+abline( v = Q2, col = 'red3', lwd = 2 )
+abline( v = mean( pazienti$Colesterolo ), col = 'green3', lwd = 2 )
+abline( v = Q3, col = 'blue3', lwd = 2, lty = 2 )
+legend( 'topright', legend = c( 'Q1', 'Mediana [Q2]', 'Media', 'Q3' ),
+        col = c( 'blue3', 'red3', 'green3', 'blue3' ),
+        lwd = c( 2, 2, 2, 2 ), lty = c( 2, 1, 1, 2 ) )
+
+# Nota: dall'istogramma non si rilevano particolari asimmetrie
+
+# 2.2 Box plot
+#   - eventuali asimmetrie della distribuzione
+#   - presenza di eventuali valori estremi (outliers).
+
+# Istruzioni:
+#   - costruire un rettangolo con basi inferiore e superiore uguali,
+#     rispettivamente, al primo e al terzo quartile (il rettangolo contiene
+#     il 50% centrale delle osservazioni)
+#   - all'interno del rettangolo tracciare una linea in corrispondenza
+#     della mediana
+#   - tracciare il primo baffo del box plot collegando la base inferiore
+#     del rettangolo all'osservazione più bassa maggiore di lim_inf = Q1-1.5*IQR
+#   - tracciare il secondo baffo del box plot collegando la base superiore
+#     del rettangolo all'osservazione più alta minore di lim_sup = Q3+1.5*IQR
+#   - segnalare la presenza di eventuali outliers (osservazioni fuori dal range
+#   - definito da lim_inf e lim_sup).
+
+# Box plot
+dev.new()
+boxplot( pazienti$Colesterolo, ylab = 'Colesterolo', col = 'lightblue',
+         main = 'Box plot:\nCOLESTEROLO' )
+
+# Box plot vs. Istogramma: COLESTEROLO
+dev.new()
+par( mfrow = c( 2, 1 ) )
+boxplot( pazienti$Colesterolo, xlab = 'Colesterolo', col = 'lightblue',
+         main = 'Box plot:\nCOLESTEROLO', horizontal = TRUE, ylim = c( 165, 230 ) )
+abline( v = Q1, col = 'blue3', lwd = 2, lty = 2 )
+abline( v = Q2, col = 'red3', lwd = 2 )
+abline( v = mean( pazienti$Colesterolo ), col = 'green3', lwd = 2 )
+abline( v = Q3, col = 'blue3', lwd = 2, lty = 2 )
+
+hist( pazienti$Colesterolo, prob = TRUE,
+      xlab = 'Colesterolo', ylab = 'Densità',
+      main = 'Istogramma:\nCOLESTEROLO' )
+abline( v = Q1, col = 'blue3', lwd = 2, lty = 2 )
+abline( v = Q2, col = 'red3', lwd = 2 )
+abline( v = mean( pazienti$Colesterolo ), col = 'green3', lwd = 2 )
+abline( v = Q3, col = 'blue3', lwd = 2, lty = 2 )
+
+# Box plot vs. Istogramma: GLICEMIA
+Q1 = quantile( pazienti$Glicemia, probs = 0.25, type = 2 ) # Q1
+Q2 = quantile( pazienti$Glicemia, probs = 0.50, type = 2 ) # Q2
+Q3 = quantile( pazienti$Glicemia, probs = 0.75, type = 2 ) # Q3
+
+dev.new()
+par( mfrow = c( 2, 1 ) )
+boxplot( pazienti$Glicemia, xlab = 'Glicemia', col = 'lightblue',
+         main = 'Box plot:\nGLICEMIA', horizontal = TRUE, ylim = c( 60, 320 ) )
+abline( v = Q1, col = 'blue3', lwd = 2, lty = 2 )
+abline( v = Q2, col = 'red3', lwd = 2 )
+abline( v = mean( pazienti$Glicemia ), col = 'green3', lwd = 2 )
+abline( v = Q3, col = 'blue3', lwd = 2, lty = 2 )
+
+hist( pazienti$Glicemia, prob = TRUE,
+      xlab = 'Glicemia', ylab = 'Densità',
+      main = 'Istogramma:\nGLICEMIA' )
+abline( v = Q1, col = 'blue3', lwd = 2, lty = 2 )
+abline( v = Q2, col = 'red3', lwd = 2 )
+abline( v = mean( pazienti$Glicemia ), col = 'green3', lwd = 2 )
+abline( v = Q3, col = 'blue3', lwd = 2, lty = 2 )
+
+# La distribuzione della glicemia nei pazienti risulta caratterizzata da
+# asimmetria positiva, con media superiore alla mediana.

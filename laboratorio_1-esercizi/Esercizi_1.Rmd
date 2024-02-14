@@ -35,6 +35,8 @@ SOLUZIONE
 ```{r}
 # Da interfaccia RStudio:
 # 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
+# oppure
+# 'Session' -> 'Set Working Directory' -> 'To Source File Location'
 
 # Da console:
 # setwd('C:/percorso/dove/si/trova/il/file/anagrafica.txt')
@@ -51,10 +53,10 @@ head(anagrafica)
 3. Selezioniamo le prime tre colonne di \texttt{anagrafica}.
 
 ```{r}
-anagrafica = anagrafica[,1:3] # ATTENTZIONE sto sovrascrivendo la variabile
+anagrafica = anagrafica[,1:3] # ATTENZIONE sto sovrascrivendo la variabile
 ```
 
-4. Summary delle variabili di interesse. Si noti che NON è necessario utilizzare `attach()`. Infatti, accediamo alle variabili di interesse tramite l'operatore `$`.
+4. Summary delle variabili di interesse.
 ```{r}
 summary(anagrafica$ETA)     # oppure: summary(anagrafica[,1])
 
@@ -120,6 +122,8 @@ SOLUZIONE
 ```{r}
 # Da interfaccia RStudio:
 # 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
+# oppure
+# 'Session' -> 'Set Working Directory' -> 'To Source File Location'
 
 # Da console:
 # setwd('C:/percorso/dove/si/trova/il/file/anagrafica.txt')
@@ -168,8 +172,8 @@ freq_rel
 7. Barplot e Grafico a torta della tabella delle frequenze relative.
 ```{r}
 par(mfrow=c(1,2))
-barplot(freq_rel, col=c("pink","lightblue"), main="Frequenze relative\n sesso")
-pie(freq_rel, col=c("pink","lightblue"), main="Frequenze relative\n sesso")
+barplot(freq_rel, col=c("orange","forestgreen"), main="Frequenze relative\n sesso")
+pie(freq_rel, col=c("orange","forestgreen"), main="Frequenze relative\n sesso")
 ```
 
 
@@ -359,6 +363,8 @@ SOLUZIONE
 ```{r}
 # Da interfaccia RStudio:
 # 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
+# oppure
+# 'Session' -> 'Set Working Directory' -> 'To Source File Location'
 
 # Da console:
 # setwd('C:/percorso/dove/si/trova/il/file/delfini.txt')
@@ -376,8 +382,6 @@ class(delfini)
 str(delfini)
 
 head(delfini)
-
-attach(delfini)
 ```
 
 2. Al fine di creare le tabelle di frequenze assolute e relative e rispondere
@@ -388,13 +392,10 @@ opportunamente la variabile \texttt{sex} da \texttt{int} a
 necessita del comando \texttt{delfini\$sex}, ma semplicemente di \texttt{sex}.
 
 ```{r}
-sex = as.factor(sex)  # in questo modo si sta modificando direttamente il
-                      # dataset e non si sta creando una nuova variabile
+sex = as.factor(delfini$sex)
 sex
 
 class(sex)
-
-str(delfini)
 ```
 
 Trattandosi di una variabile binaria, il numero di valori possibili assunti
@@ -425,14 +426,14 @@ grafici desiderati.
 
 ```{r}
 par(mfrow=c(1,2))
-pie(freq_rel, col=c('green', 'red'), main='Frequenze relative:\n SEX')
-barplot(freq_ass, col=c('green', 'red'), main='Frequenze assolute:\n SEX')
+pie(freq_rel, col=c('orange', 'forestgreen'), main='Frequenze relative:\n SEX')
+barplot(freq_ass, col=c('orange', 'forestgreen'), main='Frequenze assolute:\n SEX')
 ```
 
 4. Il sottocampione di delfini con età maggiore di 16 anni viene così estratto.
 
 ```{r}
-gruppo = delfini[which(age > 16),]
+gruppo = delfini[which(delfini$age > 16),]
 gruppo
 
 range(gruppo$age)
@@ -442,25 +443,13 @@ range(gruppo$age)
 così estratte.
 
 ```{r}
-delfini[which(sex == 1 & length > 1.80),4] 
+delfini[which(delfini$sex == 1 & delfini$length > 1.80),4] 
 ```
 
 Gli esemplari che soddisfano le condizioni di cui sopra sono 14 in totale.
 
 ```{r}
-length(delfini[which(sex == 1 & length > 1.80),4])
+length(delfini[which(delfini$sex == 1 & delfini$length > 1.80),4])
 ```
 
-Si ricorda ancora una volta che l'accesso al dataframe avviene direttamente
-digitando il nome della variabile di interesse (ad esempio \texttt{age}) grazie
-all'uso di \texttt{attach(delfini)}. In assenza di questo comando, l'accesso
-alle variabili del dataframe avviene tramite l'operatore \$ (ad esempio
-\texttt{delfini\$age}).
-
-Nel nostro caso, una volta concluso il lavoro sul dataset, è buona norma
-eseguire:
-
-```{r}
-detach(delfini)   # ricordarsi sempre!
-```
 
