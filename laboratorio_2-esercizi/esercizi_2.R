@@ -1,6 +1,5 @@
-#########################################
-#############  ESERCIZIO 1  #############
-#########################################
+# ESERCIZIO 1  -----------------------------------------------------------------
+
 # Analisi dei dati contenuti nel file combustione.txt. 
 # Il dataset contiene 20 osservazioni del tempo di combustione di due diversi composti:
 #    Tempo:  tempo di combustione
@@ -13,9 +12,7 @@
 #   4. Costruire gli istogrammi affiancati della variabile \texttt{Tempo} per ciascun sottogruppo. 
 #      Costruire i boxplot affiancati della variabile \texttt{Tempo} per ciascun sottogruppo
 
-#########################################
-#############  ESERCIZIO 2  #############
-#########################################
+# ESERCIZIO 2 ------------------------------------------------------------------
 
 # Analisi dei dati contenuti nel file 'temperatura.txt'.
 # Il dataset contiene 130 osservazioni di 3 variabili:
@@ -34,10 +31,7 @@
 #    Costruire un unico grafico contenente istogrammi e i boxplots, ruotati in orizzontale, per ciascun sottogruppo.
 # 5. Commentare i risultati.
 
-
-#########################################
-#############  ESERCIZIO 3  #############
-#########################################
+# ESERCIZIO 3 ------------------------------------------------------------------
 
 # ANALISI DEL COLESTEROLO
 # Considerare il livello di colesterolo nel sangue dei primi 100 studenti
@@ -51,9 +45,27 @@
 #    per le femmine.
 # 5. Esiste una relazione tra sesso dello studente e livello di colesterolo?
 
-#########################################
-#############  ESERCIZIO 4  #############
-#########################################
+# ESERCIZIO 4 ------------------------------------------------------------------
+
+# ANAGRAFICA 
+# Importare i dati di anagrafica.txt.
+# I dati consistono in osservazioni di 4 variabili:
+#    ETA
+#    PESO
+#    ALTEZZA
+#    SESSO ( 1 = femmina, 2 = maschio )
+# che rappresentano l'età, il peso, l'altezza e il sesso di pazienti
+# ammessi a diversi reparti di ospedali della Lombardia con una diagnosi di infarto
+
+# Si richiede di:
+# 1. Importare il dataset e salvarlo in un dataframe.
+# 2. Suddividere i pazienti in maschi e femmine.
+# 3. Costruire una tabella delle frequenze relative per ciascun sottogruppo.
+# 4. Costruire in un unico grafico l'istogramma dell'altezza per i maschi e
+#    per le femmine.
+# 5. Esiste una relazione tra sesso del paziente e l'altezza?
+
+# ESERCIZIO 5 ------------------------------------------------------------------
 
 # ANALISI DELLE ABITUDINI DI STUDENTI
 # Considerare i dati contenuti nel file di testo 'abitudini_studenti.txt'. Le

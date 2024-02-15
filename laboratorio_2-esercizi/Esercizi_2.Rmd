@@ -159,13 +159,13 @@ par(mfrow=c(2,1))
 hist(temperatura$Temperatura[Donne_], probability = T,
      xlab="", ylab="Densità",
      main="Istogramma Temperatura\nDonne",
-     col="pink",
+     col="orange",
      breaks = seq(from=min(temperatura$Temperatura), max(temperatura$Temperatura),
                   length.out=11))
 hist(temperatura$Temperatura[Uomini_], probability = T,
      xlab="", ylab="Densità",
      main="Istogramma Temperatura\nUomini",
-     col="lightblue",
+     col="forestgreen",
      breaks = seq(from=min(temperatura$Temperatura), max(temperatura$Temperatura),
                   length.out=11))
 ```
@@ -175,7 +175,7 @@ boxplot(temperatura$Temperatura ~ temperatura$Sesso,
         names=c("Donne", "Uomini"),
         main="Boxplot: TEMPERATURA\n(Donne vs. Uomini) ",
         ylab="Temperatura [°F]", xlab="",
-        col= c("pink", "lightblue"))
+        col= c("orange", "forestgreen"))
 
 ```
 
@@ -184,27 +184,27 @@ par(mfrow=c(2,2))
 hist(temperatura$Temperatura[Donne_], probability = T,
      xlab="", ylab="Densità",
      main="Istogramma Temperatura\nDonne",
-     col="pink",
+     col="orange",
      breaks = seq(from=min(temperatura$Temperatura), max(temperatura$Temperatura),
                   length.out=10))
 hist(temperatura$Temperatura[Uomini_], probability = T,
      xlab="", ylab="Densità",
      main="Istogramma Temperatura\nDonne",
-     col="lightblue",
+     col="forestgreen",
      breaks = seq(from=min(temperatura$Temperatura), max(temperatura$Temperatura),
                   length.out=10))
 boxplot(temperatura$Temperatura[Donne_],
         names="Donne",
         main="Box plot\nTEMPERATURA DONNA",
         xlab="Temperatura [°F]",ylab="",
-        col= "pink",
+        col= "orange",
         horizontal = T)
 
 boxplot(temperatura$Temperatura[Uomini_],
         names= "Uomini",
         main="Box plot\nTEMPERATURA UOMINI",
         xlab="Temperatura [°F]", ylab="",
-        col= "lightblue",
+        col= "forestgreen",
         horizontal = T)
         
 ```
@@ -268,7 +268,7 @@ table(studenti$Sesso)/length(studenti$Sesso)
 
 ```{r}
 par ( mfrow = c( 2, 1 ) )
-hist( femmine$Colesterolo, prob = TRUE, col = 'pink',
+hist( femmine$Colesterolo, prob = TRUE, col = 'orange',
       xlim = range( studenti$Colesterolo ), ylim = c( 0, 0.045 ),
       breaks = seq( min( studenti$Colesterolo ), max( studenti$Colesterolo ),
                     length = 10 ),
@@ -276,7 +276,7 @@ hist( femmine$Colesterolo, prob = TRUE, col = 'pink',
       xlab = '', ylab = 'Densità' )
 abline( v = median( femmine$Colesterolo ), col = 'red', lty = 2, lwd = 2 )
 abline( v = mean( femmine$Colesterolo ), col = 'yellow', lty = 2, lwd = 2 )
-hist( maschi$Colesterolo, prob = TRUE, col = 'lightblue',
+hist( maschi$Colesterolo, prob = TRUE, col = 'forestgreen',
       xlim = range( studenti$Colesterolo ), ylim = c( 0, 0.045 ),
       breaks = seq( min( studenti$Colesterolo ), max( studenti$Colesterolo ),
                     length = 10 ),
@@ -304,7 +304,7 @@ mean( maschi$Colesterolo )
 segue.
 
 ```{r}
-boxplot( studenti$Colesterolo ~ studenti$Sesso, col = c( 'pink', 'lightblue' ),
+boxplot( studenti$Colesterolo ~ studenti$Sesso, col = c( 'orange', 'forestgreen' ),
          xlab = 'Sesso', ylab = 'Colesterolo',
          main = 'Boxplot: COLESTEROLO\n(Femmine vs. Maschi)' )
 ```
@@ -329,7 +329,82 @@ rm( list = ls( ) )
 graphics.off()
 ```
 
-## ESERCIZIO 4: ANALISI DELLE ABITUDINI DI STUDENTI
+## ESERCIZIO 4: ANALISI INFARTO
+
+Importare i dati di anagrafica.txt. I dati consistono in osservazioni di 4 variabili:
+
+ * \texttt{ETA}
+ * \texttt{PESO}
+ * \texttt{ALTEZZA}
+ * \texttt{SESSO} ( 1 = femmina, 2 = maschio )
+ che rappresentano l'età, il peso, l'altezza e il sesso di pazienti
+ ammessi a diversi reparti di ospedali della Lombardia con una diagnosi di infarto
+
+Si richiede di:
+
+1. Importare il dataset e salvarlo in un dataframe.
+
+2. Suddividere i pazienti in maschi e femmine.
+
+3. Costruire una tabella delle frequenze relative per ciascun sottogruppo.
+
+4. Costruire gli istogrammi affiancati della variabile \texttt{ALTEZZA} per
+maschi e femmine.
+
+5. Esiste una relazione tra la variabile \texttt{SESSO} del paziente e
+la variabile \texttt{ALTEZZA}?
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. 
+```{r}
+anagrafica <- read.table( 'anagrafica.txt', header = TRUE )
+
+head( anagrafica )
+dim( anagrafica )
+names( anagrafica )
+```
+
+2. Modifichiamo il dataset iniziale sostituendo al numero 1, la lettera "F" e al numero 2, la lettera "M". Ora si ottiene la suddivisione in due sottogruppi sulla base del genere dei pazienti (variabile \texttt{SESSO}) attraverso la funzione \texttt{which()}.
+
+```{r}
+anagrafica$SESSO[ anagrafica$SESSO == 1 ] = 'F' 
+anagrafica$SESSO[ anagrafica$SESSO == 2 ] = 'M'
+
+anagrafica$SESSO = as.factor(anagrafica$SESSO)  
+```
+
+3. Costruiamo tabella delle frequenze relative come segue. 
+```{r}
+table(anagrafica$SESSO) / nrow(anagrafica)
+```
+
+4. Gli istogrammi richiesti si costruiscono mediante la funzione
+\texttt{hist()}, come segue.
+
+```{r}
+par( mfrow = c( 2, 1 ) )
+hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'F' ] , prob = TRUE,
+      xlab = 'Altezza [ cm ] ', 
+      ylab = 'Densità', 
+      main = 'Istogramma Altezza Femmine',
+      col = 'orange', xlim = range( anagrafica$ALTEZZA ),
+      breaks = seq( 150, 195, by = 5 ) )
+
+hist( anagrafica$ALTEZZA[ anagrafica$SESSO == 'M' ] , prob = TRUE, 
+      xlab = 'Altezza [ cm ] ', 
+      ylab = 'Densità',
+      main = 'Istogramma Altezza Maschi',
+      col = 'forestgreen', xlim = range( anagrafica$ALTEZZA ),
+      breaks = seq(150, 195, by = 5 ) )
+```
+
+
+## ESERCIZIO 5: ANALISI DELLE ABITUDINI DI STUDENTI
 Considerare i dati contenuti nel file di testo
 \texttt{'abitudini\_studenti.txt'}. Le variabili presenti sono le seguenti:
  
@@ -566,7 +641,7 @@ tapply( studenti$Studio, studenti$Sesso, IQR )
 ```{r}
 par ( mfrow = c( 2, 1 ) )
 hist( studenti$Studio[which(studenti$Sesso=='F')], prob = TRUE,
-      col = 'pink', xlim = range( studenti$Studio ), ylim = c( 0, 0.05 ),
+      col = 'orange', xlim = range( studenti$Studio ), ylim = c( 0, 0.05 ),
       breaks = seq( min( studenti$Studio), max( studenti$Studio), length = 10 ),
       main = 'Istogramma: STUDIO (Femmine)', xlab = 'Studio', ylab = 'Densità' )
 abline( v = median( studenti$Studio[ which( studenti$Sesso == 'F' ) ] ),
@@ -578,7 +653,7 @@ abline( v = mean( studenti$Studio[ which( studenti$Sesso == 'F' ) ] ),
 axis( 1, mean( studenti$Studio[ which( studenti$Sesso == 'F' ) ] ), 'media',
       col = 'green', las = 3 )
 hist( studenti$Studio[ which( studenti$Sesso == 'M' ) ], prob = TRUE,
-      col = 'lightblue', xlim = range( studenti$Studio ), ylim = c( 0, 0.05 ),
+      col = 'forestgreen', xlim = range( studenti$Studio ), ylim = c( 0, 0.05 ),
       breaks = seq( min( studenti$Studio), max( studenti$Studio), length = 10 ),
       main = 'Istogramma: STUDIO (Maschi)', xlab = 'Studio', ylab = 'Densità' )
 abline( v = median( studenti$Studio[ which( studenti$Sesso == 'M' ) ] ),
@@ -599,7 +674,7 @@ rispetto ai maschi durante lo scorso semestre.
 9. Il grafico richiesto si ricava tramite funzione \texttt{boxplot()}, come segue.
 
 ```{r}
-boxplot( studenti$Studio ~ studenti$Sesso, col = c( 'pink', 'lightblue' ),
+boxplot( studenti$Studio ~ studenti$Sesso, col = c( 'orange', 'forestgreen' ),
          main = 'Box plot:\nSTUDIO (Femmine vs. Maschi)',
          names = c( 'Femmine', 'Maschi' ), xlab = 'Sesso', ylab = 'Studio' )
 ```
