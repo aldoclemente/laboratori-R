@@ -16,7 +16,11 @@
 
 # IMPOSTARE LA WORKING DIRECTORY (CARTELLA DI LAVORO): -------------------------
 # Da interfaccia:
+# 1.
 # 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
+
+# 2. 
+# 'Session' -> 'Set Working Directory' -> 'To Source File Location'
 
 # Da console:
 # setwd( 'C:/percorso/file' )
