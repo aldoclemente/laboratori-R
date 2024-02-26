@@ -13,17 +13,20 @@
 # 5 - Calcolo della potenza e della curva di potenza di un test via Monte Carlo
 # 6 - Calcolo del livello di confidenza reale via Monte Carlo
 
-# set working directory
-if(!require(pacman, quietly = TRUE)) install.packages("pacman")
-pacman::p_load("rstudioapi") 
-setwd(dirname(getActiveDocumentContext()$path))
+# IMPOSTARE LA WORKING DIRECTORY (CARTELLA DI LAVORO): -------------------------
+# Da interfaccia:
+# 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
+
+# Da console:
+# setwd( 'C:/percorso/file' )
+
+# Da pacchetto:
+if(!require(rstudioapi)) install.packages("rstudioapi")
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 ## 1 - IC E TEST PER LA MEDIA DI UNA POPOLAZIONE -------------------------------
 
 ### 1.1 VARIANZA NOTA ----------------------------------------------------------
-
-# install.packages("BSDA")
-# install.packages("EnvStats")
 
 library(BSDA)
 library(EnvStats) 

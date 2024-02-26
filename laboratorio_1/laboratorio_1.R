@@ -17,9 +17,8 @@
 # setwd( 'C:/percorso/file' )
 
 # Da pacchetto:
-if(!require(pacman)) install.packages("pacman")
-pacman::p_load("rstudioapi")
-setwd(dirname(getActiveDocumentContext()$path))
+if(!require(rstudioapi)) install.packages("rstudioapi")
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # CONOSCERE LA WORKING DIRECTORY (CARTELLA DI LAVORO):
 getwd()

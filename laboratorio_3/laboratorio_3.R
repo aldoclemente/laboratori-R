@@ -14,10 +14,16 @@
 # 4- Verifica sperimentale della legge dei grandi numeri sui dati simulati
 # 5- Verifica sperimentale del teorema centrale del limite sui dati simulati
 
-# set working directory
-if(!require(pacman, quietly = TRUE)) install.packages("pacman")
-pacman::p_load("rstudioapi") 
-setwd(dirname(getActiveDocumentContext()$path))
+# IMPOSTARE LA WORKING DIRECTORY (CARTELLA DI LAVORO): -------------------------
+# Da interfaccia:
+# 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
+
+# Da console:
+# setwd( 'C:/percorso/file' )
+
+# Da pacchetto:
+if(!require(rstudioapi)) install.packages("rstudioapi")
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 ##    0 - CAMPIONAMENTO DI VARIABILI ALEATORIE NOTE  ---------------------------
 #    Uniforme, Normale, Esponenziale, Binomiale 

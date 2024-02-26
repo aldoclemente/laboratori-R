@@ -20,9 +20,8 @@ graphics.off()
 # setwd( 'C:/percorso/file' )
 
 # Da pacchetto:
-if(!require(pacman)) install.packages("pacman")
-pacman::p_load("rstudioapi")
-setwd(dirname(getActiveDocumentContext()$path))
+if(!require(rstudioapi)) install.packages("rstudioapi")
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # 1 - ANALISI DI UNA VARIABILE QUANTITATIVA (DATI NUMERICI) -------------------- 
 # Analisi di variabili quantitative:
