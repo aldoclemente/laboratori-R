@@ -387,9 +387,7 @@ head(delfini)
 2. Al fine di creare le tabelle di frequenze assolute e relative e rispondere
 alle richieste successive più agevolmente, occorre prima convertire
 opportunamente la variabile \texttt{sex} da \texttt{int} a
-\texttt{factor}. Si noti che è stato eseguito il comando
-\texttt{attach(delfini)}. Pertanto, l'accesso alla variabile \texttt{sex} non
-necessita del comando \texttt{delfini\$sex}, ma semplicemente di \texttt{sex}.
+\texttt{factor}.
 
 ```{r}
 sex = as.factor(delfini$sex)
