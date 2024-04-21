@@ -21,33 +21,6 @@ Sapendo che $\int_0^1 (e^x+1)dx=e$ (provare per credere). Si richiede di:
 
 4. Costruire il qqnorm delle stime del Numero di Nepero ottenute al punto precendente. 
 
-1. 
-
-```{r}
-
-
-```
-
-2.
-
-```{r}
-
-
-```
-
-3. 
-
-```{r}
-
-
-```
-
-4.
-```{r}
-
-
-```
-
 
 # Esercizio 2 
 
@@ -60,28 +33,12 @@ Normale standard. Si richiede di:
 
 3. Ripetere punto 2. campionando i punti utili alla valutazione della funzione $g(x)$ da una $N(0,1)$ e confronta i risultati con quelli ottenuti al punto precedente.
 
-1.
+# Esercizio 3 
+Data funzione:
 
-```{r}
+$$f(x) = \left( 2 + sin(10x^2)e^x \sqrt{x} \right) \mathbb{I}_{[0,1]}(x),$$
 
-
-```
-
-
-
-2.
-
-```{r}
-
-
-```
-
-3.
-
-```{r}
-
-
-```
+stimare la costante $c \in \mathbb{R}$ tale per cui la $f(x)/c$ sia la funzione di densità di probabilità di una variabile aleatoria continua. 
 
 # Esercizio 3 - TCL: Somma di Uniformi
 
@@ -94,25 +51,4 @@ Verificare la legge asintotica della media campionaria per un campione di $n=5, 
 3. Verifica graficamente l'ipotesi di normalità delle osservazioni della media campionaria, per ogni valore di $n$.
 
 4. Commentare i risultati ottenuti al punto 3. e al punto 4.
-
-1.
-
-```{r}
-
-
-```
-
-2. 
-
-```{r}
-
-
-```
-
-3.
-
-```{r}
-
-
-```
 

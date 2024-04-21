@@ -33,7 +33,7 @@ scores = function(players, counts){
 xx = seq(from=-1, to=1, by=0.0125)
 yy = sqrt(1-xx^2)
 
-players = c("Aldo", "Stefano")
+players = c("Player1", "Player2")
 colors = c("red2","blue2")
 
 {

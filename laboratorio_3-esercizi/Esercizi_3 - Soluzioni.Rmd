@@ -140,8 +140,35 @@ points(1:n, I_norm, type="l", lwd=2, col="red")
 legend("topright", c("Uniforme","Normale"), lty=1, lwd=3,col=c("blue","red"))
 ```
 
+# Esercizio 3 
+Data la seguente funzione:
 
-# Esercizio 3 - TCL: Somma di Uniformi
+$$f(x) = \left( 2 + sin(10x^2)e^x \sqrt{x} \right) \mathbb{I}_{[0,1]}(x)$$
+
+Stimare la costante $c \in \mathbb{R}$ tale per cui la $f(x) / c$ sia la funzione di densità di probabilità di una variabile aleatoria continua. 
+
+```{r}
+f<-function(x){
+  return(2 + sin(10*x^2)*exp(x)*sqrt(x))
+}
+
+x = seq(0,1,by=0.01)
+plot(x, f(x), xlab='x', ylab='f(x)', 
+     main='Distribuzione vera (non normalizzata)', type='l', col='red',
+     ylim=c(-1,4.5))
+
+```
+```{r}
+set.seed(123) #riproducibilità
+n.max = 2500
+n = seq(1,n.max,by=1)
+x_unif = runif(n.max)
+f_unif = f(x_unif)
+I_unif = cumsum(f_unif)/n
+plot(n, I_unif, type='l', ylab="costante normalizzazione", xlab='n')
+
+```
+# Esercizio 4 - TCL: Somma di Uniformi
 
 Verificare la legge asintotica della media campionaria per un campione di $n=5, 10, 50, 100$ variabili $U(0,1)$. Si richiede di:
 
