@@ -168,7 +168,37 @@ I_unif = cumsum(f_unif)/n
 plot(n, I_unif, type='l', ylab="costante normalizzazione", xlab='n')
 
 ```
-# Esercizio 4 - TCL: Somma di Uniformi
+# Esercizio 4 
+
+Sia X una variabile continua continua con densità di probabilità: 
+$$f(x) = \frac{1}{\sqrt{2\pi}} \frac{1}{x(1-x)} \exp\left( -\frac{\left(\log\left(\frac{x}{1-x}\right)-\frac{1}{2}\right)^2}{2} \right) \mathbb{I}_{(0,1)}(x).$$ 
+Si chiede di:
+
+1. Verificare che l'integrale di $f(x)$ sia approssimativamente uguale a $1$.
+```{r}
+f = function(x){
+  return(1/sqrt(2*pi)*1/(x*(1-x))*exp(-(log(x/(1-x))-0.5)^2/2))
+}
+x = seq(0,1,by=0.01)
+
+plot(x, f(x), xlab='x', ylab='f(x)', main="Densità", type='l', lwd=2, col='red')
+
+```
+2. Calcolare approssimativamente media e varianza della variabile aleatoria $X$.
+```{r}
+N= 10000
+x_unif = runif(N)
+media = sum(x_unif * f(x_unif))/N
+media
+
+# calcolata Var[X] = E[X^2] - E[X]^2
+
+momento_secondo = sum(x_unif^2 * f(x_unif))/N
+varianza = momento_secondo - media^2
+varianza
+```
+
+# Esercizio 5 - TCL: Somma di Uniformi
 
 Verificare la legge asintotica della media campionaria per un campione di $n=5, 10, 50, 100$ variabili $U(0,1)$. Si richiede di:
 

@@ -286,10 +286,19 @@ abline(h= p, col= 'red', lty=2, lwd=2)
 
 ## 3 - INTEGRAZIONE MONTE-CARLO ----------------------------------------------
 
-# Esempio 1
 # Calcolare integrale di
 # f(x) = 4x se x in [0, 1/2]; 4(1-x) se x in [0.5,1] tramite integrazione MC.  
-# Campionare i punti per la valutazione da una U(0,1)
+
+# Si chiede di:
+# 1. verificare che l'integrale di $f(x)$ sia approssimativamente uguale a $1$.
+# 2. Calcolare approssimativamente media e varianza della variabile aleatoria continua X
+#    che ha come funzione di densità di probabilità la funzione f(x).
+# 3. Calcolare approssimativamente la funzione di ripartizione di X.
+
+# Confrontare i risultati ottenuti campioanando i punti per la valutazione 
+# da una U(0,1) e da una N(0.5,0.25^2)
+
+# 1. verificare che l'integrale di $f(x)$ sia approssimativamente uguale a $1$.
 
 f = function(x){
   risultato = vector(mode="numeric", length = length(x))
@@ -302,43 +311,10 @@ f = function(x){
   return(risultato)
 }
 
-xx = seq(0,1,length=1000)
+x = seq(0,1,length=1000)
 dev.new()
-plot(xx, f(xx), type="l", lwd=2,
+plot(x, f(x), type="l", lwd=2,
      xlab="", ylab="", main="f(x)")
-
-# Campionare i punti per la valutazione da una U(0,1)
-
-set.seed(123) # riproducibilità
-
-n = 100
-x = runif(n)                 
-      
-I_n = sum(f(x))/n
-I_n
-
-I_esatto = 1.
-
-errore = abs(I_n-I_esatto)
-errore
-
-# Al variare di n (LGN)
-set.seed(123)
-n.max = 1000
-n = seq(from=1,to=n.max,by=1) # 1:n.max
-
-x = runif(n.max)
-I_n = cumsum(f(x))/n
-
-dev.new()
-plot(n, I_n, type='l', lwd=2, ylab="Approssimazione", xlab='n')
-abline(h=I_esatto, col='red', lty=2, lwd=2)
-
-# Esempio 2
-# Calcolare integrale di
-# f(x) = 4x se x in [0, 1/2]; 4(1-x) se x in [0.5,1] tramite integrazione MC.  
-# Confrontare i risultati ottenuti campioanando i punti per la valutazione 
-# da una U(0,1) e da una N(0.5,0.25^2)
 
 set.seed(123) # riproducibilità
 mu = 0.5
@@ -368,64 +344,49 @@ I_unif = cumsum(f(x_unif))/n
 I_norm = cumsum(f(x_norm)/dnorm(x_norm, mean=mu, sd=sigma)) / n
 
 dev.new()
-plot(n, I_unif, type="l", lwd=2, ylab="Approssimazione", xlab='n')
+plot(n, I_unif, type="l", lwd=2, ylab="Approssimazione", xlab='n', 
+     col="forestgreen")
 points(n, I_norm, type="l", lwd=2, col="blue")
 abline(h=I_esatto, col='red', lty=2, lwd=2)
 legend(800, 1.2, legend = c("uniforme", "normale"), 
-       col=c("black", "blue"), lty=1, lwd=4)
+       col=c("forestgreen", "blue"), lty=1, lwd=4)
 
-# Esempio 3
-# Sia X una v.a. continua con densità di probabilità 
-# f(x) = 1/sqrt(2*pi)*1/(x*(1-x))*exp(-(log(x/(1-x))-1)^2/2) definita in (0, 1)
-# calcolare, tramite approssimazione MC, media, varianza e funzione di ripartizione
+# 2. Calcolare approssimativamente media e varianza della variabile aleatoria continua X
+#    che ha come funzione di densità di probabilità la funzione f(x).
+# Nb. f(x) è la densità di una v.a. triangolare di parametri a=0, b=1, c=0.5
+#     E[X] = (a+b+c)/3; Var(X) = ((a^2 + b^2 + c^2) - (ac + ab + bc))/18 
+a=0; b=1; c=0.5;
+media_esatta = (a+b+c)/3
+var_esatta = ((a^2 + b^2 + c^2) - (a*c + a*b + b*c))/18
 
-rm(list=ls())
-graphics.off()
+# E[X] = int x f(x) dx
+media_unif = cumsum(x_unif * f(x_unif))/n
+media_norm = cumsum(x_norm * f(x_norm)/dnorm(x_norm, mean=mu, sd=sigma)) / n
 
-# Data la seguente funzione di densita'
-f = function(x){
-  return(1/sqrt(2*pi)*1/(x*(1-x))*exp(-(log(x/(1-x))-0.5)^2/2))
-}
-x = seq(0,1,by=0.01)
+dev.new()
+plot(n, media_unif, type="l", lwd=2, col="forestgreen", 
+     ylab="Approssimazione", xlab='n', main="Valore Atteso")
+points(n, media_norm, type="l", lwd=2, col="blue")
+abline(h=media_esatta, col='red', lty=2, lwd=2)
+legend(800, 0.6, legend = c("uniforme", "normale"), 
+       col=c("forestgreen", "blue"), lty=1, lwd=4)
 
-plot(x, f(x), xlab='x', ylab='f(x)', main="Densità", type='l', lwd=2, col='red')
+# Var(X) = E[X^2] -(E[X])^2
 
-# stimiamo la media
-# integrale_0^1 (x f(x)/l(x) l(x) dx)
-# scegliamo l(x) uniforme quindi l(x) = 1
+# E[X] = int x f(x) dx
+momento_secondo_unif = cumsum(x_unif^2 * f(x_unif))/n
+momento_secondo_norm = cumsum(x_norm^2 * f(x_norm)/dnorm(x_norm, mean=mu, sd=sigma)) / n
 
-set.seed(123) #riproducibilità risultati
+var_unif = momento_secondo_unif - media_unif^2
+var_norm = momento_secondo_norm - media_norm^2
 
-N= 10000
-x_unif = runif(N)
-f_unif = f(x_unif)
-media = sum(x_unif * f_unif/1)/N
-media
-
-# stimiamo la varianza
-# calcolata Var[X] = E[X^2] - E[X]^2
-momento_secondo = sum(x_unif^2 * f_unif/1)/N
-varianza = momento_secondo - media^2
-varianza
-
-sqrt(varianza)
-
-# calcoliamo la funzione di ripartizione
-# calcolando l'integrale della densita' da 0 a x
-
-num_points = 100
-xgrid = seq(0., 1, length.out = num_points)
-
-F_rip = rep(0, num_points)
-x_unif = runif(N, min=0, max=1)
-
-for(i in 1:num_points){
-  f_unif = f(x_unif[ x_unif<=xgrid[i] ])   # valuto la f in tutti i punti x_unif < x_grid_i
-  F_rip[i] = sum(f_unif)/N             # Funzione ripartizione Empirica
-}
-
-plot(xgrid, F_rip, xlab='', ylab='', 
-     main='Funzione di ripartizione stimata', type='l', lwd=2, col='red')
+dev.new()
+plot(n, var_unif, type="l", lwd=2, col="forestgreen", 
+     ylab="Approssimazione", xlab='n', main="Varianza")
+points(n, var_norm, type="l", lwd=2, col="blue")
+abline(h=var_esatta, col='red', lty=2, lwd=2)
+legend(800, 0.08, legend = c("uniforme", "normale"), 
+       col=c("forestgreen", "blue"), lty=1, lwd=4)
 
 ## 5 - TEOREMA CENTRALE DEL LIMITE ( TCL ) -------------------------------------
 

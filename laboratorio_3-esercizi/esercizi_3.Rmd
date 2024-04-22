@@ -40,7 +40,17 @@ $$f(x) = \left( 2 + sin(10x^2)e^x \sqrt{x} \right) \mathbb{I}_{[0,1]}(x),$$
 
 stimare la costante $c \in \mathbb{R}$ tale per cui la $f(x)/c$ sia la funzione di densità di probabilità di una variabile aleatoria continua. 
 
-# Esercizio 3 - TCL: Somma di Uniformi
+# Esercizio 4 
+
+Sia X una variabile continua continua con densità di probabilità: 
+$$f(x) = \frac{1}{\sqrt{2\pi}} \frac{1}{x(1-x)} \exp\left( -\frac{\left(\log\left(\frac{x}{1-x}\right)-\frac{1}{2}\right)^2}{2} \right) \mathbb{I}_{(0,1)}(x).$$ 
+Si chiede di:
+
+1. Verificare che l'integrale di $f(x)$ sia approssimativamente uguale a $1$.
+
+2. Calcolare approssimativamente media e varianza della variabile aleatoria $X$.
+
+# Esercizio 5 - TCL: Somma di Uniformi
 
 Verificare la legge asintotica della media campionaria per un campione di $n=5, 10, 50, 100$ variabili $U(0,1)$. Si richiede di:
 

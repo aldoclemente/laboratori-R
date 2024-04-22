@@ -7,13 +7,6 @@
 # #######        TEOREMA CENTRALE DEL LIMITE          #######'#
 #'###########################################################'#
 
-# Argomenti trattati nel laboratorio 3:
-# 1- Campionamento di variabili aleatorie
-# 2- Approssimazione integrali con metodo Monte-Carlo
-# 3- Q-Q plot e verifica della normalita' dei dati
-# 4- Verifica sperimentale della legge dei grandi numeri sui dati simulati
-# 5- Verifica sperimentale del teorema centrale del limite sui dati simulati
-
 # IMPOSTARE LA WORKING DIRECTORY (CARTELLA DI LAVORO): -------------------------
 # Da interfaccia:
 # 1.
@@ -21,13 +14,6 @@
 
 # 2. 
 # 'Session' -> 'Set Working Directory' -> 'To Source File Location'
-
-# Da console:
-# setwd( 'C:/percorso/file' )
-
-# Da pacchetto:
-if(!require(rstudioapi)) install.packages("rstudioapi")
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 ##    0 - CAMPIONAMENTO DI VARIABILI ALEATORIE NOTE  ---------------------------
 #    Uniforme, Normale, Esponenziale, Binomiale 
@@ -430,6 +416,50 @@ for(i in 1:num_points){
 
 plot(xgrid, rip_func, xlab='x', ylab='F', 
      main='Funzione di ripartizione stimata', type='l', lwd=2, col='red')
+
+# 3. Calcolare approssimativamente la funzione di ripartizione di X.
+
+num_points = 250
+x = seq(0., 1, length.out = num_points)
+
+set.seed(123)
+N = 1000
+x_unif = runif(N)
+x_norm = rnorm(N, mean=mu, sd=sigma)
+
+F_unif = rep(0, num_points)
+F_norm = rep(0, num_points)
+N = 10000
+for(i in 2:num_points){                 # NB. F(0) = 0 !!!
+  for(epoch in 1:100){
+    x_unif = runif(N)
+    x_norm = rnorm(N, mean=mu, sd=sigma)
+    
+    points_unif = x_unif[ x_unif <= x[i] ]
+    points_norm = x_norm[ x_norm <= x[i] ]
+    
+    f_unif = f(points_unif)
+    f_norm = f(points_norm)
+    
+    # Funzione ripartizione Empirica
+    F_unif[i] = F_unif[i] + 1/length(f_unif) * sum(f_unif)    
+    F_norm[i] = F_norm[i] + 1/length(f_norm) * sum(f_norm / dnorm(points_norm, mean=mu, sd=sigma))
+  }
+}
+
+F_unif = F_unif / 100
+F_norm = F_norm / 100
+
+if(!require("triangle")) install.packages("triangle")
+
+dev.new()
+plot(x, F_unif, xlab='', ylab='', 
+     main='Funzione di Ripartizione', type='l', lwd=2, col='forestgreen')
+points(x, F_norm, type='l', lwd=2, col='blue')
+points(x, ptriangle(x,a=a,b=b,c=c), type='l', lwd=2, col="black")
+legend(0.8, 0.5, legend = c("uniforme", "normale", "F(x)"), 
+       col=c("forestgreen", "blue", "black"), lty=1, lwd=4)
+
 
 ## 3 - Q-Q PLOT E VERIFICA DELLA NORMALITA' DEI DATI ---------------------------
 
