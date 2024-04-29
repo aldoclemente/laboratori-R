@@ -19,7 +19,7 @@ Sapendo che $\int_0^1 (e^x+1)dx=e$ (provare per credere). Si richiede di:
 
 3. Fissando $n=1000$, ripetere $M=500$ volte l'approssimazione del Numero di Nepero e salvare i risultati ottenuti in un vettore. 
 
-4. Costruire il qqnorm delle stime del Numero di Nepero ottenute al punto precendente. 
+4. Costruire l'istogramma delle stime del Numero di Nepero ottenute al punto precendente e commentare i risultati. 
 
 
 # Esercizio 2 
@@ -57,8 +57,3 @@ Verificare la legge asintotica della media campionaria per un campione di $n=5, 
 1. Per ogni valore $n$, ripetere campionamento da una $U(0,1)$ per $N=500$ volte in modo da ottenere $N=500$ osservazioni della media campionaria.
 
 2. Costruire l'istogramma delle osservazioni della media campionaria, per ogni valore di $n$ (facoltativo: per ogni valore di $n$, sovrapporre agli istogrammi, il grafico della densità Normale prevista dal TCL).
-
-3. Verifica graficamente l'ipotesi di normalità delle osservazioni della media campionaria, per ogni valore di $n$.
-
-4. Commentare i risultati ottenuti al punto 3. e al punto 4.
-

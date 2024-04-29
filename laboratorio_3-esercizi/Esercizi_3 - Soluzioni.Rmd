@@ -19,7 +19,7 @@ Sapendo che $\int_0^1 (e^x+1)dx=e$ (provare per credere). Si richiede di:
 
 3. Fissando $n=1000$, ripetere $M=500$ volte l'approssimazione del Numero di Nepero e salvare i risultati ottenuti in un vettore. 
 
-4. Costruire il qqnorm delle stime del Numero di Nepero ottenute al punto precendente. 
+4. Costruire l'istogramma delle stime del Numero di Nepero ottenute al punto precendente e commentare i risultati. 
 
 
 ---
@@ -67,12 +67,6 @@ for(i in 1:M){
     x_unif = runif(n)
     e_MC[i] = sum(g(x_unif))/n
 }
-```
-4. 
-
-```{r}
-qqnorm(e_MC)
-qqline(e_MC, col="red")
 ```
 
 # Esercizio 2 
@@ -168,6 +162,7 @@ I_unif = cumsum(f_unif)/n
 plot(n, I_unif, type='l', ylab="costante normalizzazione", xlab='n')
 
 ```
+
 # Esercizio 4 
 
 Sia X una variabile continua continua con densità di probabilità: 
@@ -175,6 +170,17 @@ $$f(x) = \frac{1}{\sqrt{2\pi}} \frac{1}{x(1-x)} \exp\left( -\frac{\left(\log\lef
 Si chiede di:
 
 1. Verificare che l'integrale di $f(x)$ sia approssimativamente uguale a $1$.
+
+2. Calcolare approssimativamente media e varianza della variabile aleatoria $X$.
+
+---
+
+\begin{center}
+SOLUZIONE
+\end{center}
+
+1. 
+
 ```{r}
 f = function(x){
   return(1/sqrt(2*pi)*1/(x*(1-x))*exp(-(log(x/(1-x))-0.5)^2/2))
@@ -183,8 +189,22 @@ x = seq(0,1,by=0.01)
 
 plot(x, f(x), xlab='x', ylab='f(x)', main="Densità", type='l', lwd=2, col='red')
 
+set.seed(0) # riproducibilità
+N = 10000
+x_unif = runif(N)
+I = sum( f(x_unif) )/N # oppure mean(f(x_unif))
+I
+
+# al variare di N
+
+I = cumsum(f(x_unif)) / 1:N
+plot(1:N, I, type="l", lwd=2,
+     xlab="N", ylab="approssimazione")
+abline(h = 1, lwd=2, lty=2,col="red")
 ```
-2. Calcolare approssimativamente media e varianza della variabile aleatoria $X$.
+
+2. 
+
 ```{r}
 N= 10000
 x_unif = runif(N)
@@ -205,11 +225,6 @@ Verificare la legge asintotica della media campionaria per un campione di $n=5, 
 1. Per ogni valore $n$, ripetere campionamento da una $U(0,1)$ per $N=500$ volte in modo da ottenere $N=500$ osservazioni della media campionaria.
 
 2. Costruire l'istogramma delle osservazioni della media campionaria, per ogni valore di $n$ (facoltativo: per ogni valore di $n$, sovrapporre agli istogrammi, il grafico della densità Normale prevista dal TCL).
-
-3. Verifica graficamente l'ipotesi di normalità delle osservazioni della media campionaria, per ogni valore di $n$.
-
-4. Commentare i risultati ottenuti al punto 3. e al punto 4.
-
 
 ---
 
@@ -259,17 +274,5 @@ for(i in 1:length(n)){
        main=paste('TCL: Media Campionaria di Uniformi\n','n = ', n[i],sep=""))
   lines(x_, density,
         col="red", lwd=2)
-}
-```
-
-
-3.
-
-```{r}
-par(mfrow=c(2,2))
-for(i in 1:length(n)){
-  qqnorm(mean_[,i],  
-         main = paste('TCL: Media Campionaria di Uniformi\n','n = ', n[i],sep=""))
-  qqline(mean_[,i], lwd = 2, col = 'red' )
 }
 ```

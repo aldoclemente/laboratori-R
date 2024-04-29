@@ -70,7 +70,6 @@ P_
 # errore assoluto
 abs(P_-pi)
 
-
 ### Stima Pi al variare delle iterazioni MC ###
 
 rm(list=ls())
@@ -81,12 +80,12 @@ Area_ = 4. # Area quadrato [-1,1] x [-1,1]
 {
   start = Sys.time()
   count = rep(0, M)
-
+  
   coords = cbind(runif(M, min=-1, max=1), runif(M,min=-1,max=1))
   for(i in 1:M){
-   if(norm(coords[i,],type="2")<=1) count[i] = 1
+    if(norm(coords[i,],type="2")<=1) count[i] = 1
   }
-
+  
   P_m = cumsum(count)/1:M * Area_
   cat(paste("Esecuzione: ",
             difftime(Sys.time(),start,units="secs"), "secs", sep=" "))
@@ -115,40 +114,40 @@ P_m = matrix(0, nrow=N, ncol=length(M))
 for(j in 1:length(M)){
   for(i in 1:N){
     count = rep(0, M[j])
-
+    
     coords = cbind(runif(M[j], min=-1, max=1), runif(M[j],min=-1,max=1))
-
+    
     count = apply(coords, MARGIN=1, FUN=
                     function(x){
-                          if(norm(x,type="2")<=1)
-                            return(1)
-                          else
-                            return(0)
-                      }
-                  )
-
+                      if(norm(x,type="2")<=1)
+                        return(1)
+                      else
+                        return(0)
+                    }
+    )
+    
     # for(k in 1:M[j]){
     #   if(norm(coords[k,],type="2")<=1) count[k] = 1
     # }
-
+    
     P_m[i,j] = sum(count)/M[j] * Area_
   }
 }
 
 {
-x11()
-par(mfrow=c(3,1))
-for( j in 1:length(M)){
-
-  x = seq(min(P_m[,j]), max(P_m[,j]), length.out=100)
-
-  density = dnorm(x, mean = pi, sd = sd(P_m[,j]))
-  hist(P_m[,j], probability=T, plot=T,
-       main = paste("TCL applicato a proporzione,","n =",M[j],sep=" "),
-       xlab = 'somma di n bernoulli',
-       ylim = c(0,max(max(density),max(hist(P_m[, j], plot=F)$density))))
-lines( x, density, col = 'red', lwd = 2 )
-}
+  x11()
+  par(mfrow=c(3,1))
+  for( j in 1:length(M)){
+    
+    x = seq(min(P_m[,j]), max(P_m[,j]), length.out=100)
+    
+    density = dnorm(x, mean = pi, sd = sd(P_m[,j]))
+    hist(P_m[,j], probability=T, plot=T,
+         main = paste("TCL applicato a proporzione,","n =",M[j],sep=" "),
+         xlab = 'somma di n bernoulli',
+         ylim = c(0,max(max(density),max(hist(P_m[, j], plot=F)$density))))
+    lines( x, density, col = 'red', lwd = 2 )
+  }
 }
 
 x11()
@@ -169,21 +168,21 @@ M = 1e4    # iterazioni MC
 Area_ = 4.
 
 for(i in 1:N){
-
+  
   coords = cbind( runif(M, min=-1, max=1), runif(M,min=-1,max=1))
   count = 0
-   for(j in 1:M){
-     if(norm(coords[j,],type="2")<=1) count = count + 1
-   }
-
+  for(j in 1:M){
+    if(norm(coords[j,],type="2")<=1) count = count + 1
+  }
+  
   # oppure
-
+  
   # count = apply(coords, MARGIN=1, #Righe
   #               FUN= function(x){return (norm(x, type="2")<=1)})
   # count = sum(count)
-
+  
   P_[i] = count/M * Area_
-
+  
 }
 
 summary(P_)
@@ -219,10 +218,10 @@ abline(h=exp(1), col="red", lty=2)
 #              una Gaussiana N(0,1). Confronta i risultati
 
 g = function(x){
-   return(1/2 * dnorm(x) )
- }
+  return(1/2 * dnorm(x) )
+}
 
- set.seed(314159)
+set.seed(314159)
 x = seq(-5,5,length.out=1000)
 plot(x,g(x), type="l", lwd=2, main="g(x)", xlab="x", ylab="", 
      ylim=c(0, max( max(g(x)),dnorm(x)) ))

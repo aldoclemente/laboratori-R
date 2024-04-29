@@ -1,22 +1,16 @@
 #'###########################################################'#
 #'#######               LABORATORIO 3                 #######'#
 #'#######      CAMPIONAMENTO DI VARIABILI ALEATORIE   #######'#
-#'#######           INTEGRAZIONE MONTE CARLO          #######'#
-#'#######       Q-Q PLOT e VERIFICA DI NORMALITA'     #######'#
 #'#######         LEGGE DEI GRANDI NUMERI             #######'#
+#'#######           INTEGRAZIONE MONTE CARLO          #######'#
 # #######        TEOREMA CENTRALE DEL LIMITE          #######'#
 #'###########################################################'#
 
-# IMPOSTARE LA WORKING DIRECTORY (CARTELLA DI LAVORO): -------------------------
-# Da interfaccia:
-# 1.
-# 'Session' -> 'Set Working Directory' -> 'Choose Directory' -> ...
-
-# 2. 
-# 'Session' -> 'Set Working Directory' -> 'To Source File Location'
-
 ##    0 - CAMPIONAMENTO DI VARIABILI ALEATORIE NOTE  ---------------------------
-#    Uniforme, Normale, Esponenziale, Binomiale 
+#    Uniforme, Normale, Esponenziale, Binomiale, Poisson 
+
+rm( list = ls() )
+graphics.off()
 
 # Uniforme
 
@@ -91,22 +85,111 @@ points(x_exp, rep(0,n), pch=16, col="red")
 #                         di una Bi(N,p) valutata in x
 # qbinom(alpha, mu, sd)   restituisce valore del quantile di ordine alpha
 #                         di una Bi(N,p)
+# NB. se N == 1 -> Be(p)
+
+set.seed(0) # riproducibilità
+
+n = 20
+N = 1
+p = 2/3
+x_bern = rbinom(n, size=N, prob = p)     # n realizzazioni di una Be(p)
+
+barplot(table(x_bern),
+        xlab="x",ylab="", main="Be(2/3)")
+
+# Poisson
+# rpois(n, lambda)      restituisce n realizzazioni di una Po(lambda)
+# dpois(x, lambda)      restituisce valore della funzione di Densità di Probabilità 
+#                        di una Po(lambda) valutata in x
+# ppois(x, lambda)         restituisce valore della funzione di Ripartizione
+#                         di una Po(lambda) valutata in x
+# qpois(alpha, lambda)   restituisce valore del quantile di ordine alpha
+#                         di una Po(lambda)
+
+n = 20
+lambda = 5/2
+x_pois = rpois(n, lambda=lambda)     # n realizzazioni di una Po(lambda)
+
+barplot(table(x_pois),
+        xlab="x",ylab="", main="Po(5/2)")
 
 ## 1 - CAMPIONAMENTO DI VARIABILI ALEATORIE ------------------------------------
+# Metodo della Funzione Inversa & Metodo di Accettazione/Rifiuto
 
-rm( list = ls() )
-graphics.off()
+# NB. user-defined function
+
+nome_funzione = function(param1, param2, ...){
+  
+  #corpo funzione
+  
+  return(...)
+}
+
+somma = function(x = 0, y = 0){
+  return(x + y)
+}
+
+somma(1,2)
+
 
 ### METODO DELLA FUNZIONE INVERSA ----------------------------------------------
 
 ### Esempio 1: Campionamento da v.a. Continua
 # Vogliamo campionare da una v.a. che ha funzione di densità
-# f(x) = 1/pi * (1/(1+x^2))
+# f(x) = 4x se x in [0, 1/2]; 4(1-x) se x in [0.5,1]
+
+f = function(x){
+  risultato = vector(mode="numeric", length = length(x))
+  for(i in 1:length(x)){
+    if(x[i] >= 0 & x[i] < 0.5) 
+      risultato[i] = 4 * x[i]
+    else if( x[i] > 0.5 & x[i] <=1) 
+      risultato[i] =  4 * (1 - x[i]) 
+    }
+  return(risultato)
+}
 # Calcoliamo la funzione di ripartizione
-# F(x) = 1/2 + 1/pi*arctan(x)
+# F(x) = 2x^2 se x in [0, 1/2]; (1-2*(1-x)^2) in (1/2, 1]
+F_ = function(x){
+  risultato = vector(mode="numeric", length = length(x))
+  for(i in 1:length(x)){
+    if(x[i] < 0)
+      risultato[i] = 0.
+    else if(x[i] >= 0 & x[i] < 0.5) 
+      risultato[i] = 2 * x[i]^2
+    else if( x[i] > 0.5 & x[i] <=1) 
+      risultato[i] = 1 - 2 * (1-x[i])^2 
+    else if (x[i] > 1)
+      risultato[i] =1.
+  }
+  return(risultato)
+} 
+
+x = seq(0,1,length=1000)
+
+dev.new()
+par(mfrow=c(2,1))
+plot(x, f(x), type="l", lwd=2,
+     xlab="", ylab="", main="f(x)")
+plot(x, F_(x), type="l", lwd=2,
+     xlab="", ylab="", main="F(x)")
+
 # Calcoliamo l' inversa della funzione di ripartizione
-# F^-1(u) = tan(pi(u - 1/2)) , u in (0, 1)
+# F^-1(x) = sqrt(u/2) se x in [0, 1/2); 1 - sqrt((1-x)/2) se x in [1/2, 1] 
 # Se U ~ U[0,1] -> X = F^-1(U) ~ f
+
+F_inv = function(x){
+  res = vector(mode="numeric", length = length(x))
+  for(i in 1:length(x)){
+    if( x[i] >=0 & x[i] < 1/2 ){
+      res[i] = sqrt(x[i] / 2)
+    }else if( x[i] >1/2 & x[i] <= 1 ){
+      res[i] = 1 - sqrt( ( 1 - x[i] ) / 2)
+    }
+  }
+  return(res)
+}
+
 # Campioniamo N realizzazioni da una distribuzione uniforme in [0,1]
 # e mostriamo che l'istogramma di x = F^-1(u) approssima
 # la densita' f.
@@ -115,98 +198,37 @@ set.seed(0) # riproducibilità
 
 N = 5000
 u = runif(N)
-x.samples = tan(pi*(u - 0.5))
 
-x_ = seq(-1000,1000,by=0.1)
-f = 1/pi*(1/(1+x_^2))
+campione = F_inv(u)
 
 # Istogramma realizzazioni con vera Densità
 dev.new()
-hist(x.samples, prob=T,
+hist(campione, prob=T,
      main="Istogramma realizzazioni", 
      xlab= "realizzazioni", ylab="Densità")
-lines(x_, f, lwd=2, col='red')
+lines(x, f(x), lwd=2, col='red')
 # invece di "lines" avremmo potuto utilizzare: 
 # points(x_, f, type="l", lwd=2, col="red")
-
-# Zoom intorno a 0
-x_ = seq(-10,10,by=0.1)
-f = 1/pi*(1/(1+x_^2))
-
-dev.new()
-hist(x.samples[x.samples>-5 & x.samples<5], prob=T,
-     main="Istogramma realizzazioni in [-5,5]",
-     xlab= "realizzazioni", ylab="Densità")
-lines(x_, f, lwd=2, col='red')
-
-# L'istogramma delle realizzazioni ottenute approssima la densità f(x)
-
-### Esempio 2: Campionamento da v.a. discreta
-# Vogliamo campionare X da una distribuzione con funzione di densita' f
-# f(x) = 0.5  per x = 1
-#        0.2  per x = 2
-#        0.3  per x = 3
-# La funzione di ripartizione non e' invertibile, poiche' e' costante a tratti,
-# e quindi non iniettiva.
-# Possiamo comunque costruire l'inversa, limitandadola ai possibili valori assunti da x
-# La scriviamo in questo modo:
-#F^-1(u) = 1 per u in [0. 0.5)
-#        = 2 per u in [0.5, 0.7)
-#        = 3 per u in [0.7, 1]
-# Formula: x=k se  sum(x_i<k) p(x_i) < u < sum(x_i<=k) p(x_i)
-# Campioniamo N realizzazioni da una distribuzione uniforme in [0,1]
-# e mostriamo che l'istogramma di x = F^-1(u) approssima
-# la densita' f.
-rm(list=ls())
-graphics.off()
-
-set.seed(0) # riproducibilità
-
-N = 5000
-u = runif(N)
-
-inverse_F <- function(u){
-  if(u<0.5){
-    return(1)
-  }else if (u<0.7){
-    return(2)
-  }else{
-    return(3)
-  }
-}
-
-x = vector(mode="numeric", length= N)
-for(i in 1:N){
-  x[i] = inverse_F(u[i])
-}
-
-freq_relative = table(x)/N
-freq_relative
-
-barplot(freq_relative)
-lines( x=c(1,2,3), y=c(0.5, 0.2, 0.3), col = 'red', type = 'h', lwd = 2 )
-
 
 ### ACCEPT-REJECT METHOD -------------------------------------------------------
 
 # Esempio 
 
 # Vogliamo campionare da v.a. con densità di probabilità
-# f(x) = (2 + sin(10*x^2)*exp(x)*sqrt(x))/ integrale_0^1(2 + sin(10*x^2)*exp(x)*sqrt(x) dx)
-# definita in [0,1].
-
-f<-function(x){
-  return(2 + sin(10*x^2)*exp(x)*sqrt(x))
+# g(x) = 2*f(x), dove f(x) è la funzione definita nell'esercizio precedente 
+# NB. integrale di g NON è 1
+g = function(x){
+  return(2*f(x))
 }
 
-x_ = seq(0,1,by=0.01)
-dens_ = f(x_) 
-dev.new()
-plot(x_, dens_, xlab='x', ylab='f(x)', 
-     main='Distribuzione vera (non normalizzata)', type='l', col='red')
+x = seq(0,1,length=1000)
 
-# Notiamo che f(x) <= M con M = 4.4
-M = 4.4
+# Notiamo che g(x) <= M con M = 4.1
+M = 4.1
+
+dev.new()
+plot(x, g(x), xlab='x', ylab='g(x)', ylim =c(0,4.1),
+     main='Distribuzione vera (non normalizzata)', type='l',  lwd=2, col='red')
 abline(h=M, lty=2, col='blue')
 
 # Accept-reject loop
@@ -215,401 +237,42 @@ abline(h=M, lty=2, col='blue')
 set.seed(0) # riproducibilità
 
 N = 10000  # numero di realizzazioni
-x.accept <- vector(mode="numeric", length=N)
-rejected = 0
+accettati <- vector(mode="numeric", length=N)
+rifiutati = 0
 for(i in 1:N){
-  accept = FALSE
-  while(accept==FALSE){
-    x = runif(n=1, min=0, max=1) # realizzazione da U[0,1]
+  accetto = FALSE
+  while(accetto == FALSE){
+    xx = runif(n=1, min=0, max=1) # realizzazione da U[0,1]
     u = runif(n=1, min=0, max=M) # realizzazione da U[0,M]
-    if(u<=f(x)){
-      x.accept[i] = x            # se vale la condizione accetto
-      accept = TRUE              # il valore campionato
+    if(u <= g(xx) ){
+      accettati[i] = xx            # se vale la condizione accetto
+      accetto = TRUE               # il valore campionato
     }else{
-      rejected = rejected + 1
+      rifiutati = rifiutati + 1
     }
   }
 }
 
-efficienza = N/(rejected + N)
+efficienza = N/(rifiutati + N)
 print(efficienza)
 
 # Istogramma delle realizzazioni ottenute 
 dev.new()
-hist(x.accept, ylim=c(0, M), prob=T, 
+hist(accettati, ylim=c(0, M), prob=T, ylab="Densità",
      main="Istogramma realizzazioni accettate")
-lines(x_, dens_, xlab='x', ylab='f(x)', 
-      type='l', col='red')
+lines(x, g(x), xlab='x', ylab='g(x)', 
+      type='l', lwd=2, col='red')
+lines(x, f(x), xlab='x', ylab='f(x)', 
+      type='l', lwd=2, col='forestgreen')
 abline(h=M, lty=2, col='blue')
+legend(0.85,3.5, legend = c("g(x)", "f(x)"), 
+       lty = 1, lwd=4, 
+       col=c("red", "forestgreen"))
 
 # L'istogramma delle realizzazioni ottenute approssima la vera densità
 # che non conosciamo in forma chiusa perchè non non sappiamo normalizzare la f(x) 
 
-
-## 2 - INTEGRAZIONE MONTE-CARLO ----------------------------------------------
-
-rm(list=ls())
-graphics.off()
-
-# Data una variabile aleatoria X con densita' f(x),
-# vogliamo approssimare il valore atteso della variabile aleatoria Y = h(X).
-# Per farlo scegliamo una distribuzione f(x) e generiamo n realizzazioni x_1, ..., x_n da f
-# Approssimiamo il valore atteso E[h(X)] = integrale(h(x)*f(x)*dx) con
-# h_n = sum( h(x_i) )/n
-# che per la legge dei grandi numeri tende a E[h(X)] per n che tende all'infinito.
-
-# Esempio 1
-# Calcolare integrale di g(x) = 4/(1+x^2) tramite integrazione MC
-# Campionare i punti per la valutazione da una U(0,1)
-
-set.seed(123)
-
-n = 100
-x_ = runif(n)                 
-g_ = 4.0 / (1.0 + x_^2)        
-I_n = sum(g_)/n
-I_n
-
-I_esatto = pi # 4*arctg(1)
-
-errore = abs(I_n-I_esatto)
-errore
-
-# Al variare di n:
-set.seed(123)
-n.max = 1000
-n.prove = seq(from=1,to=n.max,by=1) # 1:n.max
-
-x_ = runif(n.max)
-g_ = 4/(1+x_^2)
-I_n = cumsum(g_)/n.prove
-
-dev.new()
-plot(n.prove, I_n, type='l', ylab="Approssimazione", xlab='n')
-abline(h=pi, col='red', lty=2, lwd=2)
-
-# Esempio 2
-# Calcolare la costante di normalizzazione della densita'
-# f(x) = 2 + sin(10*x^2)*exp(x)*sqrt(x) definita in [0, 1]
- 
-rm(list=ls())
-graphics.off()
-
-f<-function(x){
-  return(2 + sin(10*x^2)*exp(x)*sqrt(x))
-}
-
-x_ = seq(0,1,by=0.01)
-dens_ = f(x_)
-dev.new()
-plot(x_, dens_, xlab='x', ylab='f(x)', 
-     main='Distribuzione vera (non normalizzata)', type='l', col='red',
-     ylim=c(-1,4.5))
-
-# dobbiamo calcolare
-# int_0^1 f(x) dx = int_0^1 f(x)/l(x) l(x) dx
-
-# calcoliamo il valore atteso di f/l rispetto alla distribuzione 
-# scegliamo l distribuita come U(0, 1), quindi l(x) = 1
-# Al variare di n:
-
-set.seed(123) #riproducibilità
-
-n.max = 2500
-n.prove = seq(1,n.max,by=1)
-x_unif = runif(n.max)
-f_unif = f(x_unif)
-I_unif = cumsum(f_unif)/n.prove
-
-dev.new()
-plot(n.prove, I_unif, type='l', ylab="costante normalizzazione", xlab='n')
-
-# Cosa succede se considero una densità l(x) diversa dalla uniforme 
-# da cui campionare i punti utili alla valutazione? 
-
-# Devo scegliere una densità definita in [0, 1]
-# Esempio: scegliamo l(x) una particolare distribuzione distribuzione triangolare
-
-install.packages('triangle')
-library(triangle)
-
-dev.new()
-plot(x_, dtriangle(x_, a=0, b=1, c=0.1),
-     xlab='x', ylab='f(x)', main='Distribuzione Triangolare', type='l', col='red')
-
-x_tri = rtriangle(n.max, a=0, b=1, c=0.1)
-f_tri = f(x_tri)/dtriangle(x_tri, a=0, b=1, c=0.1)
-I_tri = cumsum(f_tri)/n.prove
-
-dev.new()
-plot(n.prove, I_tri, type='l', ylab="costante normalizzazione", xlab='n')
-
-# Confrontiamo velocità di convergenza 
-dev.new()
-plot(n.prove, I_tri, type='l', xlab='n', ylim=c(min(I_unif,I_tri), max(I_unif,I_tri)))
-lines(n.prove, I_unif, col='red')
-legend("topright", legend=c("Triangolare", "Uniforme"),
-       lwd=2, lty=1 , col=c("black", "red"))
-
-# dovremmo scegliere una densità l(x) che sia il più proporzionale possibile
-# alla funzione f della quale vogliamo calcolare l'integrale!
-# La densita' triangolare centrata in 0.1 non è sicuramente la scelta ottimale.
-# Nella pratica, puo' non essere facile trovare una densità simile alla f 
-# dalla quale sappiamo campionare
-
-# confrontiamo gli errori
-sd(I_unif)/sqrt(n.max)
-sd(I_tri)/sqrt(n.max)
-
-# Esempio 3
-# Sia X una v.a. continua con densità di probabilità 
-# f(x) = 1/sqrt(2*pi)*1/(x*(1-x))*exp(-(log(x/(1-x))-1)^2/2) definita in (0, 1)
-# calcolare, tramite approssimazione MC, media, varianza e funzione di ripartizione
-
-rm(list=ls())
-graphics.off()
-
-# Data la seguente funzione di densita'
-f<-function(x){
-  return(1/sqrt(2*pi)*1/(x*(1-x))*exp(-(log(x/(1-x))-0.5)^2/2))
-}
-x_ = seq(0,1,by=0.01)
-dens_ = f(x_)
-plot(x_, dens_, xlab='x', ylab='f(x)', main="Densità", type='l', lwd=2, col='red')
-
-# stimiamo la media
-# integrale_0^1 (x f(x)/l(x) l(x) dx)
-# scegliamo l(x) uniforme quindi l(x) = 1
-
-set.seed(123) #riproducibilità risultati
-
-N= 10000
-x_unif = runif(N)
-f_unif = f(x_unif)
-media = sum(x_unif * f_unif/1)/N
-media
-
-errore = sd(x_unif*f_unif/1)/sqrt(N)
-errore
-
-# stimiamo la varianza
-# calcolata Var[X] = E[X^2] - E[X]^2
-momento_secondo = sum(x_unif^2 * f_unif/1)/N
-varianza = momento_secondo - media^2
-varianza
-
-sqrt(varianza)
-
-# calcoliamo la funzione di ripartizione
-# calcolando l'integrale della densita' da 0 a x
-
-num_points = 100
-xgrid = seq(0., 1, length.out = num_points)
-
-rip_func = rep(0, num_points)
-x_unif = runif(N, min=0, max=1)
-
-for(i in 1:num_points){
-  f_unif = f(x_unif[ x_unif<=xgrid[i]])   # valuto la f in tutti i punti x_unif < x_grid_i
-  rip_func[i] = sum(f_unif)/N             # Funzione ripartizione Empirica
-}
-
-plot(xgrid, rip_func, xlab='x', ylab='F', 
-     main='Funzione di ripartizione stimata', type='l', lwd=2, col='red')
-
-# 3. Calcolare approssimativamente la funzione di ripartizione di X.
-
-num_points = 250
-x = seq(0., 1, length.out = num_points)
-
-set.seed(123)
-N = 1000
-x_unif = runif(N)
-x_norm = rnorm(N, mean=mu, sd=sigma)
-
-F_unif = rep(0, num_points)
-F_norm = rep(0, num_points)
-N = 10000
-for(i in 2:num_points){                 # NB. F(0) = 0 !!!
-  for(epoch in 1:100){
-    x_unif = runif(N)
-    x_norm = rnorm(N, mean=mu, sd=sigma)
-    
-    points_unif = x_unif[ x_unif <= x[i] ]
-    points_norm = x_norm[ x_norm <= x[i] ]
-    
-    f_unif = f(points_unif)
-    f_norm = f(points_norm)
-    
-    # Funzione ripartizione Empirica
-    F_unif[i] = F_unif[i] + 1/length(f_unif) * sum(f_unif)    
-    F_norm[i] = F_norm[i] + 1/length(f_norm) * sum(f_norm / dnorm(points_norm, mean=mu, sd=sigma))
-  }
-}
-
-F_unif = F_unif / 100
-F_norm = F_norm / 100
-
-if(!require("triangle")) install.packages("triangle")
-
-dev.new()
-plot(x, F_unif, xlab='', ylab='', 
-     main='Funzione di Ripartizione', type='l', lwd=2, col='forestgreen')
-points(x, F_norm, type='l', lwd=2, col='blue')
-points(x, ptriangle(x,a=a,b=b,c=c), type='l', lwd=2, col="black")
-legend(0.8, 0.5, legend = c("uniforme", "normale", "F(x)"), 
-       col=c("forestgreen", "blue", "black"), lty=1, lwd=4)
-
-
-## 3 - Q-Q PLOT E VERIFICA DELLA NORMALITA' DEI DATI ---------------------------
-
-graphics.off()
-rm(list=ls())
-
-# Il q-q plot ( quantile-quantile plot ) e' un grafico che permette di visualizzare il buon adattamento
-# di una serie di dati ad una distribuzione nota. La distibuzione di riferimento piu' utilizzata e'
-# quella normale. In questo caso il q-q plot prende anche il nome di normal probability plot ( NPP ).
-# Nel q-q plot sono rappresentati in ascissa i quantili teorici di una normale standard
-# e in ordinata i quantili campionari ( che corrispondono ai dati osservati ordinati ).
-
-# Il metodo puo' essere applicato a qualsiasi distribuzione continua,
-# sostituendo ai quantili teorici della normale standard
-# quelli della funzione di ripartizione appropriata.
-
-# Campioniamo da una variabile aletoria Normale di media e varianza nota
-# e costruiamo il q-q plot tramite la sua definizione teorica
-
-set.seed(123) #riproducibilità risultati
-
-mu = 0
-sigma = 1
-N = 10000 # Simulo N realizzazioni della variabile gaussiana
-
-# Campionamento tramite la funzione 'rnorm'
-dati.sim = rnorm( N, mean = mu, sd = sigma )
-# 'rnorm' genera N osservazioni indipendenti da una normale
-# di media mean e deviazione standard sd
-
-# Costruiamo istogramma per valutare l'andamento della distribuzione dei dati
-# campionati rispetto al modello teorico
-
-x = seq(min(dati.sim)-.1, max(dati.sim)+.1, length = 100 )
-dens = dnorm(x, mean = mu, sd = sigma )
-
-dev.new()
-hist(dati.sim, prob = T, main = 'Istogramma dati campionati da N(0,1)',
-     xlab="x", ylab="Densità", ylim=c(0, max(dens)))
-lines( x, dens, col = 'red', lwd = 2 )
-
-# Costruiamo in automatico del q-q plot con la funzione 'qqnorm'
-dev.new()
-qqnorm( dati.sim )
-# 'qqnorm' di default rappresenta in ascissa i quantili teorici
-# di una normale standard e in ordinata i quantili empirici
-
-qqline( dati.sim, col = 'red', lwd = 2 )
-# 'qqline' aggiunge al grafico una retta che approssima il grafico
-# dei quantili empirici rispetto ai quantili teorici ( di default e' la
-# retta che passa per il primo e per il terzo quartile )
-
-
-# Campioniamo ora da una gaussiana non standard
-mu2 = 5
-sigma2 = 2
-dati.sim2 = rnorm(N, mean = mu2, sd = sigma2)
-
-# Istogramma
-x = seq(min(dati.sim2)-.1, max(dati.sim2)+.1, length = 100)
-dens = dnorm(x, mean = mu2, sd = sigma2 )
-
-dev.new()
-hist(dati.sim2, prob = T, main = 'Istogramma dati campionati da N(5,4)',
-     xlab="x", ylab="Densità", ylim=c(0,max(dens)))
-lines( x, dens, col = 'red', lwd = 2 )
-
-# q-q plot
-dev.new()
-qqnorm( dati.sim2 )
-qqline( dati.sim2, col = 'red', lwd = 2 )
-abline( 0, 1, lwd = 2, col = 'green', lty = 2 )
-# qqline non coincide con bisettrice del primo e terzo quadrante
-
-
-# Standardizziamo i dati: ( dati-media )/devstd
-
-dati.stand = ( dati.sim2 - mean( dati.sim2 ) )/sd( dati.sim2 )
-
-dev.new()
-qqnorm( dati.stand )
-qqline( dati.stand, col = 'red', lwd = 2 )
-abline( 0, 1, col = 'green', lty = 3, lwd = 3 )
-
-# Per verificare la normalita' dei dati possiamo standardizzare i dati e confrontare
-# l'andamento del qqplot con la bisettrice, oppure semplicemente verificare che il qqplot
-# abbia un andamento lineare
-
-
-### Q-Q PLOT DI DATI PROVENIENTE DA DISTRIBUZIONI NOTE NON GAUSSIANE -----------
-
-rm(list=ls())
-graphics.off()
-
-set.seed(123) #riproducibilità risultati
-
-# Osservazioni iid da una normale standard
-z = rnorm( 1000 )
-
-# Osservazioni iid da una U( -2, 2 )
-u = runif( 1000, -2, 2 )
-
-# Osservazioni iid da una Exp( 1/3 )
-g = rexp( 1000, 1/3 )
-
-x = seq(from=-5, to=5, length=1000)
-
-dev.new()
-par(mfrow= c(2,3))
-# Normale
-plot(x, dnorm(x), type="l", lwd=2, col = 2,
-     ylab = "densità", main = 'Normale')
-
-# Uniforme
-plot(x, dnorm(x), type="l", lwd=2,
-     ylab = "densità", main = 'Uniforme')
-lines(x, dunif(x,min=-2,max=2), lwd=2, col = 2)
-legend(1, 0.4, c("N(0,1)", "U(-2,2)"), col= c(1, 2), 
-       lwd = 4, x.intersp = 0.5, seg.len=0.6)
-
-# Esponenziale
-plot(x, dnorm(x), type="l", lwd=2,
-     ylab = "densità", main = 'Esponenziale')
-lines(x, dexp(x,1/3), lwd=2, col = 2)
-legend(1, 0.4, c( "N(0,1)", "Exp(1/3)" ), col = c(1, 2), 
-       lwd = 4, x.intersp = 0.5, seg.len=0.6)
-
-# QQ-plot
-# Normale
-qqnorm(z)
-qqline(z, col= 'red', lwd=2)
-# Uniforme
-qqnorm(u)
-qqline(u, col= 'red', lwd=2)
-# Esponenziale
-qqnorm(g)
-qqline(g, col= 'red', lwd=2)
-
-# UNIFORME
-# Quando i dati provengono da una distribuzione con code meno pesanti (più basse)
-# di quelle della gaussiana otteniamo un qq-plot a forma di S,
-# con parte sinistra piegata verso l'alto e parte destra piegata verso il basso
-
-# ESPONENZIALE
-# Quando i dati provengono da una distribuzione asimmetrica a dx
-# otteniamo un qq-plot a forma di mezza U ( funzione convessa )
-# Se i dati provenissero da una distribuzione asimmetrica a sx
-# otterremmo un qq-plot a forma di radice quadrata
-
-## 4 - LEGGE DEI GRANDI NUMERI ( LGN ) -----------------------------------------
+## 2 - LEGGE DEI GRANDI NUMERI ( LGN ) -----------------------------------------
 
 rm( list = ls())
 graphics.off()
@@ -662,6 +325,109 @@ plot(n.lanci, media.camp, type= 'l', lwd= 2,
      ylab= 'proporzione di successi', ylim = c(0,1))
 abline(h= p, col= 'red', lty=2, lwd=2)
 
+## 3 - INTEGRAZIONE MONTE-CARLO ----------------------------------------------
+
+# Calcolare integrale di
+# f(x) = 4x se x in [0, 1/2]; 4(1-x) se x in [0.5,1] tramite integrazione MC.  
+
+# Si chiede di:
+# 1. verificare che l'integrale di $f(x)$ sia approssimativamente uguale a $1$.
+# 2. Calcolare approssimativamente media e varianza della variabile aleatoria continua X
+#    che ha come funzione di densità di probabilità la funzione f(x).
+
+# Confrontare i risultati ottenuti campioanando i punti per la valutazione 
+# da una U(0,1) e da una N(0.5,0.25^2)
+
+# 1. verificare che l'integrale di $f(x)$ sia approssimativamente uguale a $1$.
+
+f = function(x){
+  risultato = vector(mode="numeric", length = length(x))
+  for(i in 1:length(x)){
+    if(x[i] >= 0 & x[i] < 0.5) 
+      risultato[i] = 4 * x[i]
+    else if( x[i] > 0.5 & x[i] <=1) 
+      risultato[i] =  4 * (1 - x[i]) 
+  }
+  return(risultato)
+}
+
+x = seq(0,1,length=1000)
+dev.new()
+plot(x, f(x), type="l", lwd=2,
+     xlab="", ylab="", main="f(x)")
+
+set.seed(123) # riproducibilità
+mu = 0.5
+sigma = 0.25
+n = 100
+x_unif = runif(n)                 
+x_norm = rnorm(n, mean=mu, sd=sigma)
+I_unif = sum(f(x_unif))/n
+I_norm = sum( f(x_norm) / dnorm(x_norm, mean=mu, sd=sigma) )/n
+
+I_esatto = 1.
+
+err_unif = abs(I_unif-I_esatto)
+err_unif
+
+err_norm = abs(I_norm-I_esatto)
+err_norm
+
+# Al variare di n (LGN)
+set.seed(123)
+n.max = 1000
+x_unif = runif(n.max)                 
+x_norm = rnorm(n.max, mean=mu, sd=sigma)
+n = 1:n.max
+
+I_unif = cumsum(f(x_unif))/n
+I_norm = cumsum(f(x_norm)/dnorm(x_norm, mean=mu, sd=sigma)) / n
+
+dev.new()
+plot(n, I_unif, type="l", lwd=2, ylab="Approssimazione", xlab='n', 
+     col="forestgreen")
+points(n, I_norm, type="l", lwd=2, col="blue")
+abline(h=I_esatto, col='red', lty=2, lwd=2)
+legend(800, 1.2, legend = c("uniforme", "normale"), 
+       col=c("forestgreen", "blue"), lty=1, lwd=4)
+
+# 2. Calcolare approssimativamente media e varianza della variabile aleatoria continua X
+#    che ha come funzione di densità di probabilità la funzione f(x).
+# Nb. f(x) è la densità di una v.a. triangolare di parametri a=0, b=1, c=0.5
+#     E[X] = (a+b+c)/3; Var(X) = ((a^2 + b^2 + c^2) - (ac + ab + bc))/18 
+a=0; b=1; c=0.5;
+media_esatta = (a+b+c)/3
+var_esatta = ((a^2 + b^2 + c^2) - (a*c + a*b + b*c))/18
+
+# E[X] = int x f(x) dx
+media_unif = cumsum(x_unif * f(x_unif))/n
+media_norm = cumsum(x_norm * f(x_norm)/dnorm(x_norm, mean=mu, sd=sigma)) / n
+
+dev.new()
+plot(n, media_unif, type="l", lwd=2, col="forestgreen", 
+     ylab="Approssimazione", xlab='n', main="Valore Atteso")
+points(n, media_norm, type="l", lwd=2, col="blue")
+abline(h=media_esatta, col='red', lty=2, lwd=2)
+legend(800, 0.6, legend = c("uniforme", "normale"), 
+       col=c("forestgreen", "blue"), lty=1, lwd=4)
+
+# Var(X) = E[X^2] -(E[X])^2
+
+# E[X] = int x f(x) dx
+momento_secondo_unif = cumsum(x_unif^2 * f(x_unif))/n
+momento_secondo_norm = cumsum(x_norm^2 * f(x_norm)/dnorm(x_norm, mean=mu, sd=sigma)) / n
+
+var_unif = momento_secondo_unif - media_unif^2
+var_norm = momento_secondo_norm - media_norm^2
+
+dev.new()
+plot(n, var_unif, type="l", lwd=2, col="forestgreen", 
+     ylab="Approssimazione", xlab='n', main="Varianza")
+points(n, var_norm, type="l", lwd=2, col="blue")
+abline(h=var_esatta, col='red', lty=2, lwd=2)
+legend(800, 0.08, legend = c("uniforme", "normale"), 
+       col=c("forestgreen", "blue"), lty=1, lwd=4)
+
 ## 5 - TEOREMA CENTRALE DEL LIMITE ( TCL ) -------------------------------------
 
 rm(list = ls())
@@ -688,7 +454,7 @@ graphics.off()
 
 # NB. Generare $n$ variabili aleatorie Be(p) e calcolarne la somma è equivalente 
 #     a generare una Bin(n,p).
- 
+
 # Per ogni valore di n generiamo N=500 realizzazioni di una Bin(n,p)
 # in modo da avere N realizzazione della somma di n Bernoulli. 
 # I dati generati sono salvati in un'unica matrice N x 4
@@ -752,31 +518,14 @@ hist( dati[,4], prob = TRUE, main = 'TCL applicato a somma di Bernoulli\n n = 50
       ylim = c(0, max(max(density), max(hist(dati[,4], plot=F)$density))))
 lines( x, density, col= 'red', lwd= 2)
 
-
-# Oltre al confronto qualitativo tra gli istogrammi, la bonta' dell'adattamento
-# della legge della somma alla normale puo' essere valutata anche con un q-q plot.
-# Tracciamo dunque il q-q plot della somma di n Bernoulli per ciascun valore
-# di n considerato, e vediamo come l'adattamento alla normale migliori al crescere di n.
-
-dev.new()
-par( mfrow = c( 2, 2 ) )
-qqnorm( dati[,1], main = 'TCL applicato a somma di Bernoulli\n n = 5' )
-qqline( dati[,1], lwd = 2, col = 'red' )
-qqnorm( dati[,2], main = 'TCL applicato a somma di Bernoulli\n n = 50' )
-qqline( dati[,2], lwd = 2, col = 'red' )
-qqnorm( dati[,3], main = 'TCL applicato a somma di Bernoulli\n n = 500' )
-qqline( dati[,3], lwd = 2, col = 'red' )
-qqnorm( dati[,4], main = 'TCL applicato a somma di Bernoulli\n n = 5000' )
-qqline( dati[,4], lwd = 2, col = 'red' )
-
 # Si noti che per n grande risulta sempre meno evidente 
 # la distinzione fra l'andamento dei quantili empirici della somma di Bernoulli 
 # e quelli di una distribuzione gaussiana.
 
 
 # Consideriamo la Media Campionaria delle n Bernoulli.
-# Verifichiamo che al crescere di n l'approssimazione della Media Campionaria
-# con una Normale N(p,p(1-p)/n).
+# Valutiamo al crescere di n l'approssimazione della Media Campionaria 
+# con una Normale N(p,p(1-p)/n)
 
 mean_ = matrix(0,nrow=N,ncol=length(n))
 
