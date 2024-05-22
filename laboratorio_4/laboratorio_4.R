@@ -1,17 +1,8 @@
 #'###########################################################'#
 #'#####                 LABORATORIO 4                   #####'#
+#'#####              VERIFICA di NORMALITA'             #####'#
 #'#####    INFERENZA E TEST PER UNA E DUE POPOLAZIONI   #####'#
 #'###########################################################'#
-
-# Argomenti del quarto laboratorio:
-# 1.1 - IC e test per la media di una popolazione normale a varianza nota
-# 1.2 - IC e test per la media di una popolazione normale a varianza incognita
-# 2 - IC e test per una proporzione
-# 3 - IC e test per la varianza di una popolazione normale
-# 4.1 - IC e test per la differenza tra due popolazioni normali (dati accoppiati)
-# 4.2 - IC e test per la differenza tra due popolazioni normali (dati non accoppiati)
-# 5 - Calcolo della potenza e della curva di potenza di un test via Monte Carlo
-# 6 - Calcolo del livello di confidenza reale via Monte Carlo
 
 # IMPOSTARE LA WORKING DIRECTORY (CARTELLA DI LAVORO): -------------------------
 # Da interfaccia:
@@ -22,602 +13,445 @@
 # 'Session' -> 'Set Working Directory' -> 'To Source File Location'
 
 # Da console:
-# setwd( 'C:/percorso/file' )
+# setwd( 'path/to/file' )
 
-# Da pacchetto:
-if(!require(rstudioapi)) install.packages("rstudioapi")
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+if(!require(BSDA)) install.packages("BSDA")  
+if(!require(EnvStats)) install.packages("EnvStats")
 
-## 1 - IC E TEST PER LA MEDIA DI UNA POPOLAZIONE -------------------------------
+library(BSDA)     
+library(EnvStats)
 
-### 1.1 VARIANZA NOTA ----------------------------------------------------------
+# 1 - VERIFICA di NORMALITA (QQ-plot e Test di Shapiro-Wilk) -------------------
+ 
+set.seed(0) # riproducibilità risultati
+mu = 5
+sigma = 2
+n = 30    
 
-library(BSDA)
-library(EnvStats) 
+# n realizzazioni della variabile gaussiana
+x_norm = rnorm(n, mean = mu, sd = sigma)
 
+# Q-Q plot
+#   - in ascissa: quantili teorici di N(0,1)
+#                 -> distribuzione cumulata della normale
+#   - in ordinata: quantili empirici
+#                 -> distribuzione cumulata della variabile osservata
+qqnorm(x_norm, pch=16)
+qqline(x_norm, lty=2, lwd=2, col="red")
+
+# Test di Shapiro-Wilk 
+# H_0: Popolazione Normale vs H_1: Popolazione NON Normale
+
+shapiro.test(x_norm) # p-value >> 0.05 -> NON rifiuto H_0
+
+## DATI PROVENIENTE DA DISTRIBUZIONI NOTE NON GAUSSIANE ------------------------
+
+rm(list=ls())
+
+set.seed(0) #riproducibilità risultati
+n = 1000
+
+# Osservazioni da una normale standard
+x_norm = rnorm(n)
+
+# Osservazioni da una U( -2, 2 )
+x_unif = runif(n, -2, 2 )
+
+# Osservazioni iid da una Exp( 1/3 )
+x_exp = rexp(n, 1/3 )
+
+x = seq(from=-5, to=5, length=1000)
+
+{
+dev.new()
+par(mfrow= c(2,3))
+# Normale
+plot(x, dnorm(x), type="l", lwd=2, col = 2,
+     ylab = "densità", main = 'Normale')
+
+# Uniforme
+plot(x, dnorm(x), type="l", lwd=2,
+     ylab = "densità", main = 'Uniforme')
+lines(x, dunif(x,min=-2,max=2), lwd=2, col = 2)
+legend(1, 0.4, c("N(0,1)", "U(-2,2)"), col= c(1, 2), 
+       lwd = 4, x.intersp = 0.5, seg.len=0.6)
+
+# Esponenziale
+plot(x, dnorm(x), type="l", lwd=2,
+     ylab = "densità", main = 'Esponenziale')
+lines(x, dexp(x,1/3), lwd=2, col = 2)
+legend(1, 0.4, c( "N(0,1)", "Exp(1/3)" ), col = c(1, 2), 
+       lwd = 4, x.intersp = 0.5, seg.len=0.6)
+
+# QQ-plot
+# Normale
+qqnorm(x_norm, pch=16)
+qqline(x_norm, col= 'red', lwd=2)
+# Uniforme
+qqnorm(x_unif, pch=16)
+qqline(x_unif, col= 'red', lwd=2)
+# Esponenziale
+qqnorm(x_exp, pch=16)
+qqline(x_exp, col= 'red', lwd=2)
+}
+
+shapiro.test(x_norm)
+shapiro.test(x_unif) # p-value < 0.05 -> Rifiuto H_0
+shapiro.test(x_exp)  
+
+# 2 - IC E TEST PER LA MEDIA DI UNA POPOLAZIONE -------------------------------
+
+# Esercizio 1 
 # Carichiamo i dati contenuti nel file lampadine.txt:
 # Essi rappresentano il tempo di vita (espresso in ore) di un campione di 
-# 20 lampadine da 75 watt. Il tempo di vita della lampadina è una variabile aleatoria 
-# normale con deviazione standard nota pari a 25 ore.  
+# 20 lampadine da 75 watt. 
 
-# 1) E' ragionevole supporre che la media di vita delle lampadine sia pari a 1000 ore? 
-# Usare un livello di significatività pari al 5%.
-# Calcolare il p-value del test. 
+# 1. Verificare la normalità dei dati
+#
+# 2.  Supporre che la deviazione standard sia nota e pari a 25 ore.
+#     E' ragionevole supporre che la media di vita delle lampadine sia pari a 1000 ore?
+#     Fissare un livello di significatività pari al 5%. 
+#     2.1 Costruire il test di ipotesi
+#     2.2 Costruire IC al 95%
+#     2.3 Calcolare il p-value del test. 
+
+# 3. Costruire i Test Unilateri per la media di vita delle lampadine 
+#    al livello di significatività 0.05
 
 # Importiamo il dataset
-dati <- read.table('lampadine.txt', dec='.', header=T)
+dati = read.table('lampadine.txt', dec='.', header=T)
 head(dati)
 
 dim(dati)
-n <- dim(dati)[1] # n è il numero di lampadine (dimensione del campione)
 names(dati)
 
-# Il testo dell'esercizio dice che i dati sono campionati da una normale, quindi potrei non 
-# verificare la normalità. Per scrupolo facciamo comunque una verifica:
+# 1. Verifichiamo Normalità
 
-# Tramite Q-Q plot:
-qqnorm(dati$tempo_vita)
-qqline(dati$tempo_vita)
+dev.new()
+qqnorm(dati$tempo_vita, pch=16)
+qqline(dati$tempo_vita, lty=2, lwd=3, col="red")
 
-# Tramite Shapiro test:
-shapiro.test(dati$tempo_vita) # posso supporre i dati normali!
+# Tramite Shapiro test 
+# H_0: Popolazione Normale vs H_1: Popolazione NON Normale
+shapiro.test(dati$tempo_vita) 
+# p-value >> 0.05 -> E' ragionevole assumere normalità
 
-# Consideriamo il test:
+# 2. 
+# 2.1 Consideriamo il test:
 # H_0: mu = 1000     vs     H_1: mu != 1000
 
-alpha <- 0.05 
-help(z.test)
-z.test(x = dati$tempo_vita,
-       alternative = "two.sided", 
-       mu = 1000, 
-       sigma.x = 25, 
-       conf.level = 1-alpha)
+# Rifiuto H_0 se abs(z_0) = abs( (x_mean - mu0)/(sigma/sqrt(n)) ) > z_{1-alpha/2}
+alpha = 0.05
+n = nrow(dati)
+mu0 = 1000
+x_mean = mean(dati$tempo_vita)
+sigma = 25
+z.quantile = qnorm(1-alpha/2)
 
-res <- z.test(x = dati$tempo_vita, 
-              alternative = "two.sided", 
-              mu = 1000,
-              sigma.x = 25, 
-              conf.level = 1-alpha)
+z0 = (x_mean - mu0)/(sigma/sqrt(n))  
+
+abs(z0) > z.quantile # RIFIUTO H_0
+
+# Costruiamo IC al livello 95%
+IC = c( x_mean - z.quantile * sigma/sqrt(n), x_mean + z.quantile * sigma/sqrt(n))
+IC  # mu0 non è all'interno di IC, coerentemente al risultato del test
+
+# Calcoliamo p-value del Test
+
+p.value = 2 * (1 - pnorm( abs(z0) ))
+p.value   # Rifiuto H_0 per ogni alpha < p-value 
+
+# BSDA::z.test
+z.test(x = dati$tempo_vita, alternative = "two.sided", 
+       mu = mu0, sigma.x = sigma, conf.level = 1-alpha)
+
+res = z.test(x = dati$tempo_vita, alternative = "two.sided", 
+              mu = mu0, sigma.x = sigma, conf.level = 1-alpha)
 names(res)
 
-res$statistic # statistica test del test z
-res$p.value # p-value
+res$statistic  # z0
+res$conf.int   # IC 
+res$p.value    # p-value
+res$estimate   # x_mean
 
-res$estimate # stima puntuale
-res$conf.int # stima intervallare
-
-# Possiamo anche costruire l'intervallo di confidenza "a mano":
-sigma <- 25
-z.alpha <- qnorm(1-alpha/2)
-IC.alpha <- c( mean(dati$tempo_vita) - z.alpha*sigma/sqrt(n),  mean(dati$tempo_vita) + z.alpha*sigma/sqrt(n))
-
-# Plottiamo IC e dati
-plot(rep(1,n),dati$tempo_vita,col=4,lwd=2,ylim=range(dati$tempo_vita),xlab='') 
-points(res$estimate,pch=4,lwd=3)
-points(rep(1,2),res$conf.int,type='l',lwd=2)
-points(1000,pch=4,lwd=3,col="red")
-
-# 2) E' ragionevole supporre che la media di vita delle lampadine superi 1000 ore? 
+# 3. 
 
 # Consideriamo il test unilatero:
 # H_0: mu = 1000     vs     H_1: mu > 1000
+# Rifiuto H_0 se z0 =  (x_mean - mu0)/(sigma/sqrt(n)) > z_{1-alpha}
+z.quantile = qnorm(1-alpha)
+z0 > z.quantile # Rifiuto H_0
 
-z.test(x = dati$tempo_vita, 
-       alternative = "greater",
-       mu = 1000, 
-       sigma.x = 25, 
-       conf.level = 1-alpha)
-
-# 3) E' ragionevole supporre che la media di vita delle lampadine sia inferiore a 1000 ore? 
+z.test(x = dati$tempo_vita, alternative = "greater",
+       mu = mu0, sigma.x = sigma, conf.level = 1-alpha)
+# p.value << 0.05 -> Rifiuto H_0
 
 # Consideriamo il test unilatero:
 # H_0: mu = 1000     vs     H_1: mu < 1000
+# Rifiuto H_0 se z0 = (x_mean - mu0)/(sigma/sqrt(n)) < z_{alpha} = -z_{1-alpha}
 
-z.test(x = dati$tempo_vita, 
-       alternative = "less", 
-       mu = 1000, 
-       sigma.x = 25,
-       conf.level = 1-alpha)
+z0 < -z.quantile # NON Rifiuto H_0 
+
+z.test(x = dati$tempo_vita, alternative = "less", 
+       mu = mu0, sigma.x = sigma, conf.level = 1-alpha)
 
 rm(list=ls())
-graphics.off()
 
-### 1.2 VARIANZA INCOGNITA -----------------------------------------------------
-
+# Esercizio 2
 # Carichiamo i dati contenuti nel file temperatura.txt:
 # Essi rappresentano la temperatura corporea (espressa in gradi Fahrenheit)
 # di un campione di 130 soggetti, di cui 65 maschi e 65 femmine.
 # Si vuole stabilire se la media reale della temperatura corporea della popolazione
-# sia 98.6 gradi F
+# sia 37 gradi Celsius
+#  1.1 Costruire il test di ipotesi
+#  1.2 Costruire IC al 95%
+#  1.3 Calcolare il p-value del test. 
+
+# 2.1 Stabilire se ci sono differenze nella temperatura corporea dovute al
+#     sesso del soggetto per mezzo di grafici e di un opportuno test.
+# 2.2 Stabilire se la temperatura corporea media delle donne è superiore 
+#    alla temperatura corporea media degli uomini (assumendo stessa varianza)
+
 
 # Importiamo il dataset
-dati <- read.table('temperatura.txt', dec='.', header=T)
+dati = read.table('temperatura.txt', dec='.', header=T)
 head(dati)
 
 dim(dati)
-n <- dim(dati)[1] # n è il numero di pazienti (dimensione del campione)
 names(dati)
+# Fahrenheit -> Celsius ( C = (F - 32)/1.8 ) 
+dati$Temperatura = (dati$Temperatura - 32) / 1.8 
 
-# Per impostare un test corretto per la media della variabile Temperatura, 
-# dobbiamo sapere se la variabile Temperatura può essere considerata normale
+# Verifichiamo la Normalità della v.a. Temperatura
 
 par(mfrow = c(1,2))
-hist(dati$Temperatura,prob=TRUE)
-qqnorm(dati$Temperatura)
-qqline(dati$Temperatura,lwd=2,col='red')
+hist(dati$Temperatura, prob=TRUE)
+qqnorm(dati$Temperatura, pch=16)
+qqline(dati$Temperatura, lwd=2, col='red')
 
 shapiro.test(dati$Temperatura)
-# pvalue abbastanza alto quindi possiamo assumere che i dati siano normali
+# p-value > 0.05 -> possiamo assumere che i dati provengano da popolazione normale
 
-# effettuo un test per verificare l'ipotesi
-#       H_0: mu = 98.6 F     vs     H_1: mu != 98.6 F
+# Effettuo un test per verificare l'ipotesi
+#       H_0: mu = 37 C     vs     H_1: mu != 37 C
 
-alpha<-0.05
-t.test(x = dati$Temperatura, alternative = "two.sided", mu = 98.6, conf.level = 1-alpha)
+# Varianza incognita -> t-Test
 
-# il p-value è circa 0, per cui ho forte evidenza per affermare che la media vera
-# sia diversa da 98.6.
+# Rifiuto H_0 se abs(t_0) = abs( (x_mean - mu0)/(s/sqrt(n)) ) > t_{1-alpha/2,n-1}
+alpha = 0.05
+n = nrow(dati)
+mu0 = 37
+x_mean = mean(dati$Temperatura)
+x_sd = sd(dati$Temperatura)
+t.quantile = qt(1-alpha/2, df = n - 1)
 
-rm(list=ls())
-graphics.off()
+t0 = (x_mean - mu0)/(x_sd/sqrt(n))
+abs(t0) > t.quantile # RIFIUTO H_0 
 
-## 2 - IC E TEST PER UNA PROPORZIONE -------------------------------------------
+# Costruiamo IC al livello 95%
+IC = c( x_mean - t.quantile * x_sd/sqrt(n), 
+        x_mean + t.quantile * x_sd/sqrt(n))
+IC  # mu0 non è all'interno di IC, coerentemente al risultato del test
 
-# Carichiamo i dati contenuti nel file penicillina.txt:
-# Essi rappresentano la temperatura corporea (espressa in gradi Fahrenheit)
-# di 100 pazienti ricoverati per meningite, che sono stati trattati con un'ampia
-# dose di penicillina. Se dopo 3 giorni è stata osservata una diminuzione di
-# temperatura, il trattamento è stato considerato un successo.
-# Vogliamo stabilire se i dati ci permettono di affermare, con un livello di significatività
-# pari a 0.05, che il trattamento ha successo almeno nel 60% dei casi.
+# Calcoliamo p-value del Test
 
-# Importiamo il dataset
-dati <- read.table('penicillina.txt', header=T)
-head(dati)
+p.value = 2 * (1 - pt( abs(t0) , df = n - 1))
+p.value   # p-value << 0.05 
 
-dim(dati)
-n <- dim(dati)[1] # n è il numero di pazienti (dimensione del campione)
-names(dati)
+# Utilizziamo la funzione t.test
+help("t.test")
+t.test(x = dati$Temperatura, alternative = "two.sided", 
+       mu = mu0, conf.level = 1-alpha)
 
-# effettuo un test per verificare l'ipotesi
-#        H_0: p = 0.6 vs H_1: p > 0.6
+# p-value << 0.05 -> Rifiuto H_0 -> Vera Media != mu0
 
-p.0 <- 0.6
+# 2.1 Rappresentiamo gli istogrammi delle due popolazioni e i boxplot
+# e costruiamo un test d'ipotesi per la differenza tra le medie
+# delle temperature corporee nelle due sottopopolazioni individuate
+# dal sesso.
+class(dati$Sesso)
+dati$Sesso = as.factor(dati$Sesso)
+levels(dati$Sesso)
+# esplorazione grafica
+dev.new()
+par(mfrow=c(1,1))
+boxplot(dati$Temperatura ~ dati$Sesso, horizontal=FALSE, 
+        main='Boxplot Temperatura', xlab = "Sesso",
+        names=c('Donne','Uomini'), col=c('orange','forestgreen'),
+        ylab='temperatura corporea [gradi C]')
 
-# Per poter usare l'approssimazione Gaussiana dobbiamo verificare che siano soddisfatte 
-# le ipotesi 
-n>50
-n*p.0>5
-n*(1-p.0)>5
-# sono tutte soddisfatte
+# Tendenza delle donne ad avere una temperatura corporea più alta rispetto agli uomini.
 
-z.test(x=dati$Rid_Temp, alternative = "greater", mu = p.0, sigma.x = sqrt(p.0*(1 - p.0)))
+# verifichiamo la normalità delle due popolazioni
+temp.maschi = dati$Temperatura[dati$Sesso == "M"]
+temp.femmine = dati$Temperatura[dati$Sesso == "F"]
 
-# ad un livello di significatività del 5%,  non possiamo rifiutare l'ipotesi nulla
-# ad un livello di significatività del 10%, possiamo rifiutare l'ipotesi nulla
+dev.new()
+par(mfrow=c(2,1))
+qqnorm(temp.femmine, pch=16, main='Temperatura Femmine')
+qqline(temp.femmine, col='orange',lwd=3)
+qqnorm(temp.maschi, pch=16, main='Temperatura Maschi')
+qqline(temp.maschi, col='forestgreen',lwd=3)
 
-rm(list=ls())
-graphics.off()
+shapiro.test(temp.femmine)  # p-value > 0.05
+shapiro.test(temp.maschi)   # p-value > 0.05
 
-## 3 - IC E TEST PER LA VARIANZA DI UNA POPOLAZIONE NORMALE --------------------
+# Test d'ipotesi sulla differenza di media tra due popolazioni
+#       H_0: mu_F - mu_M = 0    vs     H_1: mu_F - mu_M != 0
+# Rifiuto H_0 se abs(t0) = abs( ((mean_F - mean_M))/(sqrt(s2_pool* (1/n_F + 1/n_M))) > t_{1-alpha/2, n_M + n_F -2} 
 
+n_F = length(temp.femmine)
+n_M = length(temp.maschi)
+mean_F = mean(temp.femmine)
+mean_M = mean(temp.maschi)
+alpha = 0.05
+s2_pool = ((n_F - 1)*var(temp.femmine) + (n_M - 1)*var(temp.maschi))/(n_F + n_M - 2)
+
+t0 = ((mean_F - mean_M))/(sqrt(s2_pool* (1/n_F + 1/n_M)))
+t.quantile = qt(1-alpha/2, df = (n_M + n_M - 2))
+abs(t0) > t.quantile # Rifiuto H_0
+
+# p.value test
+p.value = 2*(1 - pt(abs(t0), df = (n_M + n_M - 2)))
+p.value   # coerente risultato test
+# utilizziamo la funzione t.test
+t.test(temp.femmine, temp.maschi, alternative = "two.sided", 
+       paired = FALSE, var.equal = TRUE)
+
+# p-value < 0.05 -> Rifiuto H_0 -> 
+# -> al livello 0.05 non c'è evidenza per affermare che esiste una differenza nella
+#    media delle due sotto-popolazioni
+
+# 2.2  Test unilatero sulla differenza di media tra due popolazioni
+#       H_0: mu_F - mu_M <= 0    vs     H_1: mu_F - mu_M > 0
+
+
+t.test(temp.femmine, temp.maschi, mu=0, alternative = "greater",
+       paired = FALSE, conf.level = 1-alpha, var.equal = TRUE)
+
+# p-value < 0.05 -> Rifiuto H_0
+
+# Esercizio 3
 # Carichiamo il dataset funi.txt
-# Esso i risultati di 25 prove di rottura (risultati espressi 
+# Esso contiene i risultati di 25 prove di rottura (risultati espressi 
 # in Newton) di funi prodotte in una fabbrica per mezzo di un nuovo processo 
 # produttivo
 # Si sa che le funi tradizionali hanno una resistenza di rottura pari a 1730N. 
-# 1) Il processo produttivo ha significativamente migliorato la qualità 
+# 1. Il processo produttivo ha significativamente migliorato la qualità 
 # delle funi?
-# 2) Si vuole poi verificare con un opportuno test al 5% che la varianza 
+# 2. Si vuole poi verificare con un opportuno test al 5% che la varianza 
 # della resistenza delle funi non sia superiore a 28900N^2 
 # (deviazione standard 170N) e calcolare poi il p-value di tale test.
-# 3) Calcolare un intervallo di confidenza bilatero per la varianza al 95%.
+# 3. Calcolare un intervallo di confidenza bilatero per la varianza al 95%.
 
 # Importiamo il dataset
-dati <- read.table('funi.txt', header=T)
-dati
+dati = read.table('funi.txt', header=T)
 
 dim(dati)
-n <- dim(dati)[1] # n è il numero di pazienti (dimensione del campione)
 names(dati)
+head(dati)
 
 # verifica normalità
 par(mfrow = c(1,2))
 hist(dati$resistenza,prob=TRUE)
-qqnorm(dati$resistenza)
-qqline(dati$resistenza, lwd=2, col='red')
+qqnorm(dati$resistenza, pch=16)
+qqline(dati$resistenza, lty=2, lwd=3, col='red')
 
 shapiro.test(dati$resistenza)
-# pvalue abbastanza alto quindi possiamo assumere che i dati siano normali
+# p-value > 0.05 -> assumiamo che i dati provengano da popolazione normale
 
-# 1) Vogliamo effettuare un test sulla media 
+# 1. Vogliamo effettuare un test sulla media 
 # H0: mu=1730  contro  H1: mu>1730 
 
-mu0 <- 1730
+mu0 = 1730
 t.test(dati$resistenza, mu=mu0, alternative="greater")
 
-# Si conclude che il processo produttivo ha significativamente migliorato  
+# p-value < 0.05 -> Rifiuto H_0
+# Si conclude che il processo produttivo ha migliorato  
 # la qualità delle funi.
 
-# 2) Test per la varianza di una popolazione normale.
-help(varTest)
-
-# Test per varianza di una gaussiana
+# 2. Test per la varianza di una popolazione normale.
 # H0: sigma2 >= 28900 vs H1: sigma2 < 28900
 
-sigma2_0 <- 28900
+# Rifiuto H_0 se u0 = (n - 1)*x_var/sigma2_0 < quisq_{alpha, n-1}  
 
-alpha<-0.05
-varTest(x = dati$resistenza, alternative = "less", conf.level = 1-alpha, 
-        sigma.squared = sigma2_0)
+sigma2_0 = 28900
+alpha = 0.05
+n = nrow(dati)
+x_mean = mean(dati$resistenza)
+x_var = var(dati$resistenza)
+quisq.quantile = qchisq(alpha, df = n - 1)
 
-# A livello 5% viene rifiutata l'ipotesi nulla e si può quindi dichiarare che
-# la resistenza delle funi ha una deviazione standard NON superiore ai 170N.
+u0 = (n - 1)*x_var/sigma2_0
+u0 < quisq.quantile # Rifiuto H_0
+# IC al 95%
+IC = c(0, (n-1) * x_var / quisq.quantile)
+IC
+# p-value del test
+p.value = pchisq(u0, df = n - 1)
+p.value # coerente al risultato del test
 
-# 3) Intervallo di confidenza bilatero per la varianza al 95%
+# EnvStats::varTest
+help(varTest)
+varTest(x = dati$resistenza, alternative = "less", 
+        sigma.squared = sigma2_0, conf.level = 1-alpha)
 
-varTest(x = dati$resistenza, alternative = "two.sided", conf.level = 1-alpha)
+# 3. Intervallo di confidenza bilatero per la varianza al 95%
 
-rm(list=ls())
-graphics.off()
+varTest(x = dati$resistenza, alternative = "two.sided", 
+        conf.level = 1-alpha)
 
-## 4 - IC E TEST PER LA DIFFERENZA TRA DUE POPOLAZIONI NORMALI -----------------
-
-### 4.1 DATI ACCOPPIATI --------------------------------------------------------
-
-# Analizziamo il dataset jogging.txt.
-# Questo dataset contiene le misurazioni della frequenza cardiaca a riposo
-# relative a 50 volontari che non hanno mai svolto attività fisica
-# prima di iniziare un programma di un mese di jogging e dopo il mese 
-# di attività sportiva.
-
-# Importazione dei dati
-dati <- read.table('jogging.txt')
-head(dati)
-
-# Si vuole stabilire se l'attività sportiva porta ad una diminuzione 
-# della frequenza cardiaca a riposo.
-# Viene quindi richiesto di:
-# 1) eseguire un'esplorazione grafica dei dati;
-# 2) eseguire un test d'ipotesi per stabilire se l'attività sportiva porta ad una diminuzione 
-#    della frequenza cardiaca a riposo;
-# 3) calcolare un intervallo di confidenza per la differenza di medie al livello di confidenza 90%.
-
-dim(dati)
-n <- dim(dati)[1] # n ? il numero di pazienti (dimensione del campione)
-names(dati)
-
-# 1): Esplorazione grafica della frequenza cardiaca prima e dopo
-# il programma di jogging
-
-boxplot(dati, col=c('green','orange'))
-
-dev.new()
-par(mfrow=c(2,1))
-hist(dati$prima, prob=T, xlim=c(50,120), breaks=seq(50,120,by=5), col='green')
-hist(dati$dopo, prob=T, xlim=c(50,120), breaks=seq(50,120,by=5), col='orange')
-
-# Dopo il mese di attività sportiva la mediana della frequenza cardiaca è leggermente
-# diminuita ma è aumentata la variabilità del campione.
-
-# 2): Test d'ipotesi per la differenza di medie
-
-# I dati sono accoppiati perchè le misurazioni prima e dopo sono effettuate 
-# sulle stesse persone.
-# Si può quindi creare una nuova variabile diff che rappresenta la differenza 
-# tra la frequenza prima dell'attività sportiva e dopo.
-
-diff <- dati$prima-dati$dopo
-
-diff.media <- mean(diff)
-diff.media
-
-# Prima di procedere con il test doppiamo verifica della normalità di diff
-dev.new()
-par(mfrow=c(2,1))
-hist(diff,prob=TRUE)
-qqnorm(diff)
-qqline(diff,lwd=2,col='red')
-
-shapiro.test(diff)
-# La differenza dei dati può essere considerata normale
-
-# Dato che stiamo considerando diff = prima - dopo, per stabilire se l'attività sportiva porta 
-# ad una diminuzione della frequenza cardiaca a riposo, dobbiamo quindi provare che diff 
-# sia effettivamente maggiore di 0.
-# Per fare questo possiamo effettuare un test sulla media della differenza
-# H0: mu.diff<=0 vs H1: mu.diff>0
-
-t.test(diff, mu=0, alternative = "greater")
-# Ad un livello di significatività del 5%,  non possiamo rifiutare l'ipotesi nulla
-
-# O in alternativa:
-t.test(dati$prima, dati$dopo, mu=0, alternative = "greater", paired = TRUE)
-
-# N.B. Attenzione alla concordanza tra l'ordine di "prima", "dopo" e l'alternative hypothesis.
-
-# 3): IC bilatero per la differenza delle medie al 90%
-alpha <- 0.10
-t.test(dati$prima, dati$dopo, mu=0, alternative = "two.sided", paired = TRUE, conf.level = 1-alpha)
-
-# IC 90% per (prima-dopo) = [-1.157734; 7.917734]
+# VERIFICA NUMERICA DELLA SIGNIFICATIVITA' DI UN TEST --------------------------
 
 rm(list=ls())
 graphics.off()
 
-### 4.2 DATI NON ACCOPPIATI ---------------------------------------------------- 
-
-# Riprendiamo i dati del file temperatura.txt.
-# Carichiamo i dati contenuti nel file temperatura.txt:
-dati <- read.table('temperatura.txt', header=T)
-dati
-
-# Essi rappresentano la temperatura corporea (espressa in gradi Fahrenheit)
-# di un campione di 130 soggetti, di cui 65 maschi e 65 femmine.
-# Si vuole stabilire se la media reale della temperatura corporea della popolazione
-# sia 98.6 gradi F
-
-# 1) Stabilire se ci sono differenze nella temperatura corporea dovute al
-#    sesso del soggetto per mezzo di grafici e di un opportuno test.
-# 2) Calcolare un intervallo di confidenza bilatero per la differenza nella 
-#    temperatura corporea tra donne e uomini a livello 97%.
-# 3) Stabilire se la temperatura corporea media delle donne è superiore 
-#    alla temperatura corporea media degli uomini.
-
-dim(dati)
-n <- dim(dati)[1] # n è il numero di pazienti (dimensione del campione)
-names(dati)
-
-# 1): Rappresentiamo gli istogrammi delle due popolazioni e i boxplot
-# e facciamo un test d'ipotesi per la differenza tra le medie
-# delle temperature corporee nelle due sottopopolazioni individuate
-# dal sesso.
-
-# Consideriamo innanzitutto i due campioni distinti per sesso
-temp.m <- dati$Temperatura[which(dati$Sesso=='U')]
-temp.f <- dati$Temperatura[which(dati$Sesso=='D')]
-# ora ho due campioni di ampiezza dimezzata
-n.m <- length(temp.m)
-n.f <- length(temp.f)
-n.m
-n.f
-
-# esplorazione grafica
-dev.new()
-par(mfrow=c(2,1))
-hist(temp.f, prob=TRUE, main='Istogramma Temperatura Donne',
-     xlab='temperatura corporea [gradi F]',
-     ylab='Densità', col='pink', xlim=range(dati$Temperatura), breaks=seq(96,101,.25))
-hist(temp.m, prob=TRUE, main='Istogramma Temperatura Uomini',
-     xlab='temperatura corporea [gradi F]',
-     ylab='Densità', col='lightblue', xlim=range(dati$Temperatura), breaks=seq(96,101,.25))
-
-dev.new()
-par(mfrow=c(1,1))
-boxplot(temp.f, temp.m, horizontal=FALSE, main='Boxplot Temperatura',
-        names=c('Donne','Uomini'), col=c('pink','lightblue'),
-        ylab='temperatura corporea [gradi F]', ylim=c(94,102))
-
-# Tendenza delle donne ad avere una temperatura corporea più alta rispetto agli uomini.
-
-# Prima di effettuare il test sulle medie verifichiamo la normalità
-# delle due popolazioni osservazione: per questo tipo di test di ipotesi
-# la verifica della normalit? va fatta in maniera distinta per le due popolazioni
-dev.new()
-par(mfrow=c(2,1)) 
-qqnorm(temp.f, main='Temperatura Donne')
-qqline(temp.f, col='pink',lwd=2)
-qqnorm(temp.m, main='Temperatura Uomini')
-qqline(temp.m, col='light blue',lwd=2)
-
-shapiro.test(temp.f)
-shapiro.test(temp.m)
-# Consideriamo comunque i due campioni normali
-
-# Test d'ipotesi sulla differenza di media tra due popolazioni
-#       H_0: mu_F = mu_M    vs     H_1: mu_F != mu_M
-t.test(temp.f, temp.m, mu=0, alternative = "two.sided", paired = FALSE, var.equal = TRUE)
-
-# Al livello 5% ho evidenza per rifiutare H_0 ed affermare che esiste una
-# differenza nella media della temperatura corporea nelle due sottopopolazioni.
-# Al livello 1% non avrei rifiutato H_0.
-
-# 2): IC bilatero per la differenza nella temperatura corporea tra donne 
-# e uomini a livello 97%.
-alpha <- 0.03
-t.test(temp.f, temp.m, mu=0, alternative = "two.sided",
-       paired = FALSE, conf.level = 1-alpha, var.equal = TRUE)
-
-# IC al 95% per (donne-uomini): [0.03882; 0.53964]
-
-# 3): Facciamo un test d'ipotesi per la differenza tra le medie
-# delle temperature corporee nelle due sottopopolazioni individuate
-# dal sesso per stabilire se la temperatura corporea media delle donne è
-# superiore a quella degli uomini.
-
-# Abbiamo già verificato che
-# 1) Le due popolazioni sono normali
-# Possiamo procedere con il test unilatero
-
-# Test unilatero sulla differenza di media tra due popolazioni
-#       H_0: mu_F <= mu_M    vs     H_1: mu_F > mu_M
-alpha <- 0.05
-t.test(temp.f, temp.m, mu=0, alternative = "greater",
-       paired = FALSE, conf.level = 1-alpha, var.equal = TRUE)
-
-# Al livello 5% ho evidenza per rifiutare H_0 ed affermare che la temperatura 
-# corporea media delle donne è superiore a quella degli uomini.
-# Al livello 1% non avrei rifiutato H_0.
-
-## 5 - CALCOLO DELLA POTENZA E DELLA CURVA DI POTENZA VIA MONTE CARLO ----------
-
-rm(list=ls())
-graphics.off()
-
-# La lunghezza dei componenti meccanici prodotti da un'azienda segue una distribuzione 
-# normale con media mu e con deviazione standard nota pari a 10 cm
-# 
-# Consideriamo il test:
-# H_0: mu = 40 cm    vs     H_1: mu > 40 cm
-# 1) calcolare la potenza del test con alpha=0.05 di un campione di 20 componenti sapendo 
-#    che la vera media è mu =42 cm
-# 2) Cosa succede alla potenza al variare di mu nell'intervallo fra 41 e 50 cm ?
-
-# 3) Ripetere l'esercizio con un campione di 40 componenti? Cosa succede ala potenza al 
-#    variare del numero di componenti?
-
-# 1) calcolare la potenza del test con alpha=0.05 di un campione di 20 componenti sapendo 
-#    che la vera media è mu =42 cm
-n <- 20 
-mu0 <- 40  
-mu1 <- 42
-sigma <- 10
-alpha <- 0.05
-N <- 2000 # numero di iterazione montecarlo
-
-# vettore in cui inserirò i risultati del test
-# Metto 0 se accetto H_0, 1 se rifiuto H_0, quindi alla fine dell'esperimento
-# sum(esito) sarà il numero di volte che ho correttamente concluso che H_0 era falsa
-esito <- rep(0,N) 
-
-for( i in 1:N){
-  # genero un random sample sotto H1, quindi con media mu1
-  x <- rnorm (n , mean = mu1 , sd = sigma ) 
-  
-  # testo se la media è uguale a mu0
-  z.test <- z.test(x = x, alternative = "greater", mu = mu0, sigma.x = sigma) # calcolo il test
-  if( z.test$p.value < alpha ){ 
-    esito[i] <- 1
-  }
-}
-
-plot(as.factor(esito))
-power = mean(esito) # calcolo la potenza del test come proporzione di volte in cui ho rifiutato H0
-power
-
-# 2) Cosa succede alla potenza al variare di mu nell'intervallo fra 41 e 50 cm ?
-
-# ripeto l'esercizio al variare di mu sotto H1 nell'intervallo fra 41 e 50 cm
-mu <- 41:50 # alternatives
-M <- length(mu) 
-# creo il vettore dove andrò a salvare la potenza per ogni media 
-power <- rep(0, M)
-# per ogni media, ripeto il procedimento di prima
-for ( j in 1:M ) {
-  mu1 <- mu[j]
-  
-  esito <- rep(0,N)
-  for( i in 1:N){
-    # genero un random sample sotto H1, quindi con media mu1
-    x <- rnorm (n , mean = mu1 , sd = sigma ) 
-    
-    # testo se la media è uguale a mu0
-    z.test <- z.test(x = x, alternative = "greater", mu = mu0, sigma.x = sigma) # calcolo il test
-    if( z.test$p.value < alpha ){ 
-      esito[i] <- 1
-    }
-  }
-  
-  power[j] <- mean(esito)
-}
-
-plot(mu,power,pch=20,ylab="Potenza",xlab="Vera media", main = "Potenza al variare della media")
-lines(mu,power)
-
-
-# 3) Ripetere l'esercizio con un campione di 40 componenti? Cosa succede ala potenza al 
-#    variare del numero di componenti?
-
-# Salvo la potenza con 20 componenti in un vettore che chiamo power_20 per poterla confrontare 
-# con la nuova che calcolo per 40 componenti
-power_20 = power
-n = 40
-
-# Ripeto la stessa cosa di prima, questa volta con n = 40
-mu <- 41:50 # alternatives
-power <- rep(0, M)
-# per ogni media, ripeto il procedimento di prima
-for ( j in 1:M ) {
-  mu1 <- mu[j]
-  
-  esito <- rep(0,N)
-  for( i in 1:N){
-    # genero un random sample sotto H1, quindi con media mu1
-    x <- rnorm (n , mean = mu1 , sd = sigma ) 
-    
-    # testo se la media ? uguale a mu0
-    z.test <- z.test(x = x, alternative = "greater", mu = mu0, sigma.x = sigma) # calcolo il test
-    if( z.test$p.value < alpha ){ 
-      esito[i] <- 1
-    }
-  }
-  
-  power[j] <- mean(esito)
-}
-
-# Salvo la potenza nel vettore power_40
-power_40 = power
-
-# Confronto col risultato precendente
-plot(mu,power_20,pch=20,ylab="Potenza",xlab="Vera media", main = "Potenza al variare della media",col="red")
-lines(mu,power_20,col="red")
-points(mu,power_40,pch=20,col="blue")
-lines(mu,power_40,col="blue")
-legend("bottomright",legend = c("n=20","n=40"),col=c("red","blue"),lwd=2)
-
-## 6- CALCOLO DEL LIVELLO DI SIGNIFICATIVITA' REALE VIA MONTE CARLO ------------
-
-rm(list=ls())
-graphics.off()
-
-# Vogliamo ora calcolare l'errore di primo tipo (rifiuto H_0 quando H_0 è vera)
-# tramite metodo Monte Carlo
-
+# Popolazione Gaussiana a varianza nota sigma = 2.5, n = 100, mu0 = 50
 # Consideriamo il test:
 #       H_0: mu = mu_0     vs     H_1: mu != mu_0
-# La regione critica (di rifiuto) del test bilatero di livello alpha è
-#       R_alpha = {abs(media.camp - mu_0)/(sigma/sqrt(n)) > z_(1-alpha/2)}
 
-# Vogliamo calcolare ora alpha = probabilità errore di primo tipo (rifiuto H_0 quando H_0 ? vera)
+# Stimare alpha
+N = 1000     # numero di esperimenti
+n = 100      # dimensione del campione
+sigma = 2.5  # deviazione standard (nota)
+mu0 = 50     # media vera della popolazione da cui provengono i campioni
+alpha = 0.05
+accetto = rep(0, N) # 1 se accetto H_0, 0 altrimenti 
 
-# Simuliamo 1000 realizzazioni di un campione di 10 variabili aleatorie gaussiane
-# con media mu = 50 e deviazione standard sigma = 2.5 nota.
-# Calcoliamo quindi la percentuale di realizzazioni campionarie che ci portano
-# a rifiutare H_0.
-
-N <- 1000   # numero di esperimenti
-n <- 10      # dimensione del campione
-sigma <- 2.5 # deviazione standard (nota)
-mu <- 50     # media vera della popolazione da cui provengono i campioni
-
-# Dato che vogliamo calcolare la probabilità errore di primo tipo, dobbiamo costruire il test
-# in modo che H_0 sia vera, quindi facciamo un test in cui mu_0 = 50
-mu.0 <-50    # media ipotizzata in H_0
-
-alpha <- 0.05 # livello teorico del test, che supponiamo di non sapere
-
-# Creo un vettore che conterrà il risultato del test ad ogni iterazione
-# Metto 0 se accetto H_0, 1 se rifiuto H_0, quindi alla fine dell'esperimento
-# sum(esito) sarà il numero di volte che ho concluso che H_0 era falsa, anche se era vera.
-esito <- rep(0, N) 
-
-for(i in 1:N){ # ripeto il test N volte
-  # set.seed(i) # lo faccio se voglio poter riprodurre gli stessi risultati ogni volta che lancio il codice
-  
-  # ad ogni iterazione simulo i dati gaussiani su cui effettuare il test
-  dati.sim <- rnorm(n, mean = mu, sd = sigma)
-  
-  # effettuo il test: esito = 1 se rifiuto H_0, 0 se accetto H_0
-  z.test = z.test(dati.sim, mu = mu.0,  sigma.x = sigma)
-  if( z.test$p.value < alpha ){ 
-    esito[i] <- 1
+set.seed(0)
+for(i in 1:N){
+  # sotto H_0
+  dati = rnorm(n, mean = mu0, sd = sigma)
+  test = BSDA::z.test(dati, mu = mu0,  sigma.x = sigma)
+  if( test$p.value > alpha ){ 
+    accetto[i] = 1
   }
 }
 
-# calcolo una stima della probabilità di errore di prima specie:
-# proporzione di volte in cui rifiuto
-alpha.camp <- mean(esito)
+alpha.camp = 1 - mean(accetto)
 alpha.camp
 
-# la stima di alpha è vicina all'errore di primo tipo reale,
-# provare a cambiare N e vedere come cambia la stima. 
+# STIMA DELLA POTENZA DEL TEST 
+
+mu = seq(from = mu0-3, mu0+3, length.out = 30)
+
+potenza = matrix(0, nrow=N, ncol=length(mu)) # 1 se rifiuto H_0, 0 altrimenti 
+
+set.seed(0)
+for(j in 1:length(mu)){
+  for(i in 1:N){
+    # sotto H_1
+    dati = rnorm(n, mean = mu[j], sd = sigma)
+    test = BSDA::z.test(dati, mu = mu0,  sigma.x = sigma)
+    if( test$p.value < alpha ){ 
+      potenza[i,j] = 1
+    }
+  }
+}
+
+potenza = colMeans(potenza)
+dev.new()
+plot((mu-mu0), potenza, type="l", lwd=3,
+     xlab=expression(mu-mu[0]), ylab="", main = "Potenza")
+abline(h = 1, lwd=2, lty=2, col="red")
+abline(h = alpha, lwd=2, lty=2, col="blue")
