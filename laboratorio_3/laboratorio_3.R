@@ -362,8 +362,8 @@ sigma = 0.25
 n = 100
 x_unif = runif(n)                 
 x_norm = rnorm(n, mean=mu, sd=sigma)
-I_unif = sum(f(x_unif))/n
-I_norm = sum( f(x_norm) / dnorm(x_norm, mean=mu, sd=sigma) )/n
+I_unif = sum( f( x_unif ) )/n
+I_norm = sum( f( x_norm ) / dnorm(x_norm, mean=mu, sd=sigma) )/n
 
 I_esatto = 1.
 

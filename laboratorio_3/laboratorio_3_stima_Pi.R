@@ -33,7 +33,7 @@ scores = function(players, counts){
 xx = seq(from=-1, to=1, by=0.0125)
 yy = sqrt(1-xx^2)
 
-players = c("Player1", "Player2")
+players = c("Player 1", "Player 2")
 colors = c("red2","blue2")
 
 {
@@ -92,15 +92,14 @@ Area_ = 4. # Area quadrato [-1,1] x [-1,1]
 }
 
 x11()
-pdf("Pi_LGN.pdf")
+#pdf("Pi_LGN.pdf")
 plot(1:M, P_m, type="l", main=TeX("Stima $\\pi$ al variare di $n$"),
      xlab = "numero lanci", yaxt="n", xaxt="n", ylab="",
      cex.lab=2, cex.main=2, lwd=3)
 abline(h=pi, col="red", lty=2, lwd=4)
 axis(2, at=c(pi), labels = TeX("$\\pi$"), las=2, cex.axis=2)
 axis(1, cex.axis=2)
-dev.off()
-
+#dev.off()
 ### Stima Pi al variare per diversi valori di iterazioni MC ###
 
 rm(list=ls())
@@ -157,8 +156,6 @@ plot(1:M, P_m, type="l", main='Simulazione: la legge dei grandi numeri',
 abline(h=pi, col="red", lty=2, lwd=2)
 axis(2, at=c(pi), labels = TeX("$\\pi$"), las=2, cex.axis=2)
 axis(1, cex.axis=2)
-
-
 
 # Ripetere N volte la stima di Pi tramite Metodo MC #
 
