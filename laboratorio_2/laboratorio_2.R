@@ -3,9 +3,6 @@
 #'########            STATISTICA DESCRITTIVA         ########'#
 #'###########################################################'#
 
-rm( list = ls() )
-graphics.off()
-
 # Argomenti del secondo laboratorio:
 # 1 - Analisi descrittiva di una variabile qunatitativa (confronto fra gruppi)
 # 2 - Analisi descrittiva di più variabili quantitative (multivariata)
@@ -22,10 +19,6 @@ graphics.off()
 
 # Da console:
 # setwd( 'C:/percorso/file' )
-
-# Da pacchetto:
-if(!require(rstudioapi)) install.packages("rstudioapi")
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # 1 - ANALISI DI UNA VARIABILE QUANTITATIVA (DATI NUMERICI) -------------------- 
 # Analisi di variabili quantitative:
@@ -137,29 +130,29 @@ dim( record )
 
 str( record )
 
-### RICHIESTA: analizzare le distribuzioni delle variabili m100 e m1000
+### RICHIESTA: analizzare le distribuzioni delle variabili m100 e m200
 # Media campionaria e varianza campionaria
 media_m100 = mean( record$m100 )
 
 sd_m100 = sd( record$m100 )
 
-media_m1000 = mean( record$m1000 )
+media_m200 = mean( record$m200 )
 
-sd_m1000 = sd( record$m1000 )
+sd_m200 = sd( record$m200 )
 
 # Istogramma
 dev.new()
 par( mfrow = c( 1, 2 ) )
 hist( record$m100, prob = TRUE, main = 'Istogramma:\nm100', col = 'forestgreen',
       breaks = 12, xlab = 'm100', ylab = 'Densità' )
-hist( record$m1000, prob = TRUE, main = 'Istogramma:\nm1000', col = 'royalblue',
-      breaks = 12, xlab = 'm1000', ylab = 'Densità' )
+hist( record$m200, prob = TRUE, main = 'Istogramma:\nm200', col = 'royalblue',
+      breaks = 12, xlab = 'm200', ylab = 'Densità' )
 
 # Istogramma e distribuzione normale
 # Griglia per il campionamento dalla normale
 griglia_m100 = seq( min( record$m100 ), max( record$m100 ), length = 100 )
 
-griglia_m1000 = seq( min( record$m1000 ), max( record$m1000 ), length = 100 )
+griglia_m200 = seq( min( record$m200 ), max( record$m200 ), length = 100 )
 
 dev.new()
 par( mfrow = c( 1, 2 ) )
@@ -167,9 +160,9 @@ hist( record$m100, prob = TRUE, main = 'Istogramma:\nm100', col = 'forestgreen',
       breaks = 12, xlab = 'm100', ylab = 'Densità', xlim = c( 10, 13 ) )
 lines( griglia_m100, dnorm( griglia_m100, media_m100, sd_m100 ),
        col = 'black', lwd = 2 )
-hist( record$m1000, prob = TRUE, main = 'Istogramma:\nm1000', col = 'royalblue',
-      breaks = 12, xlab = 'm1000', ylab = 'Densità', xlim = c( 0, 700 ) )
-lines( griglia_m1000, dnorm( griglia_m1000, media_m1000, sd_m1000 ),
+hist( record$m200, prob = TRUE, main = 'Istogramma:\nm200', col = 'royalblue',
+      breaks = 12, xlab = 'm200', ylab = 'Densità', xlim = c( 21, 28 ) )
+lines( griglia_m200, dnorm( griglia_m200, media_m200, sd_m200 ),
        col = 'black', lwd = 2 )
 
 ### ESERCIZIO 3 
