@@ -121,56 +121,20 @@ boxplot( pazienti$Peso ~ pazienti$Sesso, col = c ( 'orange', 'forestgreen' ),
 # 5. Scatterplot
 # 6. Box plot
 
-# ESERCIZIO 2 
-record = read.table( 'record.txt', header = TRUE )
+### analizzare le dipendenze tra le variabili Peso e Colesterolo nel sottocampione dei maschi
 
-head( record )
+# rimuovo variabili categoriche
 
-dim( record )
+head(maschi) # oppure head(pazienti) 
+categoriche = c(1,5,6,7) # 
 
-str( record )
+maschi = maschi[ , -categoriche]   #
 
-### RICHIESTA: analizzare le distribuzioni delle variabili m100 e m200
-# Media campionaria e varianza campionaria
-media_m100 = mean( record$m100 )
-
-sd_m100 = sd( record$m100 )
-
-media_m200 = mean( record$m200 )
-
-sd_m200 = sd( record$m200 )
-
-# Istogramma
-dev.new()
-par( mfrow = c( 1, 2 ) )
-hist( record$m100, prob = TRUE, main = 'Istogramma:\nm100', col = 'forestgreen',
-      breaks = 12, xlab = 'm100', ylab = 'Densità' )
-hist( record$m200, prob = TRUE, main = 'Istogramma:\nm200', col = 'royalblue',
-      breaks = 12, xlab = 'm200', ylab = 'Densità' )
-
-# Istogramma e distribuzione normale
-# Griglia per il campionamento dalla normale
-griglia_m100 = seq( min( record$m100 ), max( record$m100 ), length = 100 )
-
-griglia_m200 = seq( min( record$m200 ), max( record$m200 ), length = 100 )
+# check maschi ? 
 
 dev.new()
-par( mfrow = c( 1, 2 ) )
-hist( record$m100, prob = TRUE, main = 'Istogramma:\nm100', col = 'forestgreen',
-      breaks = 12, xlab = 'm100', ylab = 'Densità', xlim = c( 10, 13 ) )
-lines( griglia_m100, dnorm( griglia_m100, media_m100, sd_m100 ),
-       col = 'black', lwd = 2 )
-hist( record$m200, prob = TRUE, main = 'Istogramma:\nm200', col = 'royalblue',
-      breaks = 12, xlab = 'm200', ylab = 'Densità', xlim = c( 21, 28 ) )
-lines( griglia_m200, dnorm( griglia_m200, media_m200, sd_m200 ),
-       col = 'black', lwd = 2 )
-
-### ESERCIZIO 3 
-
-### RICHIESTA: analizzare le dipendenze tra le variabili m100 e m200
-dev.new()
-plot( record$m100, record$m200, asp=1,  col = "black", pch = 16,
-      main = 'm100 vs. m200', xlab = 'm100', ylab = 'm200' )
+plot( maschi$Peso, maschi$Colesterolo, asp=1,  col = "black", pch = 16,
+      main = 'Peso vs. Colesterolo', xlab = 'Peso', ylab = 'Colesterolo' )
 
 # Covarianza (Cov): valutare come due variabili si discostano dalle loro medie
 #   - se Cov(X, Y) > 0 => variabili direttamente proporzionali
@@ -179,11 +143,11 @@ plot( record$m100, record$m200, asp=1,  col = "black", pch = 16,
 
 # Covarianza campionaria:
 #   Cov(X, Y) = sum( ( x_i - media.campionaria(X) ) * ( y_i - media.campionaria(Y) ) ) / ( n - 1 )
-cov( record$m100, record$m200 )   # oppure: cov( record$m200, record$m100 )
+cov( maschi$Peso, maschi$Colesterolo )   # oppure: cov( maschi$Colesterolo, maschi$Peso )
 
 # Nota: Cov(X, X) = Var(X)
-cov( record$m100, record$m100 )
-var( record$m100 )
+cov( maschi$Peso, maschi$Peso )
+var( maschi$Peso )
 
 # Nota: scorrelazione non equivale ad indipendenza. Infatti:
 # variabili indipendenti => variabili scorrelate (è falsa l'implicazione <=)
@@ -199,37 +163,39 @@ var( record$m100 )
 #   c) Cor(X, Y) = -1  :  Y = a + b*X, con b < 0
 
 # Indice di correlazione lineare campionario
-cov( record$m100, record$m200 ) / ( sd( record$m100 ) * sd( record$m200 ) )
+cov(  maschi$Peso, maschi$Colesterolo ) / ( sd( maschi$Peso ) * sd( maschi$Colesterolo ) )
 
-cor( record$m100, record$m200 )
+cor(  maschi$Peso, maschi$Colesterolo )
 
 # Nota: Cor(X, X) = 1
-cor( record$m100, record$m100 )
+cor( maschi$Peso, maschi$Peso )
 
 # Matrice di varianza e covarianza (dataset multivariato)
-cov( record )
+cov( maschi )
 
-round( cov( record ), 2 )
+round( cov( maschi ), 2 )
 
 # Matrice di correlazione
-cor( record )
+cor( maschi )
 
-round( cor( record ), 2 )
+round( cor( maschi ), 2 )
 
 # Scatterplot
 dev.new()
-pairs( record )
+pairs( maschi )
 
-# Box plot
-dev.new()
-boxplot( record, col = c( 2, 3, 4, 5, 6, 7 ), main = 'Box plot' )
+# se volessi analizzare contemporaneamente i maschi e le femmine ? 
+
+#
+#
+#
 
 # 3 - ESEMPIO DI CONFRONTO TRA PIU' GRUPPI -------------------------------------
 
 rm( list = ls( ) )
 graphics.off( )
 
-# ESERCIZIO 4 
+# ESERCIZIO 3 
 # Analisi dei dati contenuti nel dataset 'iris',
 # già presente in R nel pacchetto di base 'datasets'
 
