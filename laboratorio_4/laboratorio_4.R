@@ -15,12 +15,6 @@
 # Da console:
 # setwd( 'path/to/file' )
 
-if(!require(BSDA)) install.packages("BSDA")  
-if(!require(EnvStats)) install.packages("EnvStats")
-
-library(BSDA)     
-library(EnvStats)
-
 # 1 - VERIFICA di NORMALITA (QQ-plot e Test di Shapiro-Wilk) -------------------
  
 set.seed(0) # riproducibilità risultati
@@ -161,7 +155,10 @@ IC  # mu0 non è all'interno di IC, coerentemente al risultato del test
 p.value = 2 * (1 - pnorm( abs(z0) ))
 p.value   # Rifiuto H_0 per ogni alpha < p-value 
 
-# BSDA::z.test
+# BSDA::z.test !   
+# if(!require(BSDA)) install.packages("BSDA")  
+# library(BSDA)     
+
 z.test(x = dati$tempo_vita, alternative = "two.sided", 
        mu = mu0, sigma.x = sigma, conf.level = 1-alpha)
 
@@ -391,7 +388,10 @@ IC
 p.value = pchisq(u0, df = n - 1)
 p.value # coerente al risultato del test
 
-# EnvStats::varTest
+# EnvStats::varTest !
+# if(!require(EnvStats)) install.packages("EnvStats")
+# library(EnvStats)
+
 help(varTest)
 varTest(x = dati$resistenza, alternative = "less", 
         sigma.squared = sigma2_0, conf.level = 1-alpha)
@@ -422,7 +422,7 @@ set.seed(0)
 for(i in 1:N){
   # sotto H_0
   dati = rnorm(n, mean = mu0, sd = sigma)
-  test = BSDA::z.test(dati, mu = mu0,  sigma.x = sigma)
+  test = z.test(dati, mu = mu0,  sigma.x = sigma)
   if( test$p.value > alpha ){ 
     accetto[i] = 1
   }
@@ -442,7 +442,7 @@ for(j in 1:length(mu)){
   for(i in 1:N){
     # sotto H_1
     dati = rnorm(n, mean = mu[j], sd = sigma)
-    test = BSDA::z.test(dati, mu = mu0,  sigma.x = sigma)
+    test = z.test(dati, mu = mu0,  sigma.x = sigma)
     if( test$p.value < alpha ){ 
       potenza[i,j] = 1
     }
