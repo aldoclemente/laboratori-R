@@ -30,7 +30,8 @@ x_norm = rnorm(n, mean = mu, sd = sigma)
 #                 -> distribuzione cumulata della normale
 #   - in ordinata: quantili empirici
 #                 -> distribuzione cumulata della variabile osservata
-qqnorm(x_norm, pch=16)
+dev.new()
+qqnorm(x_norm, pch=16, cex=2,)
 qqline(x_norm, lty=2, lwd=2, col="red")
 
 # Test di Shapiro-Wilk 
@@ -79,18 +80,18 @@ legend(1, 0.4, c( "N(0,1)", "Exp(1/3)" ), col = c(1, 2),
 
 # QQ-plot
 # Normale
-qqnorm(x_norm, pch=16)
+qqnorm(x_norm, pch=16, cex=2)
 qqline(x_norm, col= 'red', lwd=2)
 # Uniforme
-qqnorm(x_unif, pch=16)
+qqnorm(x_unif, pch=16, cex=2)
 qqline(x_unif, col= 'red', lwd=2)
 # Esponenziale
-qqnorm(x_exp, pch=16)
+qqnorm(x_exp, pch=16, cex=2)
 qqline(x_exp, col= 'red', lwd=2)
 }
 
 shapiro.test(x_norm)
-shapiro.test(x_unif) # p-value < 0.05 -> Rifiuto H_0
+shapiro.test(x_unif) 
 shapiro.test(x_exp)  
 
 # 2 - IC E TEST PER LA MEDIA DI UNA POPOLAZIONE -------------------------------
@@ -122,13 +123,12 @@ names(dati)
 # 1. Verifichiamo Normalità
 
 dev.new()
-qqnorm(dati$tempo_vita, pch=16)
-qqline(dati$tempo_vita, lty=2, lwd=3, col="red")
+qqnorm(dati$tempo_vita, pch=16, cex=2)
+qqline(dati$tempo_vita, lty=2,lwd=3, col="red")
 
 # Tramite Shapiro test 
 # H_0: Popolazione Normale vs H_1: Popolazione NON Normale
 shapiro.test(dati$tempo_vita) 
-# p-value >> 0.05 -> E' ragionevole assumere normalità
 
 # 2. 
 # 2.1 Consideriamo il test:
@@ -148,7 +148,7 @@ abs(z0) > z.quantile # RIFIUTO H_0
 
 # Costruiamo IC al livello 95%
 IC = c( x_mean - z.quantile * sigma/sqrt(n), x_mean + z.quantile * sigma/sqrt(n))
-IC  # mu0 non è all'interno di IC, coerentemente al risultato del test
+IC  
 
 # Calcoliamo p-value del Test
 
@@ -177,11 +177,11 @@ res$estimate   # x_mean
 # H_0: mu = 1000     vs     H_1: mu > 1000
 # Rifiuto H_0 se z0 =  (x_mean - mu0)/(sigma/sqrt(n)) > z_{1-alpha}
 z.quantile = qnorm(1-alpha)
-z0 > z.quantile # Rifiuto H_0
+z0 > z.quantile
 
 z.test(x = dati$tempo_vita, alternative = "greater",
        mu = mu0, sigma.x = sigma, conf.level = 1-alpha)
-# p.value << 0.05 -> Rifiuto H_0
+# p.value << 0.05 
 
 # Consideriamo il test unilatero:
 # H_0: mu = 1000     vs     H_1: mu < 1000
@@ -211,6 +211,7 @@ rm(list=ls())
 
 
 # Importiamo il dataset
+rm(list=ls())
 dati = read.table('temperatura.txt', dec='.', header=T)
 head(dati)
 
@@ -223,11 +224,10 @@ dati$Temperatura = (dati$Temperatura - 32) / 1.8
 
 par(mfrow = c(1,2))
 hist(dati$Temperatura, prob=TRUE)
-qqnorm(dati$Temperatura, pch=16)
+qqnorm(dati$Temperatura, pch=16, cex=2)
 qqline(dati$Temperatura, lwd=2, col='red')
 
 shapiro.test(dati$Temperatura)
-# p-value > 0.05 -> possiamo assumere che i dati provengano da popolazione normale
 
 # Effettuo un test per verificare l'ipotesi
 #       H_0: mu = 37 C     vs     H_1: mu != 37 C
@@ -243,12 +243,12 @@ x_sd = sd(dati$Temperatura)
 t.quantile = qt(1-alpha/2, df = n - 1)
 
 t0 = (x_mean - mu0)/(x_sd/sqrt(n))
-abs(t0) > t.quantile # RIFIUTO H_0 
+abs(t0) > t.quantile  
 
 # Costruiamo IC al livello 95%
 IC = c( x_mean - t.quantile * x_sd/sqrt(n), 
         x_mean + t.quantile * x_sd/sqrt(n))
-IC  # mu0 non è all'interno di IC, coerentemente al risultato del test
+IC  
 
 # Calcoliamo p-value del Test
 
@@ -260,7 +260,7 @@ help("t.test")
 t.test(x = dati$Temperatura, alternative = "two.sided", 
        mu = mu0, conf.level = 1-alpha)
 
-# p-value << 0.05 -> Rifiuto H_0 -> Vera Media != mu0
+# p-value << 0.05
 
 # 2.1 Rappresentiamo gli istogrammi delle due popolazioni e i boxplot
 # e costruiamo un test d'ipotesi per la differenza tra le medie
@@ -277,17 +277,15 @@ boxplot(dati$Temperatura ~ dati$Sesso, horizontal=FALSE,
         names=c('Donne','Uomini'), col=c('orange','forestgreen'),
         ylab='temperatura corporea [gradi C]')
 
-# Tendenza delle donne ad avere una temperatura corporea più alta rispetto agli uomini.
-
 # verifichiamo la normalità delle due popolazioni
 temp.maschi = dati$Temperatura[dati$Sesso == "M"]
 temp.femmine = dati$Temperatura[dati$Sesso == "F"]
 
 dev.new()
 par(mfrow=c(2,1))
-qqnorm(temp.femmine, pch=16, main='Temperatura Femmine')
+qqnorm(temp.femmine, pch=16, cex=2, main='Temperatura Femmine')
 qqline(temp.femmine, col='orange',lwd=3)
-qqnorm(temp.maschi, pch=16, main='Temperatura Maschi')
+qqnorm(temp.maschi, pch=16, cex=2, main='Temperatura Maschi')
 qqline(temp.maschi, col='forestgreen',lwd=3)
 
 shapiro.test(temp.femmine)  # p-value > 0.05
@@ -306,16 +304,18 @@ s2_pool = ((n_F - 1)*var(temp.femmine) + (n_M - 1)*var(temp.maschi))/(n_F + n_M 
 
 t0 = ((mean_F - mean_M))/(sqrt(s2_pool* (1/n_F + 1/n_M)))
 t.quantile = qt(1-alpha/2, df = (n_M + n_M - 2))
-abs(t0) > t.quantile # Rifiuto H_0
+abs(t0) > t.quantile 
 
 # p.value test
 p.value = 2*(1 - pt(abs(t0), df = (n_M + n_M - 2)))
-p.value   # coerente risultato test
+p.value 
+
 # utilizziamo la funzione t.test
 t.test(temp.femmine, temp.maschi, alternative = "two.sided", 
        paired = FALSE, var.equal = TRUE)
 
-# p-value < 0.05 -> Rifiuto H_0 -> 
+# p-value < 0.05
+
 # -> al livello 0.05 non c'è evidenza per affermare che esiste una differenza nella
 #    media delle due sotto-popolazioni
 
@@ -326,7 +326,7 @@ t.test(temp.femmine, temp.maschi, alternative = "two.sided",
 t.test(temp.femmine, temp.maschi, mu=0, alternative = "greater",
        paired = FALSE, conf.level = 1-alpha, var.equal = TRUE)
 
-# p-value < 0.05 -> Rifiuto H_0
+# p-value < 0.05 
 
 # Esercizio 3
 # Carichiamo il dataset funi.txt
@@ -342,6 +342,7 @@ t.test(temp.femmine, temp.maschi, mu=0, alternative = "greater",
 # 3. Calcolare un intervallo di confidenza bilatero per la varianza al 95%.
 
 # Importiamo il dataset
+rm(list=ls())
 dati = read.table('funi.txt', header=T)
 
 dim(dati)
@@ -351,11 +352,11 @@ head(dati)
 # verifica normalità
 par(mfrow = c(1,2))
 hist(dati$resistenza,prob=TRUE)
-qqnorm(dati$resistenza, pch=16)
+qqnorm(dati$resistenza, pch=16, cex=2)
 qqline(dati$resistenza, lty=2, lwd=3, col='red')
 
 shapiro.test(dati$resistenza)
-# p-value > 0.05 -> assumiamo che i dati provengano da popolazione normale
+# p-value > 0.05 
 
 # 1. Vogliamo effettuare un test sulla media 
 # H0: mu=1730  contro  H1: mu>1730 
@@ -386,7 +387,7 @@ IC = c(0, (n-1) * x_var / quisq.quantile)
 IC
 # p-value del test
 p.value = pchisq(u0, df = n - 1)
-p.value # coerente al risultato del test
+p.value 
 
 # EnvStats::varTest !
 # if(!require(EnvStats)) install.packages("EnvStats")
